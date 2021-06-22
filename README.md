@@ -1,9 +1,7 @@
 # 介绍
-1、认证OATH2.0，4种模式.
+1、认证OATH2.0，4种模式. 
 2、jwt rsa 
-
 3、更简洁的jwt client方式 
-
 4、网关gateway，认证鉴权限流负载均衡、请求监视、retry 
 
 5、独立的url鉴权服务 
