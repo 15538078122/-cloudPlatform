@@ -1,0 +1,12 @@
+server:
+  port: 8083
+spring:
+  application:
+    #authentication service
+    name: auservice
+  profiles:
+    active: online #local local dev   online
+logging:
+  level:
+    root: error
+    com: info

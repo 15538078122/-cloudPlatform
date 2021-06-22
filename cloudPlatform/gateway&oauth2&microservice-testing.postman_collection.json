@@ -1,0 +1,533 @@
+{
+	"info": {
+		"_postman_id": "b64fd452-5c71-4f0f-a7fe-cb96a9b2bf3b",
+		"name": "gateway&oauth2&microservice-testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "获取授权码",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://localhost:8000/public/code&scope=write1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10001",
+					"path": [
+						"oauth",
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "client"
+						},
+						{
+							"key": "response_type",
+							"value": "code"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://localhost:8000/public/code"
+						},
+						{
+							"key": "scope",
+							"value": "write1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "由授权码获取token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
+							"let token = json.access_token;\r",
+							"pm.globals.set(\"token\", token);\r",
+							"let reftoken = json.refresh_token;\r",
+							"pm.globals.set(\"reftoken\", reftoken);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "code",
+							"value": "TP7be5",
+							"type": "text"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&grant_type=authorization_code&redirect_uri=http://localhost:8000/public/code",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10001",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "client"
+						},
+						{
+							"key": "client_secret",
+							"value": "secret123"
+						},
+						{
+							"key": "grant_type",
+							"value": "authorization_code"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://localhost:8000/public/code"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "隐式获取token",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=token&redirect_uri=http://localhost:8000/public/code",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10001",
+					"path": [
+						"oauth",
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "client"
+						},
+						{
+							"key": "response_type",
+							"value": "token"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://localhost:8000/public/code"
+						},
+						{
+							"key": "scope",
+							"value": "write1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "密码模式",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
+							"let token = json.access_token;\r",
+							"pm.globals.set(\"token\", token);\r",
+							"let reftoken = json.refresh_token;\r",
+							"pm.globals.set(\"reftoken\", reftoken);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&grant_type=password&username=liwei&password=1234",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10001",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "client"
+						},
+						{
+							"key": "client_secret",
+							"value": "secret123"
+						},
+						{
+							"key": "grant_type",
+							"value": "password"
+						},
+						{
+							"key": "username",
+							"value": "liwei"
+						},
+						{
+							"key": "scope",
+							"value": "read1",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "1234"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "客户端凭证模式",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
+							"let token = json.access_token;\r",
+							"pm.globals.set(\"token\", token);\r",
+							"let reftoken = json.refresh_token;\r",
+							"pm.globals.set(\"reftoken\", reftoken);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "secret123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:10001/oauth/token?grant_type=client_credentials&client_id=client&client_secret=secret123",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10001",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials"
+						},
+						{
+							"key": "client_id",
+							"value": "client"
+						},
+						{
+							"key": "client_secret",
+							"value": "secret123"
+						},
+						{
+							"key": "scope",
+							"value": "read1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "refreshtoken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
+							"let token = json.access_token;\r",
+							"pm.globals.set(\"token\", token);\r",
+							"let reftoken = json.refresh_token;\r",
+							"pm.globals.set(\"reftoken\", reftoken);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "refresh_token",
+							"value": "{{reftoken}}",
+							"type": "text"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&grant_type=refresh_token&redirect_uri=http://localhost:8000/public/code",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10001",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "client"
+						},
+						{
+							"key": "client_secret",
+							"value": "secret123"
+						},
+						{
+							"key": "grant_type",
+							"value": "refresh_token"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://localhost:8000/public/code"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "gatewaytest",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "para",
+							"value": "testpara1",
+							"type": "text"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9001/microserv/test?para=testpara",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9001",
+					"path": [
+						"microserv",
+						"test"
+					],
+					"query": [
+						{
+							"key": "para",
+							"value": "testpara"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auservice-auth",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "account",
+							"value": "liwei",
+							"type": "text"
+						},
+						{
+							"key": "scopes",
+							"value": "read1,write1",
+							"type": "text"
+						},
+						{
+							"key": "uri",
+							"value": "/test",
+							"type": "text"
+						},
+						{
+							"key": "method",
+							"value": "post",
+							"type": "text"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "resourceServerTest",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/private/write/233",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"private",
+						"write",
+						"233"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

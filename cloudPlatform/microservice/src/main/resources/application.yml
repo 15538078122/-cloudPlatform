@@ -1,0 +1,20 @@
+server:
+  port: 8084
+  tomcat:
+    accesslog:
+      enabled: true
+    basedir: ./tomcatlog
+spring:
+  application:
+    #authentication service
+    name: microserv
+  profiles:
+    active: online #local local dev   online
+logging:
+  level:
+    root: error
+    com.hd: info
+    org.apache.tomcat: DEBUG
+    org.apache.catalina: DEBUG
+
+#    java -jar microservice-0.0.1-SNAPSHOT.jar  --server.port=8085

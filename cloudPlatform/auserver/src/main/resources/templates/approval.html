@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html  lang="en" xmlns:th="http://www.thymeleaf.org">
+<body><h1>OAuth Approval</h1>
+<p>自定义请选择授权2?</p>
+<form id="confirmationForm" name="confirmationForm" action="/oauth/authorize" method="post"><input
+        name="user_oauth_approval" value="true" type="hidden"/>
+    <ul>
+<!--        <li>-->
+<!--            <div class="form-group">scope.read1: <input type="radio" name="scope.read1" value="true">Approve</input>-->
+<!--                <input type="radio" name="scope.read1" value="false" checked>Deny</input></div>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <div class="form-group">scope.write1: <input type="radio" name="scope.write1" value="true">Approve</input>-->
+<!--                <input type="radio" name="scope.write1" value="false" checked>Deny</input></div>-->
+<!--        </li>-->
+        <input  name="_csrf" th:value="${authorizationRequest.scope}"/>
+
+        <div class="form-group" th:each="sco : ${authorizationRequest.scope}">
+            <div th:text="'scope.'+${sco}"></div>  <input type="radio" th:name="'scope.'+${sco}" value="true">Approve</input>
+            <input type="radio" th:name="'scope.'+${sco}" value="false" checked>Deny</input></div>
+    </ul>
+    <label><input name="authorize" value="Authorize" type="submit"/></label></form>
+</body>
+</html>

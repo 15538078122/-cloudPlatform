@@ -1,0 +1,7 @@
+log/
+.idea/
+tomcatlog/
+.iml
+.md
+**/.mvn/
+!.gitignore

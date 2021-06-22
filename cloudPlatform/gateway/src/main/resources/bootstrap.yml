@@ -1,0 +1,76 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yaml
+        group: DEFAULT_GROUP
+      discovery:
+        server-addr: 127.0.0.1:8848
+        service: gateway
+    gateway:
+      httpclient:
+        connect-timeout: 2000
+        response-timeout: PT5s
+      globalcors:
+        cors-configurations:
+          '[/**]':  #匹配所有请求
+            allowedOrigins: "*" #跨域处理 允许所有的域
+            allowedMethods: #支持的方法
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      routes:
+        -
+          id: microserv
+          # 目标服务地址（uri：地址，请求转发后的地址）
+          uri: lb://microserv
+          #          uri: http://127.0.0.1:8082
+          # 路由条件（predicates：断言，匹配 HTTP 请求内容）
+          predicates:
+            ## 转发地址格式为 uri/archive
+            -
+              Path=/microserv/{path}
+          #              Path=/test/**
+          metadata:
+            connect-timeout: 2000
+            response-timeout: 3000
+          filters:
+            - name: SetPath
+              args:
+                template: /{path}
+            - name: Deal
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/defaultfallback
+            - name: Retry
+              args:
+                retries: 1
+                series:
+                  - SERVER_ERROR
+                methods:
+                  - GET
+microserv:
+  ribbon:
+    #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule #配置规则 随机
+    #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule #配置规则 轮询
+    #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RetryRule #配置规则 重试
+    #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.WeightedResponseTimeRule #配置规则 响应时间权重
+    #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.BestAvailableRule #配置规则 最空闲连接策略
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.WeightedResponseTimeRule
+#    ConnectTimeout: 5 #请求连接超时时间
+#    ReadTimeout: 100 #请求处理的超时时间
+#    OkToRetryOnAllOperations: true #ribbon超时时对所有请求都进行重试
+#    MaxAutoRetriesNextServer: 1 #切换实例的重试次数
+#    MaxAutoRetries: 2 #对当前实例的重试次数
+
+hystrix:
+  command:
+    fallbackcmd:  #fallbackcmd 针对单个设置default
+      execution:
+        isolation:
+          thread:
+            # 全局熔断器5s超时
+            timeoutInMilliseconds: 10000
