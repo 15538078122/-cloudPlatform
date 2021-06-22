@@ -20,7 +20,7 @@
 # 软件架构
 
 ![image](https://user-images.githubusercontent.com/83743182/122862067-2287bf00-d353-11eb-9c0d-2dccbc40a8df.png)
-# 安装教程
+# 安装
 自行安装nacos，网上很多。新建空project，导入各个module，如下：共6个
 ![image](https://user-images.githubusercontent.com/83743182/122862149-464b0500-d353-11eb-85fb-cfe306757c96.png)
 global libraries里添加上libs目录下的common-0.0.1-SNAPSHOT.jar, 这是已经package的common项目
