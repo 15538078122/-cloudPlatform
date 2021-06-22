@@ -1,6 +1,8 @@
 # 介绍
 1、认证OATH2.0，4种模式.
+
 2、jwt rsa 
+
 3、更简洁的jwt client方式 
 4、网关gateway，认证鉴权限流负载均衡、请求监视、retry 
 5、独立的url鉴权服务 
@@ -34,6 +36,7 @@ postman 导入gateway&oauth2&microservice-testing.postman_collection.json
 注意：授权码模式的两个url需要放到浏览器中访问。根据postman中的请求列表，开始你的访问吧
 # 系统几个关键坑介绍：
 有时间补。。。。。。 先列下：
+
 1、mvn问题，gateway和spring boot 的版本注意匹配问题。 oauth和spring boot版本匹配问题；不匹配可能会有异常发生。cloud最好选择dependencyManagement方式，避免自己指定version时发送不兼容。
 
 2、gateway只引用了security-jwt；没有引用oauth2-autoconfigure； 引入会异常，只借用了解析jwt的JwtHelper class而已，也是看源码揣摩的，开始是自己写jwt工具比较麻烦。
