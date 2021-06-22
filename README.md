@@ -43,7 +43,8 @@ postman 导入gateway&oauth2&microservice-testing.postman_collection.json
 # 系统几个关键坑介绍：
 有时间补。。。。。。 先列下：
 
-1、mvn问题，gateway和spring boot 的版本注意匹配问题。 oauth和spring boot版本匹配问题；不匹配可能会有异常发生。cloud最好选择dependencyManagement方式，避免自己指定version时发送不兼容。
+1、mvn问题，gateway和spring boot 的版本注意匹配问题。 oauth和spring boot版本匹配问题；不匹配可能会有异常发生。
+cloud最好选择dependencyManagement方式，避免自己指定version时发送不兼容。
 
 2、gateway只引用了security-jwt；没有引用oauth2-autoconfigure； 引入会异常，只借用了解析jwt的JwtHelper class而已，也是看源码揣摩的，开始是自己写jwt工具比较麻烦。
 
