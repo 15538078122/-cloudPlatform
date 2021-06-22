@@ -1,5 +1,13 @@
 # 介绍
-特点： 1、认证OATH2.0，4种模式，jwt rsa 3、更简洁的jwt client方式 4、网关gateway，认证鉴权限流负载均衡、请求监视、retry 5、独立的url鉴权服务 6、更具独立性，只专注于业务实现。通过设计便于业务数据读写分离 7、各个子系统模块均可根据需求，调整部署的实例数。 8、数据库主从、连接池、数据缓存、消息队列、运维监视（完善中） 9、nacos 自己安装
+1、认证OATH2.0，4种模式.
+2、jwt rsa 
+3、更简洁的jwt client方式 
+4、网关gateway，认证鉴权限流负载均衡、请求监视、retry 
+5、独立的url鉴权服务 
+6、更具独立性，只专注于业务实现。通过设计便于业务数据读写分离
+7、各个子系统模块均可根据需求，调整部署的实例数。 
+8、数据库主从、连接池、数据缓存、消息队列、运维监视（完善中） 
+9、nacos 服务发现
 
 # 软件架构
 
@@ -25,7 +33,7 @@ postman 导入gateway&oauth2&microservice-testing.postman_collection.json
 ![image](https://user-images.githubusercontent.com/83743182/122862436-b78ab800-d353-11eb-97ed-5224c7cc0f37.png)
 注意：授权码模式的两个url需要放到浏览器中访问。根据postman中的请求列表，开始你的访问吧
 # 系统几个关键坑介绍：
-有时间补上。。。。。。 先列下：
+有时间补。。。。。。 先列下：
 1、mvn问题，gateway和spring boot 的版本注意匹配问题。 oauth和spring boot版本匹配问题；不匹配可能会有异常发生。cloud最好选择dependencyManagement方式，避免自己指定version时发送不兼容。
 
 2、gateway只引用了security-jwt；没有引用oauth2-autoconfigure； 引入会异常，只借用了解析jwt的JwtHelper class而已，也是看源码揣摩的，开始是自己写jwt工具比较麻烦。
