@@ -5,6 +5,8 @@ package com.hd.gateway.conf;
  */
 import com.hd.gateway.model.RetResult;
 import com.hd.gateway.utils.ResponseUtil;
+import com.hd.gateway.utils.SpringUtil;
+import com.mongodb.BasicDBObject;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -52,7 +55,12 @@ public class Bucket4jGlobalGatewayFilter implements GlobalFilter, Ordered
             log.info("IP: " + ip + "，has Tokens: " + bucket.getAvailableTokens());
             //System.out.println("IP: " + ip + "，has Tokens: " + bucket.getAvailableTokens());
         }
-
+//        MongoTemplate mongoTemplate = SpringUtil.getBean(MongoTemplate.class);
+//        if (mongoTemplate != null) {
+//            final BasicDBObject doc = new BasicDBObject();
+//            doc.append("level", "eventObject.getLevel().toString()");
+//            mongoTemplate.insert(doc, "log");
+//        }
         if (bucket.tryConsume(1))
         {
             return chain.filter(exchange);
