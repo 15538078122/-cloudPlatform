@@ -141,8 +141,8 @@
     <appender name="MONGODB" class="com.hd.gateway.conf.MongoDBAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>debug</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
+<!--            <onMatch>ACCEPT</onMatch>-->
+<!--            <onMismatch>DENY</onMismatch>-->
         </filter>
     </appender>
     <!--
@@ -173,7 +173,7 @@
     -->
 
     <!-- 4. 最终的策略 -->
-    <root level="info">
+    <root level="ERROR">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="DEBUG_FILE" />
         <appender-ref ref="INFO_FILE" />

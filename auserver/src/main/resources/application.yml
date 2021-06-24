@@ -10,7 +10,7 @@ spring:
     suffix: .html  #后缀名
   data:
     mongodb:
-      uri: mongodb://127.0.0.1:27017/logs
+      uri: mongodb://127.0.0.1:27017/auserverlogs
 logging:
   level:
     com: info

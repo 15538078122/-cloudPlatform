@@ -20,7 +20,7 @@ public class MongoDBAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
             //doc.append("logger", eventObject.getLoggerName());
             // doc.append("thread", eventObject.getThreadName());
             doc.append("message", eventObject.getFormattedMessage());
-            mongoTemplate.insert(doc, "log");
+            mongoTemplate.insert(doc, "logs");
         }
     }
 }

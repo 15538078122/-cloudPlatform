@@ -10,10 +10,10 @@ spring:
 #      host: localhost
 #      port: 27017
 #      database: test
-      uri: mongodb://localhost:27017/gatewaylogs?maxIdleTimeMS=3000
+      uri: mongodb://localhost:27017/gatewaylogs
 logging:
   level:
-    root: trace
+    root: error
     com.hd: debug
     com.alibaba: error
     sun.net: error
