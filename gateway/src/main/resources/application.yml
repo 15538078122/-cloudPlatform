@@ -5,7 +5,12 @@ spring:
     name: gateway
   profiles:
     active: online
-
+  data:
+    mongodb:
+#      host: localhost
+#      port: 27017
+#      database: test
+      uri: mongodb://localhost:27017/gatewaylogs?maxIdleTimeMS=3000
 logging:
   level:
     root: trace
