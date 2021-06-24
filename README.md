@@ -54,6 +54,7 @@ token验证后，uri的访问验证，采用了访问auservice方式。注意这
 ![image](https://user-images.githubusercontent.com/83743182/122862570-e4d76600-d353-11eb-8d9f-7e3f34ac38e7.png)
 8、gateway filter设置顺序，我设置的是：限流Bucket4jGlobalGatewayFilter-》TimeCostGlobalGatewayFilter-》CheckAuthGlobalGatewayFilter（认证和鉴权） DealGatewayFilter用来测试
 
-9、反漏洞限流模式很好的处理突变量访问问题，处理限流、熔断来保证系统可用性；一般系统更多的性能问题还是卡在自身的数据处理上，逻辑不合理造成耗时，数据结构不合理、数据库相关处理，数据量、索引，查询sql效率等。
+9、反漏洞限流模式很好的处理突变量访问问题，处理限流、熔断来保证系统可用性；一般系统更多的性能问题还是卡在自身的数据处理上，逻辑不合理造成耗时，数据结构不合理、数据库相关处理，数据量、索引，查询sql效率等。 
+10、数据返回，做成了一个common基础包，供各个服务项目引用，比较统一，注意启动scan配置@SpringBootApplication(scanBasePackages={"com.hd.microservice","com.hd.common.conf"})，加上common.conf包的扫描。 
+11、log写入mongo db，一定记得去掉spring-boot-devtools， 由于classloader不同造成UnsynchronizedAppenderBase获取 applicationContext失败，进而无法写入mongodb。 
 
-10、数据返回，做成了一个common基础包，供各个服务项目引用，比较统一，注意启动scan配置@SpringBootApplication(scanBasePackages={"com.hd.microservice","com.hd.common.conf"})，加上common.conf包的扫描。
