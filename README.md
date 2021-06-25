@@ -57,4 +57,6 @@ token验证后，uri的访问验证，采用了访问auservice方式。注意这
 9、反漏洞限流模式很好的处理突变量访问问题，处理限流、熔断来保证系统可用性；一般系统更多的性能问题还是卡在自身的数据处理上，逻辑不合理造成耗时，数据结构不合理、数据库相关处理，数据量、索引，查询sql效率等。   
 10、数据返回，做成了一个common基础包，供各个服务项目引用，比较统一，注意启动scan配置@SpringBootApplication(scanBasePackages={"com.hd.microservice","com.hd.common.conf"})，加上common.conf包的扫描。   
 11、log写入mongo db，一定记得去掉spring-boot-devtools， 由于classloader不同造成UnsynchronizedAppenderBase获取 applicationContext失败，进而无法写入mongodb。   
+12、auservice增加swagger2，注意  beforeBodyWrite的返回值处理，不能全部返回RetResult类型，会造成swagger页面访问失败
+![image](https://user-images.githubusercontent.com/83743182/123385246-eb6e1380-d5c7-11eb-93bf-02cbb1bc2944.png)
 
