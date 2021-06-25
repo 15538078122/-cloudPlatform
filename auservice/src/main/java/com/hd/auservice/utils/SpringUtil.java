@@ -1,17 +1,13 @@
-package com.hd.auserver.utils;
+package com.hd.auservice.utils;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @Author: liwei
  * @Description:
  */
-public class SpringUtil   {
+public class SpringUtil {
     private static ApplicationContext applicationContext;
     public static   ApplicationContext getApplicationContext(){
         return  applicationContext;

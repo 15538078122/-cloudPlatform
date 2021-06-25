@@ -1,6 +1,7 @@
 package com.hd.auservice.controller;
 
 import com.hd.auservice.IAuthFeignService;
+import com.hd.auservice.model.RequiresPermissions;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import io.swagger.annotations.Api;
@@ -9,17 +10,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @Api(tags = "url权限验证Controller")
-@RefreshScope
+//@RefreshScope
 @RestController
 @Slf4j
+@RequestMapping("/")
 public class AuthenticationController {
 
     @Autowired
@@ -38,8 +37,9 @@ public class AuthenticationController {
         scopePermissionList.put("write1", permissionList);
     }
 
+    @RequiresPermissions("permission:auth")
     @ApiOperation(value = "url权限验证func")
-    @RequestMapping(value = "/auth",method = {RequestMethod.POST,RequestMethod.GET})
+    @PostMapping(value = "/auth")
     public Boolean auth(@RequestParam("account") String account, @RequestParam("scopes") String scopes, @RequestParam("uri") String uri, @RequestParam("method") String method) throws InterruptedException {
 
         //Thread.sleep(60);
@@ -64,8 +64,9 @@ public class AuthenticationController {
         return false;
     }
 
+    @RequiresPermissions("permission:authbr")
     @ApiOperation(value = "url权限验证bridge func")
-    @RequestMapping(value = "/authbridge",method = {RequestMethod.POST,RequestMethod.GET} )
+    @PostMapping(value = "/authbridge")
     public RetResult authbridge(@RequestParam("account") String account, @RequestParam("scopes") String scopes, @RequestParam("uri") String uri, @RequestParam("method") String method) throws Exception {
 //        int dd = 1 / 0;
         //Thread.sleep(400);

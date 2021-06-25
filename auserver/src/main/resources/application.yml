@@ -13,6 +13,5 @@ spring:
       uri: mongodb://127.0.0.1:27017/auserverlogs
 logging:
   level:
-    com: info
-    org: info
-    org.springframework.security: debug
+    root: error
+    com: debug

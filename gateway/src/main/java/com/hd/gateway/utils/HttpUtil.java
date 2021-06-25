@@ -6,6 +6,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public  class HttpUtil {
@@ -24,6 +25,11 @@ public  class HttpUtil {
     public static RetResult httpGet(String applicationName, Map<String, String> params){
 
         return restTemplate.getForObject("http://" + applicationName, RetResult.class,params);
+    }
+
+    public static RetResult httpPost(String applicationName, Map<String, String> params){
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+        return restTemplate.postForObject("http://" + applicationName,hashMap,RetResult.class,params);
     }
 
 }

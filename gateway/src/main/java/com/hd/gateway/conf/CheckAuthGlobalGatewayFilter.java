@@ -86,7 +86,7 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
             params.put("uri", tokenInfo.getUri());
             params.put("method", tokenInfo.getMethod());
             //retResult=new RetResult(0,"",true);
-            retResult= HttpUtil.httpGet("127.0.0.1:8083/authbridge?account={account}&scopes={scopes}&uri={uri}&method={method}",params);
+            retResult= HttpUtil.httpPost("127.0.0.1:8083/authbridge?account={account}&scopes={scopes}&uri={uri}&method={method}",params);
         } catch (Exception e) {
             retResult = new RetResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), false);
         }

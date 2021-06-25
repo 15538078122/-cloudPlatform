@@ -1,5 +1,6 @@
 package com.hd.auserver.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class MyUserDetailService implements UserDetailsService {
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
@@ -30,6 +32,7 @@ public class MyUserDetailService implements UserDetailsService {
             List<GrantedAuthority> authList = getAuthorities();
             //TODO: 获取用户密码 ，模拟试验，所有用户密码都是1234；
             //authList角色不使用
+            log.debug("login->"+userName);
             userDetails = new UserInfo(userName, passwordEncoder.encode("1234"),authList);
 
         }catch (Exception e) {
