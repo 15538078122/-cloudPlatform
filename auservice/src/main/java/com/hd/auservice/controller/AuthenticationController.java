@@ -1,17 +1,22 @@
-package com.hd.auservice;
+package com.hd.auservice.controller;
 
+import com.hd.auservice.IAuthFeignService;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
+@Api(tags = "url权限验证Controller")
 @RefreshScope
 @RestController
 @Slf4j
@@ -33,7 +38,8 @@ public class AuthenticationController {
         scopePermissionList.put("write1", permissionList);
     }
 
-    @RequestMapping("/auth")
+    @ApiOperation(value = "url权限验证func")
+    @RequestMapping(value = "/auth",method = {RequestMethod.POST,RequestMethod.GET})
     public Boolean auth(@RequestParam("account") String account, @RequestParam("scopes") String scopes, @RequestParam("uri") String uri, @RequestParam("method") String method) throws InterruptedException {
 
         //Thread.sleep(60);
@@ -58,9 +64,10 @@ public class AuthenticationController {
         return false;
     }
 
-    @RequestMapping("/authbridge")
+    @ApiOperation(value = "url权限验证bridge func")
+    @RequestMapping(value = "/authbridge",method = {RequestMethod.POST,RequestMethod.GET} )
     public RetResult authbridge(@RequestParam("account") String account, @RequestParam("scopes") String scopes, @RequestParam("uri") String uri, @RequestParam("method") String method) throws Exception {
-        //int dd = 1 / 0;
+//        int dd = 1 / 0;
         //Thread.sleep(400);
 //        int i = 0;
 //        while (i++ < Integer.MAX_VALUE / 5) {

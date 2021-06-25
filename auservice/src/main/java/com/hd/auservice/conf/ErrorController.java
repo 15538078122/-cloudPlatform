@@ -1,6 +1,7 @@
 package com.hd.auservice.conf;
 
 import com.hd.common.RetResponse;
+import io.swagger.annotations.Api;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @Author: liwei
  * @Description:
  */
+@Api(tags = "error处理Controller")
 @RestController
 public class ErrorController extends BasicErrorController {
 

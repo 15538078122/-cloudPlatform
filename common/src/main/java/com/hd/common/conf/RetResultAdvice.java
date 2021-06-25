@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.hd.common.RetCode;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -26,6 +27,7 @@ public class RetResultAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public Object beforeBodyWrite(Object o, MethodParameter methodParameter, MediaType mediaType, Class<? extends HttpMessageConverter<?>> aClass, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) {
         //如果是返回了RetResult类就直接返回不做处理
+        //        if(true) return  o;
         if (o instanceof RetResult) {
             return o;
         }
@@ -35,7 +37,13 @@ public class RetResultAdvice implements ResponseBodyAdvice<Object> {
             String json = JSONObject.toJSONString(RetResponse.makeRsp("",o));
             return  json;
         }
-        return RetResponse.makeRsp("",o);
+
+        if(o instanceof Boolean){
+            return RetResponse.makeRsp("",o);
+        }
+        //如果是swagger处理的对象，直接返回，否则swagger访问异常
+        //return RetResponse.makeRsp("",o);
+        return o;
     }
 }
 
