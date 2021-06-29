@@ -62,6 +62,9 @@ token验证后，uri的访问验证，采用了访问auservice方式。注意这
 13、增加uri 扫描类ApiUtils，备以后将uri及对象permission 字符串写入数据库，用来进行uri授权。  注意里面：需要扫描的controller都要使用@RequestMapping注解， method使用：PostMapping   、
 GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解， 否则ApiUtils扫描会出错；保持一个method只有一个uri路径；扫描到结果如图：
 
-![image](https://user-images.githubusercontent.com/83743182/123414521-9097e480-d5e6-11eb-9427-5b3aa95ffd1e.png)
+![image](https://user-images.githubusercontent.com/83743182/123414521-9097e480-d5e6-11eb-9427-5b3aa95ffd1e.png)   
+14、MyUserDetailService使用了HttpServletRequest的注入，注意这里是代理模式，每个请求过来，注入的都是该请求对应的request；利用历史请求DefaultSavedRequest获取企业code，实现sas模式。   
+![image](https://user-images.githubusercontent.com/83743182/123797363-af64e680-d918-11eb-95a6-dbb9a54e5eed.png)
+
 
 
