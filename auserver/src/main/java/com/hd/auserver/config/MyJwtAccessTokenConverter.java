@@ -29,12 +29,14 @@ public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
             //client 模式,添加个默认user：client_secret； token解码端据此判断是否是client登录
             List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
             //authList.add(new SimpleGrantedAuthority("ROLE_UNUSE"));
-            user=new UserInfo("client_secret","",authList);
+            //如果是客户端模式，特殊前置+该clentid组成用户名
+            user=new UserInfo("lseewiixiweqoie23898hbbde0$$--"+authentication.getOAuth2Request().getClientId(),"",authList);
             data.put("user_name",user.getUsername());
         }
         //Set<String> tokenScope = token.getScope();
         //将额外的参数信息存入，用于生成token
         data.put("login_time",user.getLoginTime());
+        data.put("company_code",user.getCompanyCode());
         data.putAll(token.getAdditionalInformation());
         //自定义TOKEN包含的信息
         token.setAdditionalInformation(data);
@@ -55,6 +57,8 @@ public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
 
         String userName = (String)decode.get("user_name");
         String loginTime = (String)decode.get("login_time");
+        String companyCode = (String)decode.get("company_code");
+
         String clientId = (String)decode.get("client_id");
         List<String> scopes=new ArrayList<>();
         List<LinkedHashMap<String,String>> scopesArray =(List<LinkedHashMap<String,String>>) decode.get("scope");
@@ -80,6 +84,7 @@ public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
 
         UserInfo userInfo =new UserInfo(userName,"", grantedAuthorityList);
         userInfo.setLoginTime(loginTime);
+        userInfo.setCompanyCode(companyCode);
         //需要将解析出来的用户存入全局当中，不然无法转换成自定义的user类
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userInfo,null, grantedAuthorityList);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);

@@ -75,10 +75,10 @@ public class ApiUtils implements ApplicationContextAware {
     private static RequestPath getApiPath(AnnotatedElement annotatedElement) {
         List<String> methods = new ArrayList<>();
         //RequestMapping a1 = annotatedElement.getAnnotation(RequestMapping.class);
-        PostMapping a2 = annotatedElement.getAnnotation(PostMapping.class);
-        GetMapping a3 = annotatedElement.getAnnotation(GetMapping.class);
-        PutMapping a4 = annotatedElement.getAnnotation(PutMapping.class);
-        DeleteMapping a5 = annotatedElement.getAnnotation(DeleteMapping.class);
+        PostMapping     a2 = annotatedElement.getAnnotation(PostMapping.class);
+        GetMapping      a3 = annotatedElement.getAnnotation(GetMapping.class);
+        PutMapping      a4 = annotatedElement.getAnnotation(PutMapping.class);
+        DeleteMapping   a5 = annotatedElement.getAnnotation(DeleteMapping.class);
 
         String []paths2=new String[0];
 //        if (a1 != null) {

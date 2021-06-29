@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -38,6 +39,9 @@ public class TheAccessDecisionManager implements AccessDecisionManager {
         List<String> configRoleCodes = configAttributes.stream().map(ConfigAttribute::getAttribute).collect(Collectors.toList());
         for (String roleCode : roleCodes) {
             if (configRoleCodes.contains(roleCode)) {
+                if(roleCode.compareTo("ROLE_ANONYMOUS")==0){
+                    return;
+                }
                 UserInfo userInfo =  (UserInfo)authentication.getPrincipal();
                 //scope 判断
                 if(userInfo.getScopes().contains("write1")){

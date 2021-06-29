@@ -28,7 +28,8 @@ public class TheFilterSecurityMetadataSource implements FilterInvocationSecurity
     //定义角色的权限列表，实际应该从数据库取，这里为了简化程序先写死
     private Map<String, List<String>> rolePermissions = new HashMap<String, List<String>>() {{
         put("ROLE_ADMIN", new ArrayList() {{ add("/private/write");}});		//ADMIN角色有3个API的访问权限
-        put("ROLE_UNUSE", new ArrayList() {{ add("/private/read"); }});										//USER只有/test/serverport这1个API的访问权限
+        put("ROLE_UNUSE", new ArrayList() {{ add("/private/read"); }});
+        put("ROLE_ANONYMOUS", new ArrayList() {{ add("/public/**"); }});		//USER只有/test/serverport这1个API的访问权限
     }};
 
 
@@ -69,7 +70,8 @@ public class TheFilterSecurityMetadataSource implements FilterInvocationSecurity
         for (String role : this.rolePermissions.keySet()) {
             List<String> uriList = this.rolePermissions.get(role);
             for (String uri : uriList) {
-                if (url.contains(uri)) {
+                UrlMatcher matcher = new UrlMatcher(uri, "");
+                if (matcher.matches(url)) {
                     roles.add(new SecurityConfig(role));
                     break;
                 }

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TokenInfo {
     String account;
+    String companyCode;
     String scopes;
     String uri;
     String method;

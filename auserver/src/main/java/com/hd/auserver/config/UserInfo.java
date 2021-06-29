@@ -18,4 +18,5 @@ public class UserInfo extends User {
         loginTime= f.format(new Date());
     }
     String loginTime;
+    String companyCode;
 }

@@ -33,6 +33,7 @@ public class AuthenticationController {
     public AuthenticationController() {
         //TODO: 权限从数据库取，放redis
         userPermissionList.put("liwei", permissionList);
+        userPermissionList.put("lseewiixiweqoie23898hbbde0$$--client", permissionList);
         scopePermissionList.put("read1", permissionList);
         scopePermissionList.put("write1", permissionList);
     }
@@ -40,7 +41,8 @@ public class AuthenticationController {
     @RequiresPermissions("permission:auth")
     @ApiOperation(value = "url权限验证func")
     @PostMapping(value = "/auth")
-    public Boolean auth(@RequestParam("account") String account, @RequestParam("scopes") String scopes, @RequestParam("uri") String uri, @RequestParam("method") String method) throws InterruptedException {
+    public Boolean auth(@RequestParam("account") String account, @RequestParam("scopes") String scopes, @RequestParam("uri") String uri
+            , @RequestParam("method") String method, @RequestParam("companyCode") String companyCode) throws InterruptedException {
 
         //Thread.sleep(60);
         log.info("check auth"+Thread.currentThread().getId());
@@ -50,13 +52,14 @@ public class AuthenticationController {
         //首先判断scope
         if (scopeList.contains("all")) {
             //判断该account是否具备访问uri的权限
-            if ((userPermissionList.get(account)!=null) && userPermissionList.get(account).contains(method.toLowerCase() + " " + uri.toLowerCase())) {
+            //
+            if ((userPermissionList.get(account)!=null) && userPermissionList.get(account).contains(method.toLowerCase() + " " + uri)) {
                 return true;
             }
         } else {
             //根据scope 判断,不管user是谁
             for(Object scope:scopeList){
-                if((scopePermissionList.get(scope)!=null)&&scopePermissionList.get(scope).contains(method + " " + uri)){
+                if((scopePermissionList.get(scope)!=null)&&scopePermissionList.get(scope).contains(method.toLowerCase() + " " + uri)){
                     return  true;
                 }
             }
@@ -67,7 +70,8 @@ public class AuthenticationController {
     @RequiresPermissions("permission:authbr")
     @ApiOperation(value = "url权限验证bridge func")
     @PostMapping(value = "/authbridge")
-    public RetResult authbridge(@RequestParam("account") String account, @RequestParam("scopes") String scopes, @RequestParam("uri") String uri, @RequestParam("method") String method) throws Exception {
+    public RetResult authbridge(@RequestParam("account") String account, @RequestParam("scopes") String scopes, @RequestParam("uri") String uri
+            , @RequestParam("method") String method, @RequestParam("companyCode") String companyCode) throws Exception {
 //        int dd = 1 / 0;
         //Thread.sleep(400);
 //        int i = 0;
@@ -75,7 +79,7 @@ public class AuthenticationController {
 //            i += i * (new Random()).nextInt();
 //        }
 
-        RetResult retResult = iAuthFeignService.auth(account,scopes,uri,method);
+        RetResult retResult = iAuthFeignService.auth(account,scopes,uri,method,companyCode);
 
         return retResult;
     }

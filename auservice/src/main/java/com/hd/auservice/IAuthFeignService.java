@@ -12,5 +12,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface IAuthFeignService {
     @PostMapping("/auth")
     public RetResult auth(@RequestParam("account") String account, @RequestParam("scopes") String scopes,
-                          @RequestParam("uri") String uri, @RequestParam("method") String method);
+                          @RequestParam("uri") String uri, @RequestParam("method") String method, @RequestParam("companyCode") String companyCode);
 }

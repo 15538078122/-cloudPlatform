@@ -5,7 +5,6 @@ package com.hd.gateway.conf;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.hd.gateway.GatewayApplication;
 import com.hd.gateway.model.RetResult;
 import com.hd.gateway.model.TokenInfo;
 import com.hd.gateway.utils.HttpUtil;
@@ -37,43 +36,12 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        log.info("check token" + Thread.currentThread().getId());
-        String kk = exchange.getRequest().getHeaders().get("Authorization").get(0);
-        //TODO:  判断token 登录
-        TokenInfo tokenInfo;
-        try {
-            tokenInfo = jwtUtils.decodeToken(kk.replace("Bearer ", ""));
-            String uri=exchange.getRequest().getPath().value();
-            //url第一个分段一遍用作服务名识别，此处去掉
-            tokenInfo.setUri(uri.substring(uri.indexOf("/",1)));
-            tokenInfo.setMethod(exchange.getRequest().getMethodValue());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", false));
-        }
-        //TODO: 根据应用，判断token超时
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            Long mSec = System.currentTimeMillis() - sdf.parse(tokenInfo.getLoginTime()).getTime();
-            if (mSec > (60000 * 20)) {
-                return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-                        new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", false));
-            }
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", false));
-        }
-
-        ServerHttpRequest request = exchange.getRequest().mutate().header("token-info", JSON.toJSONString(tokenInfo)).build();
-        ServerWebExchange buildExchange = exchange.mutate().request(request).build();
+        log.info("check authority" + Thread.currentThread().getId());
 
         //TODO: PERMISSION 判断
         //获取header的参数
-        String tokenInfoJson = buildExchange.getRequest().getHeaders().getFirst("token-info");
-        //TokenInfo tokenInfo= JSON.parseObject(tokenInfoJson,TokenInfo.class);
+        String tokenInfoJson = exchange.getRequest().getHeaders().getFirst("token-info");
+        TokenInfo tokenInfo= JSON.parseObject(tokenInfoJson,TokenInfo.class);
 
         String user = tokenInfo.getAccount();
         //HttpUtil callService = GatewayApplication.applicationContext.getBean(HttpUtil.class);
@@ -85,8 +53,9 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
             params.put("scopes", tokenInfo.getScopes());
             params.put("uri", tokenInfo.getUri());
             params.put("method", tokenInfo.getMethod());
+            params.put("companyCode", tokenInfo.getCompanyCode());
             //retResult=new RetResult(0,"",true);
-            retResult= HttpUtil.httpPost("127.0.0.1:8083/authbridge?account={account}&scopes={scopes}&uri={uri}&method={method}",params);
+            retResult= HttpUtil.httpPost("127.0.0.1:8083/authbridge?account={account}&scopes={scopes}&uri={uri}&method={method}&companyCode={companyCode}",params);
         } catch (Exception e) {
             retResult = new RetResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), false);
         }
@@ -95,14 +64,14 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
         if (!permitted)  {
             //TODO: 记录拒绝访问日志
             retResult = new RetResult(HttpStatus.UNAUTHORIZED.value(), "授权异常!", false);
-            return ResponseUtil.makeJsonResponse(buildExchange.getResponse(), retResult);
+            return ResponseUtil.makeJsonResponse(exchange.getResponse(), retResult);
         }
         //TODO: 记录访问日志
-        return chain.filter(buildExchange);
+        return chain.filter(exchange);
     }
 
     @Override
     public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE + 300;
+        return Ordered.HIGHEST_PRECEDENCE + 301;
     }
 }

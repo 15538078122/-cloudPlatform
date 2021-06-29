@@ -29,15 +29,21 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         // Since we want the protected resources to be accessible in the UI as well we need session creation to be allowed (it's disabled by default in 2.0.6)
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .and().requestMatchers()
-                .and().authorizeRequests()
-                .antMatchers("/private/read/**").access("#oauth2.hasScope('read1') and hasAnyRole('USER')")
-                .antMatchers("/private/write/**").access("#oauth2.hasScope('write1') and hasRole('ADMIN')")
-                .antMatchers("/private/**").authenticated()
+        http
+        //.anonymous().disable()  //匿名访问
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .and()
+                .requestMatchers().anyRequest()
+                .and()
+                .anonymous()
+                .and()
+                .authorizeRequests()
+//                .antMatchers("/private/read/**").access("#oauth2.hasScope('read1') and hasAnyRole('USER')")
+//                .antMatchers("/private/write/**").access("#oauth2.hasScope('write1') and hasRole('ADMIN')")
+//                .antMatchers("/private/**").authenticated()
+//                .antMatchers("/public/**").permitAll()
                 .anyRequest()
                 .authenticated()
-
                 .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
                     @Override
                     public <O extends FilterSecurityInterceptor> O postProcess(O object) {
@@ -46,7 +52,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                         return object;
                     }
 
-                });
+                })
+    ;
 
     }
     @Autowired

@@ -1,0 +1,14 @@
+<html>
+<body>
+<div id='tk'></div>
+</body>
+</html>
+<script>
+    var str =window.location.href;
+    var n = str.search(/access_token=/i);
+    var m = str.search(/&token_type=/i);
+
+    var token = str.substring(n+13,m);
+    tk.innerHTML =token;
+    //alert(token);
+</script>

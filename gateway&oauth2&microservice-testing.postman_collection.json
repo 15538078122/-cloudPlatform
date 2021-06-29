@@ -23,7 +23,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://localhost:8000/public/code&scope=write1",
+					"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://localhost:8000/public/code&scope=write1&company=abc",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -49,6 +49,10 @@
 						{
 							"key": "scope",
 							"value": "write1"
+						},
+						{
+							"key": "company",
+							"value": "abc"
 						}
 					]
 				}
@@ -80,7 +84,7 @@
 					"urlencoded": [
 						{
 							"key": "code",
-							"value": "TP7be5",
+							"value": "8y4Aq5",
 							"type": "text"
 						}
 					],
@@ -141,7 +145,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=token&redirect_uri=http://localhost:8000/public/code",
+					"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=token&company=abc&redirect_uri=http://localhost:8000/public/token",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -161,13 +165,17 @@
 							"value": "token"
 						},
 						{
-							"key": "redirect_uri",
-							"value": "http://localhost:8000/public/code"
+							"key": "company",
+							"value": "abc"
 						},
 						{
 							"key": "scope",
 							"value": "write1",
 							"disabled": true
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://localhost:8000/public/token"
 						}
 					]
 				}
@@ -204,7 +212,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&grant_type=password&username=liwei&password=1234",
+					"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&password=1234&grant_type=password&username=liwei&company=abc",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -224,6 +232,10 @@
 							"value": "secret123"
 						},
 						{
+							"key": "password",
+							"value": "1234"
+						},
+						{
 							"key": "grant_type",
 							"value": "password"
 						},
@@ -232,13 +244,13 @@
 							"value": "liwei"
 						},
 						{
+							"key": "company",
+							"value": "abc"
+						},
+						{
 							"key": "scope",
 							"value": "read1",
 							"disabled": true
-						},
-						{
-							"key": "password",
-							"value": "1234"
 						}
 					]
 				}

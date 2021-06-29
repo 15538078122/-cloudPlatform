@@ -2,11 +2,13 @@ package com.hd.auserver.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 /**
@@ -20,8 +22,9 @@ public class LoginController {
     private String port;
 
     @GetMapping("/login")
-    public String serve() {
+    public String serve(HttpServletRequest request) {
         log.info("3232");
+        HttpSession session = request.getSession(true);
         //TODO: 自定义登录页面
         return "login";
     }
