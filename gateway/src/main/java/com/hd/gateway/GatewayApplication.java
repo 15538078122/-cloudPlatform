@@ -19,5 +19,5 @@ public class GatewayApplication {
 		applicationContext = run;
 	}
 	public static ApplicationContext applicationContext;
-
+	public  static  boolean checkPermission=true;
 }

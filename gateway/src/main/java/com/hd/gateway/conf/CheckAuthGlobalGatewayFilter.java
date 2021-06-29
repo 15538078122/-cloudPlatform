@@ -5,6 +5,7 @@ package com.hd.gateway.conf;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.hd.gateway.GatewayApplication;
 import com.hd.gateway.model.RetResult;
 import com.hd.gateway.model.TokenInfo;
 import com.hd.gateway.utils.HttpUtil;
@@ -37,7 +38,9 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         log.info("check authority" + Thread.currentThread().getId());
-
+        if(!GatewayApplication.checkPermission){
+            return chain.filter(exchange);
+        }
         //TODO: PERMISSION 判断
         //获取header的参数
         String tokenInfoJson = exchange.getRequest().getHeaders().getFirst("token-info");

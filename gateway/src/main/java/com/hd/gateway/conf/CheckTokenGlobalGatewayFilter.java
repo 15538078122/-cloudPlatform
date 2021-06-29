@@ -38,6 +38,9 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         log.info("check token" + Thread.currentThread().getId());
+        if(!GatewayApplication.checkPermission){
+            return chain.filter(exchange);
+        }
         String kk = exchange.getRequest().getHeaders().get("Authorization").get(0);
         //TODO:  判断token 登录
         TokenInfo tokenInfo;

@@ -23,6 +23,16 @@ spring:
               - DELETE
       routes:
         -
+          id: auservice
+          uri: lb://auservice
+          predicates:
+            - Path=/auservice/**
+          metadata:
+              connect-timeout: 2000
+              response-timeout: 3000
+          filters:
+            - StripPrefix=1
+        -
           id: microserv
           # 目标服务地址（uri：地址，请求转发后的地址）
           uri: lb://microserv
