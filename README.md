@@ -9,8 +9,7 @@
 8、数据库主从、连接池、数据缓存、消息队列、运维监视（完善中）   
 9、nacos 服务发现  
 # 软件架构
-
-![image](https://user-images.githubusercontent.com/83743182/122862067-2287bf00-d353-11eb-9c0d-2dccbc40a8df.png)
+![image](https://user-images.githubusercontent.com/83743182/123797839-3023e280-d919-11eb-988b-fd2ead38835c.png)
 # 安装
 自行安装nacos，网上很多。新建空project，导入各个module，如下：共6个
 ![image](https://user-images.githubusercontent.com/83743182/122862149-464b0500-d353-11eb-85fb-cfe306757c96.png)
