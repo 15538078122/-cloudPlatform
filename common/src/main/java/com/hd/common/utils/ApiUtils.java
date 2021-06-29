@@ -1,12 +1,10 @@
-package com.hd.auservice.utils;
+package com.hd.common.utils;
 import com.alibaba.fastjson.JSON;
-import com.hd.auservice.model.Api;
-import com.hd.auservice.model.RequiresPermissions;
+import com.hd.common.model.Api;
+import com.hd.common.model.RequiresPermissions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.AnnotatedElement;
@@ -21,13 +19,12 @@ import java.util.Map;
  */
 
 @Slf4j
-@Component
-public class ApiUtils implements ApplicationContextAware {
+public class ApiUtils {
     public final static List<Api> API_LIST = new ArrayList<>();
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public static void ScanApplicationContext(ApplicationContext applicationContext) throws BeansException {
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(RestController.class);
+        //controler 上的@RefreshScope会造成加载了两个bean，进而scan重复
         beans.forEach((name, bean) -> {
             String className = bean.getClass().getName();
             className = className.split("\\$\\$")[0];
@@ -60,7 +57,8 @@ public class ApiUtils implements ApplicationContextAware {
                     API_LIST.add(api);
                     log.debug(JSON.toJSONString(api));
                 }
-            } catch (ClassNotFoundException e) {
+            }
+            catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         });
@@ -70,7 +68,7 @@ public class ApiUtils implements ApplicationContextAware {
         if (a1 != null) {
             return a1.value();
         }
-        return null;
+        return new String[]{"/"};
     }
     private static RequestPath getApiPath(AnnotatedElement annotatedElement) {
         List<String> methods = new ArrayList<>();
@@ -101,7 +99,7 @@ public class ApiUtils implements ApplicationContextAware {
             paths2= a3.value();
         }
         //一般支取一个路径
-        RequestPath[] paths = null;
+        RequestPath[] paths = new RequestPath[0];
         if (paths2.length > 0) {
             paths = new RequestPath[1];
             paths[0]=new RequestPath();

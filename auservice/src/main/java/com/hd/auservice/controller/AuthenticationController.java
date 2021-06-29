@@ -1,9 +1,8 @@
 package com.hd.auservice.controller;
 
 import com.hd.auservice.IAuthFeignService;
-import com.hd.auservice.model.RequiresPermissions;
-import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
+import com.hd.common.model.RequiresPermissions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;

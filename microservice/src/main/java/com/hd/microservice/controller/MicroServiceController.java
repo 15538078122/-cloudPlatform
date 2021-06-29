@@ -1,20 +1,19 @@
-package com.hd.microservice;
+package com.hd.microservice.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
+import com.hd.common.model.RequiresPermissions;
+import com.hd.microservice.iservice.IFallbackFeignServiceDemo;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@RefreshScope
+@Api(tags = "微服务testController")
+//@RefreshScope
 @RestController
 @Slf4j
 public class MicroServiceController {
@@ -28,7 +27,8 @@ public class MicroServiceController {
     @Autowired
     IFallbackFeignServiceDemo iFallbackFeignServiceDemo;
 
-    @RequestMapping("/test")
+    @RequiresPermissions("micro:test")
+    @GetMapping("/test")
     public Object test(@RequestParam("para") String para) throws Exception {
 
         //大于3s，会触发retry和熔断策略
@@ -39,7 +39,8 @@ public class MicroServiceController {
         return para+"from :"+port;
     }
 
-    @RequestMapping("/test2")
+    @RequiresPermissions("micro:test2")
+    @GetMapping("/test2")
     public RetResult test2(@RequestParam("para") String para) throws Exception {
         //int dd = 1 / 0;
         //Thread.sleep(4000);

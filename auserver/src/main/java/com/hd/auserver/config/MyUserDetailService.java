@@ -52,11 +52,17 @@ public class MyUserDetailService implements UserDetailsService {
                 }
             }
             log.debug("companyCode--------"+companyCode);
-            //authList角色不使用
-            userDetails = new UserInfo(userName, passwordEncoder.encode("1234"),authList);
-            ((UserInfo)userDetails).setCompanyCode(companyCode);
+            if(!companyCode.isEmpty()){
+                //authList角色不使用
+                userDetails = new UserInfo(userName, passwordEncoder.encode("1234"),authList);
+                ((UserInfo)userDetails).setCompanyCode(companyCode);
+            }
+
         }catch (Exception e) {
             e.printStackTrace();
+        }
+        if(userDetails==null){
+                throw new UsernameNotFoundException("缺少公司标识!");
         }
         return userDetails;
     }

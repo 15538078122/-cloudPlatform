@@ -36,20 +36,13 @@ spring:
           id: microserv
           # 目标服务地址（uri：地址，请求转发后的地址）
           uri: lb://microserv
-          #          uri: http://127.0.0.1:8082
-          # 路由条件（predicates：断言，匹配 HTTP 请求内容）
           predicates:
-            ## 转发地址格式为 uri/archive
-            -
-              Path=/microserv/{path}
-          #              Path=/test/**
+            - Path=/microserv/**
           metadata:
             connect-timeout: 2000
             response-timeout: 3000
           filters:
-            - name: SetPath
-              args:
-                template: /{path}
+            - StripPrefix=1
             - name: Deal
             - name: Hystrix
               args:

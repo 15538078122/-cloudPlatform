@@ -13,7 +13,7 @@ spring:
 logging:
   level:
     root: error
-    com.hd: info
+    com.hd: debug
     org.apache.tomcat: DEBUG
     org.apache.catalina: DEBUG
 

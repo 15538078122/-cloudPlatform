@@ -1,4 +1,4 @@
-package com.hd.auservice.model;
+package com.hd.common.model;
 
 import java.lang.annotation.*;
 

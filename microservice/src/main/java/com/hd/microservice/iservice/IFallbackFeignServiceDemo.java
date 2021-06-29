@@ -1,7 +1,7 @@
-package com.hd.microservice;
+package com.hd.microservice.iservice;
 
 import com.hd.common.RetResult;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.hd.microservice.serviceimp.FallbackFeignServiceDemo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;

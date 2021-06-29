@@ -10,14 +10,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
 import java.util.Map;
 
 /**
  * @Author: liwei
  * @Description:
  */
+//@Api(tags = "error处理Controller")
 @RestController
 public class ErrorController extends BasicErrorController {
 
@@ -29,9 +33,12 @@ public class ErrorController extends BasicErrorController {
     public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
         Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
         HttpStatus status = getStatus(request);
-        //模拟server internal error,试验gateway retry功能设置
-        //StringBuffer sb=null;
-        //sb.append(1);
         return new ResponseEntity(RetResponse.makeErrRsp("server internal error."), status);
     }
+
+//    @Override
+//    public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
+//
+//        return  null;
+//    }
 }
