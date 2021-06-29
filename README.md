@@ -59,4 +59,9 @@ token验证后，uri的访问验证，采用了访问auservice方式。注意这
 11、log写入mongo db，一定记得去掉spring-boot-devtools， 由于classloader不同造成UnsynchronizedAppenderBase获取 applicationContext失败，进而无法写入mongodb。   
 12、auservice增加swagger2，注意  beforeBodyWrite的返回值处理，不能全部返回RetResult类型，会造成swagger页面访问失败
 ![image](https://user-images.githubusercontent.com/83743182/123385246-eb6e1380-d5c7-11eb-93bf-02cbb1bc2944.png)
+13、增加uri 扫描类ApiUtils，备以后将uri及对象permission 字符串写入数据库，用来进行uri授权。  注意里面：需要扫描的controller都要使用@RequestMapping注解， method使用：PostMapping   、
+GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解， 否则ApiUtils扫描会出错；保持一个method只有一个uri路径；扫描到结果如图：
+
+![image](https://user-images.githubusercontent.com/83743182/123414521-9097e480-d5e6-11eb-9427-5b3aa95ffd1e.png)
+
 
