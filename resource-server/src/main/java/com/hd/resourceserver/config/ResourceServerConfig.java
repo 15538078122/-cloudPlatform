@@ -23,12 +23,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Autowired
     private AccessDecisionManager accessDecisionManager;
 
-    @Autowired
-    private FilterInvocationSecurityMetadataSource filterSecurityMetadataSource;
-
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        // Since we want the protected resources to be accessible in the UI as well we need session creation to be allowed (it's disabled by default in 2.0.6)
         http
         //.anonymous().disable()  //匿名访问
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
@@ -38,6 +34,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .anonymous()
                 .and()
                 .authorizeRequests()
+                //此处设置不在需要，在accessDecisionManager决定
 //                .antMatchers("/private/read/**").access("#oauth2.hasScope('read1') and hasAnyRole('USER')")
 //                .antMatchers("/private/write/**").access("#oauth2.hasScope('write1') and hasRole('ADMIN')")
 //                .antMatchers("/private/**").authenticated()
@@ -48,7 +45,6 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                     @Override
                     public <O extends FilterSecurityInterceptor> O postProcess(O object) {
                         object.setAccessDecisionManager(accessDecisionManager);			//权限决策处理类
-                        object.setSecurityMetadataSource(filterSecurityMetadataSource);	//路径（资源）拦截处理
                         return object;
                     }
 
@@ -62,13 +58,4 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         resources.tokenStore(tokenStore);
     }
-//    @Primary
-//    @Bean
-//    public ResourceServerTokenServices tokenServices() {
-//        final RemoteTokenServices tokenService = new RemoteTokenServices();
-//        tokenService.setCheckTokenEndpointUrl(checkTokenAccess);
-//        tokenService.setClientId(authorizationCodeResourceDetails.getClientId());
-//        tokenService.setClientSecret(authorizationCodeResourceDetails.getClientSecret());
-//        return tokenService;
-//    }
 }

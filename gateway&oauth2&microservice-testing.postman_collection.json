@@ -23,7 +23,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://localhost:8000/public/code&scope=write1&company=abc",
+					"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://localhost:8000/public/code&scope=write read&company=abc",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -48,7 +48,7 @@
 						},
 						{
 							"key": "scope",
-							"value": "write1"
+							"value": "write read"
 						},
 						{
 							"key": "company",
@@ -84,7 +84,7 @@
 					"urlencoded": [
 						{
 							"key": "code",
-							"value": "8y4Aq5",
+							"value": "pJqsd0",
 							"type": "text"
 						}
 					],
@@ -212,7 +212,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&password=1234&grant_type=password&username=liwei&company=abc",
+					"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&password=1234&grant_type=password&username=liwei&company=abc&scope=user",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -251,6 +251,10 @@
 							"key": "scope",
 							"value": "read1",
 							"disabled": true
+						},
+						{
+							"key": "scope",
+							"value": "user"
 						}
 					]
 				}
@@ -302,7 +306,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:10001/oauth/token?grant_type=client_credentials&client_id=client&client_secret=secret123",
+					"raw": "http://localhost:10001/oauth/token?grant_type=client_credentials&client_id=client&client_secret=secret123&company=abc",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -329,6 +333,10 @@
 							"key": "scope",
 							"value": "read1",
 							"disabled": true
+						},
+						{
+							"key": "company",
+							"value": "abc"
 						}
 					]
 				}
@@ -433,7 +441,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:9001/microserv/test?para=testpara",
+					"raw": "http://localhost:9001/microserv/test2?para=testpara",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -441,12 +449,52 @@
 					"port": "9001",
 					"path": [
 						"microserv",
-						"test"
+						"test2"
 					],
 					"query": [
 						{
 							"key": "para",
 							"value": "testpara"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "microservicetest",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/html;charset=UTF-8",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8084/test2?para=parameter",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8084",
+					"path": [
+						"test2"
+					],
+					"query": [
+						{
+							"key": "para",
+							"value": "parameter"
 						}
 					]
 				}
@@ -526,7 +574,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/private/write/233",
+					"raw": "http://localhost:8000/private/read/233",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -534,7 +582,7 @@
 					"port": "8000",
 					"path": [
 						"private",
-						"write",
+						"read",
 						"233"
 					]
 				}

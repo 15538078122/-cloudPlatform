@@ -27,8 +27,8 @@ public class MicroServiceController {
     @Autowired
     IFallbackFeignServiceDemo iFallbackFeignServiceDemo;
 
-    @RequiresPermissions("micro:test")
-    @GetMapping("/test")
+    @RequiresPermissions("micro:test1")
+    @GetMapping("/test1")
     public Object test(@RequestParam("para") String para) throws Exception {
 
         //大于3s，会触发retry和熔断策略
@@ -36,7 +36,7 @@ public class MicroServiceController {
         log.info("invoke test:"+Thread.currentThread().getId());
         //RetResult xx = iFallbackFeignServiceDemo.test2("test2");
         //log.info(JSON.toJSONString(xx));
-        return para+"from :"+port;
+        return para+" from "+port;
     }
 
     @RequiresPermissions("micro:test2")
@@ -49,6 +49,6 @@ public class MicroServiceController {
 //            i += i * (new Random()).nextInt();
 //        }
 
-        return RetResponse.makeRsp(new Date().toString() + ": " +para);
+        return RetResponse.makeRsp(new Date().toString() + " : " +para);
     }
 }

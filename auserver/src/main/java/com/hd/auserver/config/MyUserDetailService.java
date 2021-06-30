@@ -53,7 +53,7 @@ public class MyUserDetailService implements UserDetailsService {
             }
             log.debug("companyCode--------"+companyCode);
             if(!companyCode.isEmpty()){
-                //authList角色不使用
+                //authList角色这里不使用，只使用用户和当前scope进行判断permission
                 userDetails = new UserInfo(userName, passwordEncoder.encode("1234"),authList);
                 ((UserInfo)userDetails).setCompanyCode(companyCode);
             }
@@ -61,9 +61,9 @@ public class MyUserDetailService implements UserDetailsService {
         }catch (Exception e) {
             e.printStackTrace();
         }
-        if(userDetails==null){
-                throw new UsernameNotFoundException("缺少公司标识!");
-        }
+//        if(userDetails==null){
+//                throw new UsernameNotFoundException("缺少公司标识!");
+//        }
         return userDetails;
     }
 //    增加前缀ROLE_，可以通过三种方式校验权限：
@@ -72,7 +72,7 @@ public class MyUserDetailService implements UserDetailsService {
 //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")      //允许
     private List<GrantedAuthority> getAuthorities(){
         List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
-        authList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        //authList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         return authList;
     }
 }

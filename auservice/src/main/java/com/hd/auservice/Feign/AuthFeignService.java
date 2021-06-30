@@ -1,4 +1,4 @@
-package com.hd.auservice;
+package com.hd.auservice.Feign;
 
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;

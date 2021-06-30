@@ -19,5 +19,6 @@ public class GatewayApplication {
 		applicationContext = run;
 	}
 	public static ApplicationContext applicationContext;
+	//TODO: 通过网关访问swagger时，关闭权限检查，开发阶段使用
 	public  static  boolean checkPermission=true;
 }

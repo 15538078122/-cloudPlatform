@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html  lang="en" xmlns:th="http://www.thymeleaf.org">
-<body><h1>OAuth Approval</h1>
-<p>自定义请选择授权2?</p>
+<body><h1>自定义授权页面</h1>
 <form id="confirmationForm" name="confirmationForm" action="/oauth/authorize" method="post"><input
         name="user_oauth_approval" value="true" type="hidden"/>
     <ul>
@@ -13,12 +12,16 @@
 <!--            <div class="form-group">scope.write1: <input type="radio" name="scope.write1" value="true">Approve</input>-->
 <!--                <input type="radio" name="scope.write1" value="false" checked>Deny</input></div>-->
 <!--        </li>-->
-        <input  name="_csrf" th:value="${authorizationRequest.scope}"/>
+<!--        <div th:text="所有scopes"></div> <input  name="_csrf" th:value="${authorizationRequest.scope}"/>-->
 
         <div class="form-group" th:each="sco : ${authorizationRequest.scope}">
+<!--            排除user scope，只有密码模式使用user scope-->
+            <div th:if="${sco}!='user'">
             <div th:text="'scope.'+${sco}"></div>  <input type="radio" th:name="'scope.'+${sco}" value="true">Approve</input>
-            <input type="radio" th:name="'scope.'+${sco}" value="false" checked>Deny</input></div>
+            <input type="radio" th:name="'scope.'+${sco}" value="false" checked>Deny</input>
+            </div>
+        </div>
     </ul>
-    <label><input name="authorize" value="Authorize" type="submit"/></label></form>
+    <label><input name="authorize" value="授权" type="submit"/></label></form>
 </body>
 </html>

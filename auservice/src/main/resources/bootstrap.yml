@@ -29,7 +29,7 @@ auservice:
     MaxAutoRetries: 1 #对当前实例的重试次数
 hystrix:
   command:
-    "IAuthFeignService#auth(String,String,String,String)":  #default全局有效，service id指定应用有效
+    "IAuthFeignService#auth(String,String,String,String,String)":  #default全局有效，service id指定应用有效
       execution:
         timeout:
           #是否开启超时熔断

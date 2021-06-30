@@ -41,9 +41,9 @@ public class AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
     private static final String IMPLICIT = "implicit";
     private static final String GRANT_TYPE = "client_credentials";
     //token 有效时间 2小时
-    private static final int ACCESS_TOKEN_VALIDITY_SECONDS = 1*2*60*60;
+    private static final int ACCESS_TOKEN_VALIDITY_SECONDS = 1 * 2 * 60 * 60;
     //刷新token有效时间 3天
-    private static final int REFRESH_TOKEN_VALIDITY_SECONDS = 3*24*60*60;
+    private static final int REFRESH_TOKEN_VALIDITY_SECONDS = 3 * 24 * 60 * 60;
 
     @Qualifier("myUserDetailService")
     @Autowired
@@ -51,23 +51,19 @@ public class AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
 
     @Autowired
     TokenStore tokenStore;
-    /**
-     * 描述: 注入AuthenticationManager管理器
-     */
+
     @Autowired
     AuthenticationManager authenticationManager;
-    /**
-     * 描述: 注入jwtAccessTokenConverter 增强token;实例是：MyJwtAccessTokenConverter
-     */
+
     @Autowired
     JwtAccessTokenConverter jwtAccessTokenConverter;
 
     @Autowired
     ClientDetailsService clientDetailsService;
 
-    public  AuthorizationConfig(){
-
+    public AuthorizationConfig() {
     }
+
     /**
      * Springboot2.x需要配置密码加密，否则报错：Encoded password does not look like BCrypt
      *
@@ -77,23 +73,24 @@ public class AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new MyBCryptPasswordEncoder();
     }
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient(CLIENT_ID)
-                    .secret(passwordEncoder().encode(CLIENT_SECRET))
-                    //.authorizedGrantTypes("authorization_code", "client_credentials", "password","implicit","refresh_token")
-                    .authorizedGrantTypes(AUTHORIZATION_CODE,GRANT_TYPE, REFRESH_TOKEN,GRANT_TYPE_PASSWORD,IMPLICIT)
-                    //.autoApprove(true) // 为true 则不会被重定向到授权的页面，也不需要手动给请求授权,直接自动授权成功返回code
-                    .scopes("read1", "write1","all")
-                    //TODO: 根据实际需要修改认证反馈uri
-                    .redirectUris("http://localhost:8000/public/code", "http://localhost:8000/public/token")
-                    //token 时间秒
-                    .accessTokenValiditySeconds(ACCESS_TOKEN_VALIDITY_SECONDS)
-                    .refreshTokenValiditySeconds(REFRESH_TOKEN_VALIDITY_SECONDS)
-                //.and().withClient(CLIENT_ID2)
-            ;
+                .secret(passwordEncoder().encode(CLIENT_SECRET))
+                .authorizedGrantTypes(AUTHORIZATION_CODE, GRANT_TYPE, REFRESH_TOKEN, GRANT_TYPE_PASSWORD, IMPLICIT)
+                //.autoApprove(true) // 为true 则不会被重定向到授权的页面，也不需要手动给请求授权,直接自动授权成功返回code
+                .scopes("read", "write","user")//user 代表gateway中使用当前用户的权限进行permission拦截；其它使用scope对应权限拦截
+                //TODO: 根据实际需要修改认证反馈uri
+                .redirectUris("http://localhost:8000/public/code", "http://localhost:8000/public/token")
+                //token 时间秒
+                .accessTokenValiditySeconds(ACCESS_TOKEN_VALIDITY_SECONDS)
+                .refreshTokenValiditySeconds(REFRESH_TOKEN_VALIDITY_SECONDS)
+        //.and().withClient(CLIENT_ID2)
+        ;
     }
+
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
         oauthServer
@@ -106,6 +103,7 @@ public class AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
                 .passwordEncoder(passwordEncoder())
         ;
     }
+
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.tokenStore(tokenStore)
@@ -123,12 +121,13 @@ public class AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
         enhancer.setTokenEnhancers(Arrays.asList(jwtAccessTokenConverter));
         endpoints.tokenEnhancer(enhancer);
     }
+
     /**
-     * 该方法用户获取一个token服务对象（该对象描述了token有效期等信息）
+     * 获取一个token服务对象（该对象描述了token有效期等信息）
      */
     public AuthorizationServerTokenServices authorizationServerTokenServices() {
         // 使用默认实现
-        DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
+        DefaultTokenServices defaultTokenServices = new MyDefaultTokenServices();
         defaultTokenServices.setSupportRefreshToken(true); // 是否开启令牌刷新
         defaultTokenServices.setTokenStore(tokenStore);
 

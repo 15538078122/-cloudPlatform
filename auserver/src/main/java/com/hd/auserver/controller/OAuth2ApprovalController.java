@@ -7,7 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 @SessionAttributes("authorizationRequest")
@@ -19,6 +21,7 @@ public class OAuth2ApprovalController {
         model.put("test", "自定义scope设置");
         if (model.get("authorizationRequest") != null){
             AuthorizationRequest authorizationRequest=(AuthorizationRequest)model.get("authorizationRequest");
+
         }
         //TODO: 授权scope自定义页面
         return "approval";

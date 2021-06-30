@@ -20,4 +20,5 @@ public class UserInfo extends User {
     }
     String loginTime;
     List<String> scopes;
+    String companyCode;
 }
