@@ -1,9 +1,8 @@
 package com.hd.gateway.conf;
 
 import com.alibaba.fastjson.JSON;
+import com.hd.common.model.TokenInfo;
 import com.hd.gateway.GatewayApplication;
-import com.hd.gateway.model.RetResult;
-import com.hd.gateway.model.TokenInfo;
 import com.hd.gateway.utils.HttpUtil;
 import com.hd.gateway.utils.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;

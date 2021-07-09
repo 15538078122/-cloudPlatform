@@ -1,6 +1,6 @@
 package com.hd.gateway;
 
-import com.hd.gateway.model.RetResult;
+import com.hd.common.RetResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

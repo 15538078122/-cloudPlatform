@@ -1,5 +1,7 @@
 package com.hd.microauservice.conf;
 
+import com.alibaba.fastjson.JSON;
+import com.hd.common.model.TokenInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -26,7 +28,10 @@ public class FirstFilter implements Filter {
         log.debug(((HttpServletRequest)request).getServletPath());
         String servletPath = ((HttpServletRequest) request).getServletPath();
         if(servletPath.indexOf("/auth")!=0){
-            log.debug("token-info: "+((HttpServletRequest)request).getHeader("token-info"));
+            String tokenInfoJson=((HttpServletRequest)request).getHeader("token-info");
+            log.debug("token-info: "+tokenInfoJson);
+            TokenInfo tokenInfo= JSON.parseObject(tokenInfoJson,TokenInfo.class);
+            SecurityContext.SetCurTokenInfo(tokenInfo);
         }
 
         //模拟server internal error,试验gateway retry功能设置

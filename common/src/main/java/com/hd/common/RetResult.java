@@ -6,12 +6,14 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Setter
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Serialization
 @ApiModel("统一返回json格式")
 public class RetResult<T> {

@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.hd.microauservice.utils.GeneralSqlUtil;
 
 @SpringBootTest
-class AuServiceApplicationTests {
+class MicroAuServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
@@ -23,7 +23,7 @@ class AuServiceApplicationTests {
 		// 表前缀，生成的实体类，不含前缀
 		String [] tablePrefixes = {};
 		// 表名，为空，生成所有的表
-		String [] tableNames = {"sy_url_mapping"};
+		String [] tableNames = {"sy_menu"};
 		// 字段前缀
 		String [] fieldPrefixes = {};
 		// 基础包名

@@ -1,7 +1,7 @@
 package com.hd.gateway.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.hd.gateway.model.RetResult;
+import com.hd.common.RetResult;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;

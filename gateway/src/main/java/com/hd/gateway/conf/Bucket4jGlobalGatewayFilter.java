@@ -3,7 +3,7 @@ package com.hd.gateway.conf;
 /**
  * @Author: liwei
  */
-import com.hd.gateway.model.RetResult;
+import com.hd.common.RetResult;
 import com.hd.gateway.utils.ResponseUtil;
 import com.hd.gateway.utils.SpringUtil;
 import com.mongodb.BasicDBObject;

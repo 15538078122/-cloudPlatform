@@ -20,4 +20,4 @@ logging:
 config:
   auth-uri: 127.0.0.1:20002  #访问授权检查的uri
   session-timeout: 20   #minutes
-  check-permission: false       #是否检查权限
+  check-permission: true       #是否检查权限

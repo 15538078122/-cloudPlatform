@@ -1,4 +1,4 @@
-package com.hd.gateway.model;
+package com.hd.common.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

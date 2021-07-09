@@ -3,7 +3,7 @@ package com.hd.gateway.utils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import com.hd.gateway.model.TokenInfo;
+import com.hd.common.model.TokenInfo;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.jwt.Jwt;

@@ -38,5 +38,5 @@ logging:
     org.apache.tomcat: error
     org.apache.catalina: error
 config:
-  scanUri:  false
+  scanUri:  true
 #    java -jar microservice-0.0.1-SNAPSHOT.jar  --server.port=8085

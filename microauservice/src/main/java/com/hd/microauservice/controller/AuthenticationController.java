@@ -39,14 +39,14 @@ public class AuthenticationController {
     HashMap<String, List<String>> scopePermissionList = new HashMap<>();
 
     List permissionCodeList = new ArrayList<String>(
-            Arrays.asList("micro:test1", "micro:test2")
+            Arrays.asList("micro:test1", "micro:test2","menu:my")
     );
-    HashMap<String, String> uriCode = new HashMap<String, String>();
-
-    {
-        uriCode.put("get /test1", "micro:test1");
-        uriCode.put("get /test2", "micro:test2");
-    }
+//    HashMap<String, String> uriCode = new HashMap<String, String>();
+//
+//    {
+//        uriCode.put("get /test1", "micro:test1");
+//        uriCode.put("get /test2", "micro:test2");
+//    }
 
     public AuthenticationController() {
         //TODO: 权限从数据库取，放redis
