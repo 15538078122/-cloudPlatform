@@ -19,5 +19,5 @@ public class Api implements Serializable {
     String className;
     String methodName;
     String path;
-    String requiredPermissions;
+    String permCode;
 }

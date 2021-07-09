@@ -1,8 +1,11 @@
 package com.hd.auserver.controller;
 
+import com.hd.common.RetResponse;
+import com.hd.common.RetResult;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,4 +30,6 @@ public class GlobalExceptionHandler {
         //TODO: 授权异常 返回页面
         return mav;
     }
+
+
 }

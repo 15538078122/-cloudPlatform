@@ -6,410 +6,601 @@
 	},
 	"item": [
 		{
-			"name": "获取授权码",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [],
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://localhost:8000/public/code&scope=write read&company=abc",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "10001",
-					"path": [
-						"oauth",
-						"authorize"
-					],
-					"query": [
-						{
-							"key": "client_id",
-							"value": "client"
-						},
-						{
-							"key": "response_type",
-							"value": "code"
-						},
-						{
-							"key": "redirect_uri",
-							"value": "http://localhost:8000/public/code"
-						},
-						{
-							"key": "scope",
-							"value": "write read"
-						},
-						{
-							"key": "company",
-							"value": "abc"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "由授权码获取token",
-			"event": [
+			"name": "认证中心",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
-							"let token = json.access_token;\r",
-							"pm.globals.set(\"token\", token);\r",
-							"let reftoken = json.refresh_token;\r",
-							"pm.globals.set(\"reftoken\", reftoken);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "code",
-							"value": "pJqsd0",
-							"type": "text"
+					"name": "获取授权码",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://localhost:30001/public/code&scope=write read&company=abc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "10001",
+							"path": [
+								"oauth",
+								"authorize"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "client"
+								},
+								{
+									"key": "response_type",
+									"value": "code"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:30001/public/code"
+								},
+								{
+									"key": "scope",
+									"value": "write read"
+								},
+								{
+									"key": "company",
+									"value": "abc"
+								}
+							]
 						}
-					],
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&grant_type=authorization_code&redirect_uri=http://localhost:8000/public/code",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "10001",
-					"path": [
-						"oauth",
-						"token"
-					],
-					"query": [
-						{
-							"key": "client_id",
-							"value": "client"
-						},
-						{
-							"key": "client_secret",
-							"value": "secret123"
-						},
-						{
-							"key": "grant_type",
-							"value": "authorization_code"
-						},
-						{
-							"key": "redirect_uri",
-							"value": "http://localhost:8000/public/code"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "隐式获取token",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [],
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=token&company=abc&redirect_uri=http://localhost:8000/public/token",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "10001",
-					"path": [
-						"oauth",
-						"authorize"
-					],
-					"query": [
-						{
-							"key": "client_id",
-							"value": "client"
-						},
-						{
-							"key": "response_type",
-							"value": "token"
-						},
-						{
-							"key": "company",
-							"value": "abc"
-						},
-						{
-							"key": "scope",
-							"value": "write1",
-							"disabled": true
-						},
-						{
-							"key": "redirect_uri",
-							"value": "http://localhost:8000/public/token"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "密码模式",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
-							"let token = json.access_token;\r",
-							"pm.globals.set(\"token\", token);\r",
-							"let reftoken = json.refresh_token;\r",
-							"pm.globals.set(\"reftoken\", reftoken);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [],
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "由授权码获取token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
+									"let token = json.access_token;\r",
+									"pm.globals.set(\"token\", token);\r",
+									"let reftoken = json.refresh_token;\r",
+									"pm.globals.set(\"reftoken\", reftoken);"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "code",
+									"value": "Egs2ap",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&grant_type=authorization_code&redirect_uri=http://localhost:30001/public/code",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "10001",
+							"path": [
+								"oauth",
+								"token"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "client"
+								},
+								{
+									"key": "client_secret",
+									"value": "secret123"
+								},
+								{
+									"key": "grant_type",
+									"value": "authorization_code"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:30001/public/code"
+								}
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&password=1234&grant_type=password&username=liwei&company=abc&scope=user",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "10001",
-					"path": [
-						"oauth",
-						"token"
-					],
-					"query": [
-						{
-							"key": "client_id",
-							"value": "client"
-						},
-						{
-							"key": "client_secret",
-							"value": "secret123"
-						},
-						{
-							"key": "password",
-							"value": "1234"
-						},
-						{
-							"key": "grant_type",
-							"value": "password"
-						},
-						{
-							"key": "username",
-							"value": "liwei"
-						},
-						{
-							"key": "company",
-							"value": "abc"
-						},
-						{
-							"key": "scope",
-							"value": "read1",
-							"disabled": true
-						},
-						{
-							"key": "scope",
-							"value": "user"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "客户端凭证模式",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
-							"let token = json.access_token;\r",
-							"pm.globals.set(\"token\", token);\r",
-							"let reftoken = json.refresh_token;\r",
-							"pm.globals.set(\"reftoken\", reftoken);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "basic",
-					"basic": [
-						{
-							"key": "password",
-							"value": "secret123",
-							"type": "string"
+					"name": "隐式获取token",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
-						{
-							"key": "username",
-							"value": "client",
-							"type": "string"
+						"url": {
+							"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=token&company=abc&redirect_uri=http://localhost:30001/public/token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "10001",
+							"path": [
+								"oauth",
+								"authorize"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "client"
+								},
+								{
+									"key": "response_type",
+									"value": "token"
+								},
+								{
+									"key": "company",
+									"value": "abc"
+								},
+								{
+									"key": "scope",
+									"value": "write1",
+									"disabled": true
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:30001/public/token"
+								}
+							]
 						}
-					]
+					},
+					"response": []
 				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [],
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:10001/oauth/token?grant_type=client_credentials&client_id=client&client_secret=secret123&company=abc",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "10001",
-					"path": [
-						"oauth",
-						"token"
-					],
-					"query": [
-						{
-							"key": "grant_type",
-							"value": "client_credentials"
-						},
-						{
-							"key": "client_id",
-							"value": "client"
-						},
-						{
-							"key": "client_secret",
-							"value": "secret123"
-						},
-						{
-							"key": "scope",
-							"value": "read1",
-							"disabled": true
-						},
-						{
-							"key": "company",
-							"value": "abc"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "refreshtoken",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
-							"let token = json.access_token;\r",
-							"pm.globals.set(\"token\", token);\r",
-							"let reftoken = json.refresh_token;\r",
-							"pm.globals.set(\"reftoken\", reftoken);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
+					"name": "密码模式",
+					"event": [
 						{
-							"key": "refresh_token",
-							"value": "{{reftoken}}",
-							"type": "text"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
+									"let token = json.access_token;\r",
+									"pm.globals.set(\"token\", token);\r",
+									"let reftoken = json.refresh_token;\r",
+									"pm.globals.set(\"reftoken\", reftoken);"
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
-					"options": {
-						"raw": {
-							"language": "json"
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&password=1234&grant_type=password&username=liwei&company=abc&scope=user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "10001",
+							"path": [
+								"oauth",
+								"token"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "client"
+								},
+								{
+									"key": "client_secret",
+									"value": "secret123"
+								},
+								{
+									"key": "password",
+									"value": "1234"
+								},
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "username",
+									"value": "liwei"
+								},
+								{
+									"key": "company",
+									"value": "abc"
+								},
+								{
+									"key": "scope",
+									"value": "read1",
+									"disabled": true
+								},
+								{
+									"key": "scope",
+									"value": "user"
+								}
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&grant_type=refresh_token&redirect_uri=http://localhost:8000/public/code",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "10001",
-					"path": [
-						"oauth",
-						"token"
-					],
-					"query": [
+				{
+					"name": "客户端凭证模式",
+					"event": [
 						{
-							"key": "client_id",
-							"value": "client"
-						},
-						{
-							"key": "client_secret",
-							"value": "secret123"
-						},
-						{
-							"key": "grant_type",
-							"value": "refresh_token"
-						},
-						{
-							"key": "redirect_uri",
-							"value": "http://localhost:8000/public/code"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
+									"let token = json.access_token;\r",
+									"pm.globals.set(\"token\", token);\r",
+									"let reftoken = json.refresh_token;\r",
+									"pm.globals.set(\"reftoken\", reftoken);"
+								],
+								"type": "text/javascript"
+							}
 						}
-					]
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "secret123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "client",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:10001/oauth/token?grant_type=client_credentials&client_id=client&client_secret=secret123&company=abc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "10001",
+							"path": [
+								"oauth",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials"
+								},
+								{
+									"key": "client_id",
+									"value": "client"
+								},
+								{
+									"key": "client_secret",
+									"value": "secret123"
+								},
+								{
+									"key": "scope",
+									"value": "read1",
+									"disabled": true
+								},
+								{
+									"key": "company",
+									"value": "abc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refreshtoken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
+									"let token = json.access_token;\r",
+									"pm.globals.set(\"token\", token);\r",
+									"let reftoken = json.refresh_token;\r",
+									"pm.globals.set(\"reftoken\", reftoken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "refresh_token",
+									"value": "{{reftoken}}",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&grant_type=refresh_token&redirect_uri=http://localhost:8000/public/code",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "10001",
+							"path": [
+								"oauth",
+								"token"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "client"
+								},
+								{
+									"key": "client_secret",
+									"value": "secret123"
+								},
+								{
+									"key": "grant_type",
+									"value": "refresh_token"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:8000/public/code"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建账号",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "USER_OP_IDENTIFICATION",
+								"type": "text",
+								"value": "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "enterprise",
+									"value": "abc",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:10001/account/admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "10001",
+							"path": [
+								"account",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取账号",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "USER_OP_IDENTIFICATION",
+								"value": "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:10001/account/admin?enterprise=abc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "10001",
+							"path": [
+								"account",
+								"admin"
+							],
+							"query": [
+								{
+									"key": "enterprise",
+									"value": "abc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取账号list",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "USER_OP_IDENTIFICATION",
+								"type": "text",
+								"value": "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:10001/account?account&pageNum=1&pageSize=5&enterprise=abc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "10001",
+							"path": [
+								"account"
+							],
+							"query": [
+								{
+									"key": "account",
+									"value": null
+								},
+								{
+									"key": "pageNum",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "5"
+								},
+								{
+									"key": "enterprise",
+									"value": "abc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除账号",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "USER_OP_IDENTIFICATION",
+								"type": "text",
+								"value": "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:10001/account/admin?enterprise=abc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "10001",
+							"path": [
+								"account",
+								"admin"
+							],
+							"query": [
+								{
+									"key": "enterprise",
+									"value": "abc"
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
 			"name": "gatewaytest",
@@ -441,15 +632,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:9001/microserv/test2?para=testpara",
+					"raw": "http://localhost:20001/microauserv/test1?para=testpara",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "9001",
+					"port": "20001",
 					"path": [
-						"microserv",
-						"test2"
+						"microauserv",
+						"test1"
 					],
 					"query": [
 						{
@@ -462,47 +653,7 @@
 			"response": []
 		},
 		{
-			"name": "microservicetest",
-			"protocolProfileBehavior": {
-				"disabledSystemHeaders": {}
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "Bearer {{token}}"
-					},
-					{
-						"key": "Content-Type",
-						"value": "text/html;charset=UTF-8",
-						"type": "text",
-						"disabled": true
-					}
-				],
-				"url": {
-					"raw": "http://localhost:8084/test2?para=parameter",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8084",
-					"path": [
-						"test2"
-					],
-					"query": [
-						{
-							"key": "para",
-							"value": "parameter"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "auservice-auth",
+			"name": "microauservice-auth",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -537,12 +688,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8083/auth",
+					"raw": "http://localhost:20002/auth",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8083",
+					"port": "20002",
 					"path": [
 						"auth"
 					]
@@ -574,12 +725,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/private/read/233",
+					"raw": "http://localhost:30001/private/read/233",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8000",
+					"port": "30001",
 					"path": [
 						"private",
 						"read",

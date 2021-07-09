@@ -1,5 +1,8 @@
 package com.hd.auserver.config;
 
+import com.hd.auserver.entity.AccountEntity;
+import com.hd.auserver.service.AccountService;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,13 +19,18 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
 public class MyUserDetailService implements UserDetailsService {
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    AccountService accountService;
 
     public MyUserDetailService(){
 
@@ -37,6 +45,7 @@ public class MyUserDetailService implements UserDetailsService {
             List<GrantedAuthority> authList = getAuthorities();
             String companyCode="";
             //TODO: 获取用户密码 ，模拟试验，所有用户密码都是1234；
+
             //注意此处使用动态代理获取request对象，然后获取当初的请求参数；这里主要获取企业id，进行sas模式的用户管理
             String []objGrantType = request.getParameterMap().get("grant_type");
             if(objGrantType!=null && ((String)(objGrantType[0])).compareTo("password")==0){
@@ -51,11 +60,20 @@ public class MyUserDetailService implements UserDetailsService {
                     companyCode = defaultSavedRequest.getParameterValues("company")[0];
                 }
             }
-            log.debug("companyCode--------"+companyCode);
             if(!companyCode.isEmpty()){
-                //authList角色这里不使用，只使用用户和当前scope进行判断permission
-                userDetails = new UserInfo(userName, passwordEncoder.encode("1234"),authList);
-                ((UserInfo)userDetails).setCompanyCode(companyCode);
+                String finalCompanyCode = companyCode;
+                List<AccountEntity> accountEntityList = accountService.listByMap(new HashMap<String, Object>() {
+                    {
+                        put("account", userName);
+                        put("enterprise", finalCompanyCode);
+                    }
+                });
+                if(accountEntityList.size()>0){
+                        //authList角色这里不使用，只使用用户和当前scope进行判断permission
+                    //userDetails = new UserInfo(userName, passwordEncoder.encode("1234"),authList);
+                    userDetails = new UserInfo(userName, accountEntityList.get(0).getPassword(),authList);
+                    ((UserInfo)userDetails).setCompanyCode(companyCode);
+                }
             }
 
         }catch (Exception e) {

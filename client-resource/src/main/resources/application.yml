@@ -1,0 +1,26 @@
+server:
+  port: 30001
+security:
+  oauth2:
+    resource:
+    authorization:
+#      jwt:
+#        key-value: werwerwrwrfastboot332eww
+#      prefer-token-info: true
+#      token-info-uri: http://localhost:9000/oauth/check_token
+#    client:
+#      client-id: client
+#      client-secret: secret123
+#      user-authorization-uri: http://localhost:9000/oauth/authorize
+#      access-token-uri: http://localhost:9000/oauth/token
+logging:
+  level:
+    org.springframework.security: debug
+spring:
+  thymeleaf:
+    enabled: true  #开启thymeleaf视图解析
+    encoding: utf-8  #编码
+    prefix: classpath:/templates/  #前缀
+    cache: false  #是否使用缓存
+    mode: HTML  #严格的HTML语法模式
+    suffix: .html  #后缀名

@@ -52,7 +52,7 @@ public class Bucket4jGlobalGatewayFilter implements GlobalFilter, Ordered
         String ip = exchange.getRequest().getRemoteAddress().getAddress().getHostAddress();
         Bucket bucket = BUCKET_CACHE.computeIfAbsent(ip, k -> createNewBucket());
         if(bucket.getAvailableTokens()>0) {
-            log.info("IP: " + ip + "，has Tokens: " + bucket.getAvailableTokens());
+            log.debug("IP: " + ip + "，has Tokens: " + bucket.getAvailableTokens());
             //System.out.println("IP: " + ip + "，has Tokens: " + bucket.getAvailableTokens());
         }
 //        MongoTemplate mongoTemplate = SpringUtil.getBean(MongoTemplate.class);

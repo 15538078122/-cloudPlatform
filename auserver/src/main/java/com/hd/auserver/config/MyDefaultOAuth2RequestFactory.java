@@ -20,7 +20,6 @@ public class MyDefaultOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
     @Override
     public OAuth2Request createOAuth2Request(AuthorizationRequest request) {
 
-        log.info(request.getApprovalParameters().toString());
         //approve 自定义不起作用，在此拦截，添加上授权scope； 都是以scope.开头的属性
         Collection<String> approvedScopes=new ArrayList<String>();
         Map<String, String> approvalParameters = request.getApprovalParameters();
@@ -30,7 +29,6 @@ public class MyDefaultOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
                     String v = approvalParameters.get(key);
                     if(v.toLowerCase().compareTo("true")==0){
                         approvedScopes.add(key.replace("scope.",""));
-                        log.info("add approed scopes: "+key.replace("scope.",""));
                     }
                 }
             }
@@ -38,7 +36,6 @@ public class MyDefaultOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
         //使用approvalParameters，避免第一次刚登录时记录scope范围，approve页面才起作用
         if(approvalParameters.size()>0){
             request.setScope(approvedScopes);
-            log.info("set approed scopes: "+approvedScopes.toString());
             //没有授权任何一个scope，拒绝访问
             if(approvedScopes.size()==0){
                 throw new AccessDeniedException("permission denied");

@@ -1,5 +1,8 @@
 package com.hd.common;
 
+/**
+ * @author liwei
+ */
 public class RetResponse {
     //自定义message 失败信息
     public static <T> RetResult<T> makeErrRsp(String message) {
@@ -10,6 +13,9 @@ public class RetResponse {
     }
     public static <T> RetResult<T> makeRsp(String message,T data) {
         return new RetResult<T>(RetCode.SUCCESS.code,message,data);
+    }
+    public static <T> RetResult<T> makeRsp(T data) {
+        return new RetResult<T>(RetCode.SUCCESS.code,"",data);
     }
     public static <T> RetResult<T> makeRsp(String message) {
         return new RetResult<T>(RetCode.SUCCESS.code,message,null);

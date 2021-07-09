@@ -13,6 +13,7 @@ import com.hd.gateway.utils.JwtUtils;
 import com.hd.gateway.utils.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -35,10 +36,17 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
     @Autowired
     JwtUtils jwtUtils;
 
+
+    @Value("${config.session-timeout}")
+    int sessionTimeout;
+
+    //TODO: 通过网关访问swagger时，关闭权限检查，开发阶段使用
+    @Value("${config.check-permission}")
+    boolean checkPermission=true;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        log.info("check token" + Thread.currentThread().getId());
-        if(!GatewayApplication.checkPermission){
+        if(!checkPermission){
             return chain.filter(exchange);
         }
         String kk = exchange.getRequest().getHeaders().get("Authorization").get(0);
@@ -59,7 +67,8 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Long mSec = System.currentTimeMillis() - sdf.parse(tokenInfo.getLoginTime()).getTime();
-            if (mSec > (60000 * 20)) {
+            //20分钟
+            if (mSec > (60000 * sessionTimeout)) {
                 return ResponseUtil.makeJsonResponse(exchange.getResponse(),
                         new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", false));
             }

@@ -1,0 +1,42 @@
+server:
+  port: 20002
+  tomcat:
+    accesslog:
+      enabled: true
+    basedir: ./tomcatlog
+spring:
+  application:
+    #authentication service
+    name: microauserv
+  profiles:
+    active: local #local local dev   online
+  datasource:
+    url: "jdbc:mysql://127.0.0.1:3333/patrol?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai"
+    username: root
+    password: 123456
+#    url: jdbc:mysql://192.168.1.99:3306/hdmis?useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+#    username: hdmisuser
+#    password: huadao@1234
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      #初始化连接池的连接数量 大小，最小，最大
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+  main:
+    allow-bean-definition-overriding: true
+mybatis-plus:
+  mapper-locations: classpath*:mybatis/*.xml
+  type-aliases-package: com.hd.microauservice.entity
+  global-config:
+    worker-id:    1
+    datacenter-id:  2
+logging:
+  level:
+    root: error
+    com.hd: debug
+    org.apache.tomcat: error
+    org.apache.catalina: error
+config:
+  scanUri:  false
+#    java -jar microservice-0.0.1-SNAPSHOT.jar  --server.port=8085

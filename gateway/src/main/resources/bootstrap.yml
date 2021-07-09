@@ -24,7 +24,7 @@ spring:
       routes:
         -
           id: auservice
-          uri: lb://auservice
+          uri: lb://microauserv
           predicates:
             - Path=/auservice/**
           metadata:
@@ -33,11 +33,11 @@ spring:
           filters:
             - StripPrefix=1
         -
-          id: microserv
+          id: microauserv
           # 目标服务地址（uri：地址，请求转发后的地址）
-          uri: lb://microserv
+          uri: lb://microauserv
           predicates:
-            - Path=/microserv/**
+            - Path=/microauserv/**
           metadata:
             connect-timeout: 2000
             response-timeout: 3000
@@ -55,7 +55,7 @@ spring:
                   - SERVER_ERROR
                 methods:
                   - GET
-microserv:
+microauserv:
   ribbon:
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule #配置规则 随机
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule #配置规则 轮询

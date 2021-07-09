@@ -1,6 +1,7 @@
 package com.hd.gateway;
 
 //import com.netflix.loadbalancer.IRule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +20,5 @@ public class GatewayApplication {
 		applicationContext = run;
 	}
 	public static ApplicationContext applicationContext;
-	//TODO: 通过网关访问swagger时，关闭权限检查，开发阶段使用
-	public  static  boolean checkPermission=true;
+
 }

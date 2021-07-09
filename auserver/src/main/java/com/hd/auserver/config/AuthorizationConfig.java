@@ -83,7 +83,7 @@ public class AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
                 //.autoApprove(true) // 为true 则不会被重定向到授权的页面，也不需要手动给请求授权,直接自动授权成功返回code
                 .scopes("read", "write","user")//user 代表gateway中使用当前用户的权限进行permission拦截；其它使用scope对应权限拦截
                 //TODO: 根据实际需要修改认证反馈uri
-                .redirectUris("http://localhost:8000/public/code", "http://localhost:8000/public/token")
+                .redirectUris("http://localhost:30001/public/code", "http://localhost:30001/public/token")
                 //token 时间秒
                 .accessTokenValiditySeconds(ACCESS_TOKEN_VALIDITY_SECONDS)
                 .refreshTokenValiditySeconds(REFRESH_TOKEN_VALIDITY_SECONDS)

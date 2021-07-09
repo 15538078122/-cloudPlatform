@@ -1,5 +1,5 @@
 server:
-  port: 9001
+  port: 20001
 spring:
   application:
     name: gateway
@@ -17,3 +17,7 @@ logging:
     com.hd: debug
     com.alibaba: error
     sun.net: error
+config:
+  auth-uri: 127.0.0.1:20002  #访问授权检查的uri
+  session-timeout: 20   #minutes
+  check-permission: false       #是否检查权限

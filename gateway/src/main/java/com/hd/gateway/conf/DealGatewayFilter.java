@@ -26,10 +26,10 @@ public class DealGatewayFilter implements GatewayFilter, Ordered
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain)
     {
-        log.info("DealGatewayFilter:");
-        //获取header的参数
+        //调整header的参数
         String tokenInfoJson = exchange.getRequest().getHeaders().getFirst("token-info");
         TokenInfo tokenInfo= JSON.parseObject(tokenInfoJson,TokenInfo.class);
+        log.debug("tokenInfo:"+JSON.toJSONString(tokenInfo));
         return chain.filter(exchange);
     }
 

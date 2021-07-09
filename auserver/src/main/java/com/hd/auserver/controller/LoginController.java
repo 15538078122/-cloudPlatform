@@ -23,13 +23,12 @@ public class LoginController {
 
     @GetMapping("/login")
     public String serve(HttpServletRequest request) {
-        log.info("3232");
         HttpSession session = request.getSession(true);
         //TODO: 自定义登录页面
         return "login";
     }
 
-    @RequestMapping({"/","/index.html","/home.html","/error"})
+    @RequestMapping({"/","/index.html","/home.html"})
     public String test(Map<String, Object> model, HttpServletRequest request) {
         //TODO: 其它页面 都返回invalid页
         return "invalid";

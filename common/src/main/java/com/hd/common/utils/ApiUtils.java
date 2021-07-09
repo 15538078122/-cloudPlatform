@@ -22,7 +22,7 @@ import java.util.Map;
 public class ApiUtils {
     public final static List<Api> API_LIST = new ArrayList<>();
 
-    public static void ScanApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public static List<Api> ScanApplicationContext(ApplicationContext applicationContext) throws BeansException {
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(RestController.class);
         //controler 上的@RefreshScope会造成加载了两个bean，进而scan重复
         beans.forEach((name, bean) -> {
@@ -52,7 +52,7 @@ public class ApiUtils {
                     api.setClassName(className)
                             .setMethodName(method.getName())
                             .setPath(pathList.get(0))
-                            .setRequiredPermissions(permissions != null ? permissions.value() : "")
+                            .setPermCode(permissions != null ? permissions.value() : "")
                     ;
                     API_LIST.add(api);
                     log.debug(JSON.toJSONString(api));
@@ -62,6 +62,7 @@ public class ApiUtils {
                 e.printStackTrace();
             }
         });
+        return  API_LIST;
     }
     private static String[] getClassApiPath(AnnotatedElement annotatedElement) {
         RequestMapping a1 = annotatedElement.getAnnotation(RequestMapping.class);

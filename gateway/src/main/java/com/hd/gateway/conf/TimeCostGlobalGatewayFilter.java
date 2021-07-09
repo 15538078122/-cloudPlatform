@@ -1,6 +1,7 @@
 package com.hd.gateway.conf;
 
 import com.hd.gateway.utils.JwtUtils;
+import com.hd.gateway.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -42,9 +43,9 @@ public class TimeCostGlobalGatewayFilter implements GlobalFilter, Ordered {
         return chain.filter(exchange).then(Mono.fromRunnable(() -> {
             //调用请求之后统计时间
             Long endTime = System.currentTimeMillis();
-            log.info(
+            log.debug(
                     exchange.getRequest().getURI().getRawPath() + ", cost time : " + (endTime - startTime) + "ms");
-
+            LogUtil.logCostTime(exchange.getRequest().getURI().getRawPath(),(endTime - startTime));
         }));
     }
     @Override

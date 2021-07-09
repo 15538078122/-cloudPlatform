@@ -11,7 +11,25 @@ spring:
   data:
     mongodb:
       uri: mongodb://127.0.0.1:27017/auserverlogs
+  datasource:
+    url: "jdbc:mysql://127.0.0.1:3333/user-center?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai"
+    username: root
+    password: 123456
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      #初始化连接池的连接数量 大小，最小，最大
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+mybatis-plus:
+  mapper-locations: classpath*:mybatis/*.xml
+  type-aliases-package: com.hd.auserver.entity
+  global-config:
+    worker-id:    1
+    datacenter-id:  1
 logging:
   level:
     root: error
-    com: debug
+    com.hd: debug
+config:
+  USER_OP_IDENTIFICATION: "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"

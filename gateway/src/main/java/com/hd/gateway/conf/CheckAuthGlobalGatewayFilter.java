@@ -13,6 +13,7 @@ import com.hd.gateway.utils.JwtUtils;
 import com.hd.gateway.utils.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -35,10 +36,16 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Value("${config.auth-uri}")
+    String authUri;
+
+    //TODO: 通过网关访问swagger时，关闭权限检查，开发阶段使用
+    @Value("${config.check-permission}")
+    boolean checkPermission=true;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        log.info("check authority" + Thread.currentThread().getId());
-        if(!GatewayApplication.checkPermission){
+        if(!checkPermission){
             return chain.filter(exchange);
         }
         //TODO: PERMISSION 判断
@@ -58,12 +65,16 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
             params.put("method", tokenInfo.getMethod());
             params.put("companyCode", tokenInfo.getCompanyCode());
             //retResult=new RetResult(0,"",true);
-            retResult= HttpUtil.httpPost("127.0.0.1:8083/authbridge?account={account}&scopes={scopes}&uri={uri}&method={method}&companyCode={companyCode}",params);
+            retResult= HttpUtil.httpPost(authUri+"/authbridge?account={account}&scopes={scopes}&uri={uri}&method={method}&companyCode={companyCode}",params);
         } catch (Exception e) {
             retResult = new RetResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), false);
         }
-        //log.info(JSON.toJSONString(retResult));
-        boolean permitted = (Boolean) retResult.getData();
+
+        boolean permitted=false;
+        if(retResult.getData()!=null){
+            permitted = (Boolean) retResult.getData();
+        }
+
         if (!permitted)  {
             //TODO: 记录拒绝访问日志
             retResult = new RetResult(HttpStatus.UNAUTHORIZED.value(), "授权异常!", false);
