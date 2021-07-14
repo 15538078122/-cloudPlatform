@@ -1,7 +1,10 @@
 package com.hd.microauservice.service;
 
+import com.hd.common.vo.SyMenuVo;
 import com.hd.microauservice.entity.SyMenuEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface SyMenuService extends IService<SyMenuEntity> {
 
+    List<SyMenuVo> getCurrentUserMenu();
 }

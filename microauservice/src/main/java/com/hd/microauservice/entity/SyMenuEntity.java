@@ -41,6 +41,13 @@ public class SyMenuEntity extends Model<SyMenuEntity> {
     @TableField("enterprise_id")
     private String enterpriseId;
 
+
+    /**
+     * 0:目录；1:菜单；
+     */
+    @TableField("type")
+    private Short type;
+
     /**
      * 本级编号
      */

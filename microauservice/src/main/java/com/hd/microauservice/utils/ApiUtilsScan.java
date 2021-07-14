@@ -23,7 +23,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class ApiUtilsTest implements ApplicationContextAware {
+public class ApiUtilsScan implements ApplicationContextAware {
     public final static List<Api> API_LIST = new ArrayList<>();
 
     @Autowired
@@ -43,6 +43,7 @@ public class ApiUtilsTest implements ApplicationContextAware {
                 syUrlMappingEntity.setUrl(api.getPath());
                 syUrlMappingEntity.setPermCode(api.getPermCode());
                 syUrlMappingEntity.setHandler(api.getClassName()+":"+api.getMethodName());
+                syUrlMappingEntity.setNotes(api.getNote());
                 syUrlMappingService.save(syUrlMappingEntity);
             }
         }

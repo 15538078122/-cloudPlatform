@@ -19,4 +19,5 @@ public class UserInfo extends User {
     }
     String loginTime;
     String companyCode;
+    String id;
 }

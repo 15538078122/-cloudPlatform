@@ -53,6 +53,7 @@ public class ApiUtils {
                             .setMethodName(method.getName())
                             .setPath(pathList.get(0))
                             .setPermCode(permissions != null ? permissions.value() : "")
+                            .setNote(permissions.note())
                     ;
                     API_LIST.add(api);
                     log.debug(JSON.toJSONString(api));
@@ -93,11 +94,11 @@ public class ApiUtils {
         }
         if (a4 != null) {
             methods.add("put");
-            paths2= a3.value();
+            paths2= a4.value();
         }
         if (a5 != null) {
             methods.add("delete");
-            paths2= a3.value();
+            paths2= a5.value();
         }
         //一般支取一个路径
         RequestPath[] paths = new RequestPath[0];

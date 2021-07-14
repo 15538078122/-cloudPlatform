@@ -19,5 +19,6 @@ logging:
     sun.net: error
 config:
   auth-uri: 127.0.0.1:20002  #访问授权检查的uri
-  session-timeout: 20   #minutes
-  check-permission: true       #是否检查权限
+  session-timeout: 200   #minutes
+  check-token: true       #是否检查令牌
+  check-permission: false       #是否检查权限

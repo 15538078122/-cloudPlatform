@@ -1,8 +1,12 @@
 package com.hd.microauservice.conf;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hd.common.model.TokenInfo;
+import com.hd.microauservice.entity.SyUserEntity;
+import com.hd.microauservice.service.SyUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
@@ -23,14 +27,28 @@ public class FirstFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
     }
 
+    @Autowired
+    SyUserService syUserService;
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         log.debug(((HttpServletRequest)request).getServletPath());
         String servletPath = ((HttpServletRequest) request).getServletPath();
-        if(servletPath.indexOf("/auth")!=0){
+        if(servletPath.indexOf("/auth")!=0 &&servletPath.indexOf("/swagger-ui.html")!=0
+                &&servletPath.indexOf("/webjars")!=0 &&servletPath.indexOf("/static")!=0
+                &&servletPath.indexOf("/null/swagger-resources")!=0&&servletPath.indexOf("/swagger-resources")!=0
+                &&servletPath.indexOf("/v2")!=0
+        ){
             String tokenInfoJson=((HttpServletRequest)request).getHeader("token-info");
             log.debug("token-info: "+tokenInfoJson);
             TokenInfo tokenInfo= JSON.parseObject(tokenInfoJson,TokenInfo.class);
+            QueryWrapper queryWrapper=new QueryWrapper(){{
+                eq("account",tokenInfo.getAccount());
+                eq("delete_flag",0);
+            }};
+            SyUserEntity syUserEntity = syUserService.getOne(queryWrapper);
+            //修改user id未业务系统的user id
+            tokenInfo.setId(syUserEntity.getId().toString());
             SecurityContext.SetCurTokenInfo(tokenInfo);
         }
 

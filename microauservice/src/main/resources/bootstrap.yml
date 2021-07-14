@@ -14,19 +14,6 @@ ribbon:
 feign:
   hystrix:
     enabled: true
-microserv:
-  ribbon:
-    #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule #配置规则 随机
-    #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule #配置规则 轮询
-    #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RetryRule #配置规则 重试
-    #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.WeightedResponseTimeRule #配置规则 响应时间权重
-    #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.BestAvailableRule #配置规则 最空闲连接策略
-    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule
-    ConnectTimeout: 5000 #请求连接超时时间
-    ReadTimeout: 1000 #请求处理的超时时间
-    OkToRetryOnAllOperations: false #ribbon超时时对所有请求都进行重试
-    MaxAutoRetriesNextServer: 0 #切换实例的重试次数
-    MaxAutoRetries: 2 #对当前实例的重试次数
 microauserv:
   ribbon:
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule #配置规则 随机

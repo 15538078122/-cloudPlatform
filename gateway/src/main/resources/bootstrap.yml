@@ -11,7 +11,7 @@ spring:
     gateway:
       httpclient:
         connect-timeout: 2000
-        response-timeout: PT5s
+        response-timeout: PT3s  #全局单次请求的默认超时时间
       globalcors:
         cors-configurations:
           '[/**]':  #匹配所有请求
@@ -40,7 +40,7 @@ spring:
             - Path=/microauserv/**
           metadata:
             connect-timeout: 2000
-            response-timeout: 3000
+            response-timeout: 5000 #针对具体服务的单次请求的默认超时时间
           filters:
             - StripPrefix=1
             - name: Deal
@@ -71,9 +71,9 @@ microauserv:
 
 hystrix:
   command:
-    fallbackcmd:  #fallbackcmd 针对单个设置default
+    default:  #fallbackcmd 针对单个设置default
       execution:
         isolation:
           thread:
             # 全局熔断器5s超时
-            timeoutInMilliseconds: 10000
+            timeoutInMilliseconds: 15000 #全局请求的默认超时时间（包含重试的时间）

@@ -26,6 +26,7 @@ import reactor.core.publisher.Mono;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -41,7 +42,7 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
     int sessionTimeout;
 
     //TODO: 通过网关访问swagger时，关闭权限检查，开发阶段使用
-    @Value("${config.check-permission}")
+    @Value("${config.check-token}")
     boolean checkPermission=true;
 
     @Override
@@ -49,11 +50,16 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
         if(!checkPermission){
             return chain.filter(exchange);
         }
-        String kk = exchange.getRequest().getHeaders().get("Authorization").get(0);
+        List<String> authorization = exchange.getRequest().getHeaders().get("Authorization");
+        if(authorization==null || authorization.size()==0){
+            return ResponseUtil.makeJsonResponse(exchange.getResponse(),
+                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "没有登录令牌!", false));
+        }
+        String bearerTk = authorization.get(0);
         //TODO:  判断token 登录
         TokenInfo tokenInfo;
         try {
-            tokenInfo = jwtUtils.decodeToken(kk.replace("Bearer ", ""));
+            tokenInfo = jwtUtils.decodeToken(bearerTk.replace("Bearer ", ""));
             String uri=exchange.getRequest().getPath().value();
             //url第一个分段一遍用作服务名识别，此处去掉
             tokenInfo.setUri(uri.substring(uri.indexOf("/",1)));

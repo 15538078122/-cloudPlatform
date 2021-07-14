@@ -42,7 +42,7 @@ public class GeneralSqlConfig {
     public static final String FILE_NAME_CONTROLLER = "%sController";
 
     /** 逻辑删除字段 */
-    public static final String FIELD_LOGIC_DELETE_NAME = "delete_status";
+    public static final String FIELD_LOGIC_DELETE_NAME = "deleteFlag";
 
 
     /** 乐观锁字段名 */

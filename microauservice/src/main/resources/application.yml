@@ -31,6 +31,10 @@ mybatis-plus:
   global-config:
     worker-id:    1
     datacenter-id:  2
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
 logging:
   level:
     root: error
@@ -38,5 +42,7 @@ logging:
     org.apache.tomcat: error
     org.apache.catalina: error
 config:
-  scanUri:  true
+  scanUri: false
+  user-center-uri: http://127.0.0.1:10001
+  USER_OP_IDENTIFICATION: "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
 #    java -jar microservice-0.0.1-SNAPSHOT.jar  --server.port=8085

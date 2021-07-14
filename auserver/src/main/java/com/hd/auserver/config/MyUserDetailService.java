@@ -73,6 +73,7 @@ public class MyUserDetailService implements UserDetailsService {
                     //userDetails = new UserInfo(userName, passwordEncoder.encode("1234"),authList);
                     userDetails = new UserInfo(userName, accountEntityList.get(0).getPassword(),authList);
                     ((UserInfo)userDetails).setCompanyCode(companyCode);
+                    ((UserInfo)userDetails).setId(accountEntityList.get(0).getId().toString());
                 }
             }
 

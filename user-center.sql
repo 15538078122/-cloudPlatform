@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80011
 File Encoding         : 65001
 
-Date: 2021-07-09 16:43:48
+Date: 2021-07-14 11:00:49
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -33,8 +33,6 @@ CREATE TABLE `account` (
 -- ----------------------------
 -- Records of account
 -- ----------------------------
-INSERT INTO `account` VALUES ('1410874401045483521', 'hxxxkj', 'admin9', '$2a$10$gs/TsC8UCpEYaLp2JmhZ3OZbTf0f96Gtw2reDvaW/Jso5ztOn1kaG', '2021-07-02 16:14:05');
-INSERT INTO `account` VALUES ('1410874550106853377', 'hxxxkj', 'admin0', '$2a$10$CWSgurqlKbY8ztGpwg4PPeOPrX9/cMMFz9It3NEa8UdhCt6O9tvP2', '2021-07-02 16:14:40');
-INSERT INTO `account` VALUES ('1410875869186101249', 'hxxxkj', 'admin', '$2a$10$SuZTzQu8RoDWu4olg.xruePuOqYdCBn7Asq6XJkQFLVfcbVuljFCG', '2021-07-02 16:19:55');
-INSERT INTO `account` VALUES ('1410878758633738242', 'abc', 'liwei', '$2a$10$mMk76qSV0ypVAddQehhMFO99yrDqOWV5nz8VOInsEKU1v5LoSB2xK', '2021-07-02 16:31:24');
-INSERT INTO `account` VALUES ('1410892362053455874', 'abc', 'admin', '$2a$10$MgJ8oBuJKSE4bUoPoyfipOWX60dcBqji90QAVZrgSsDD8MZwOa6O6', '2021-07-02 17:25:27');
+INSERT INTO `account` VALUES ('1410878758633738242', 'root', 'liwei', '$2a$10$mMk76qSV0ypVAddQehhMFO99yrDqOWV5nz8VOInsEKU1v5LoSB2xK', '2021-07-02 16:31:24');
+INSERT INTO `account` VALUES ('1414893219057111042', 'root', 'testuser', '$2a$10$dBEt/CMhXStoUfPXT9hTJ.2wcRSq7ZFr26AOhAg/13TARVnwuc6Oe', '2021-07-13 18:23:26');
+INSERT INTO `account` VALUES ('1414919679964745729', 'root', 'admin', '$2a$10$ujQvGjrc31j7gZoycSOYduudyw6mc2pHc5At3RaQBqMcD0vrV8i0C', '2021-07-13 20:08:34');

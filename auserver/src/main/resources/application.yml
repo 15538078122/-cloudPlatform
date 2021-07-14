@@ -29,7 +29,7 @@ mybatis-plus:
     datacenter-id:  1
 logging:
   level:
-    root: error
+    root: debug
     com.hd: debug
 config:
   USER_OP_IDENTIFICATION: "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"

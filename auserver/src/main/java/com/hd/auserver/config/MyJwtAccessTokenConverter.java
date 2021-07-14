@@ -42,11 +42,13 @@ public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
             }
             String companyCode=authentication.getOAuth2Request().getRequestParameters().get("company");
             user.setCompanyCode(companyCode);
+            user.setId("0000000000000000000");
         }
         //Set<String> tokenScope = token.getScope();
         //将额外的参数信息存入，用于生成token
         data.put("login_time", user.getLoginTime());
         data.put("company_code", user.getCompanyCode());
+        data.put("id",user.getId());
         data.putAll(token.getAdditionalInformation());
         //自定义TOKEN包含的信息
         token.setAdditionalInformation(data);

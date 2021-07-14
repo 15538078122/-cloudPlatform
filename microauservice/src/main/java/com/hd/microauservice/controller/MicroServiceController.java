@@ -16,9 +16,9 @@ import java.util.*;
 /**
  * @author liwei
  */
-@Api(tags = "微服务testController")
+//@Api(tags = "微服务testController")
 //@RefreshScope
-@RestController
+//@RestController
 @Slf4j
 public class MicroServiceController {
 
@@ -31,7 +31,7 @@ public class MicroServiceController {
     @Autowired
     FallbackFeignServiceDemo iFallbackFeignServiceDemo;
 
-    @ApiOperation(value = "测试")
+//    @ApiOperation(value = "测试")
     @RequiresPermissions("micro:test1")
     @GetMapping("/test1")
     public Object test(@RequestParam("para") String para) throws Exception {
@@ -42,7 +42,7 @@ public class MicroServiceController {
         return para+" from "+port;
     }
 
-    @ApiOperation(value = "测试")
+//    @ApiOperation(value = "测试")
     @RequiresPermissions("micro:test2")
     @GetMapping("/test2")
     public RetResult test2(@RequestParam("para") String para) throws Exception {

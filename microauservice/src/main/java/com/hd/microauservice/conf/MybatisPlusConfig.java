@@ -1,6 +1,7 @@
 package com.hd.microauservice.conf;
 
 import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.core.injector.ISqlInjector;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +25,6 @@ public class MybatisPlusConfig {
         //还可以添加i他的拦截器
         return interceptor;
     }
-
 //    @Bean
 //    public ConfigurationCustomizer configurationCustomizer() {
 //        return configuration -> configuration.setUseDeprecatedExecutor(false);

@@ -11,4 +11,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface RequiresPermissions {
     String value() default "";
+    String note() default  "";
 }
