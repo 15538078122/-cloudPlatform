@@ -80,6 +80,6 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 18、启动tokeninfo认证时，swagger的请求需要排除  
 ![image](https://user-images.githubusercontent.com/83743182/125553924-55000627-7600-4233-8ca9-5ce5bf0b6ded.png)
 
-
+待续
 
 
