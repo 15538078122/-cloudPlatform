@@ -72,6 +72,10 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 ![image](https://user-images.githubusercontent.com/83743182/125550884-38086b97-94e6-40b3-ad2f-9d1338fe64c7.png)
 16、json Long型转化，记得添加@JSONField(serializeUsing = LongToStringSerializer.class)； 否则js端会值会异常  ，mybatis的 worker-id: datacenter-id: 配置注意不要重复，避免分布式id产生重复  
 ![image](https://user-images.githubusercontent.com/83743182/125551509-a6b446f1-d6ac-400f-b641-692a26228622.png)
+17、favicon.ico 记得增加如下配置  
+![image](https://user-images.githubusercontent.com/83743182/125553851-8da53c9d-e8e7-49a6-bfe4-9ed84d6c2adc.png)
+18、启动tokeninfo认证时，swagger的请求需要排除  
+![image](https://user-images.githubusercontent.com/83743182/125553924-55000627-7600-4233-8ca9-5ce5bf0b6ded.png)
 
 
 
