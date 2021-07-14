@@ -7,10 +7,14 @@
 6、更具独立性，只专注于业务实现。通过设计便于业务数据读写分离  
 7、各个子系统模块均可根据需求，调整部署的实例数。   
 8、数据库主从、连接池、数据缓存、消息队列、运维监视（完善中）   
-9、nacos 服务发现  
+9、nacos 服务发现  mongodb存日志
 # 软件架构
 ![image](https://user-images.githubusercontent.com/83743182/123797839-3023e280-d919-11eb-988b-fd2ead38835c.png)
+# 基础数据模型  
+![image](https://user-images.githubusercontent.com/83743182/125550679-ddde7fae-defb-429f-ab37-ed5f5bd1844a.png)
+
 # 安装
+安装数据库：脚本user-center.sql  和 patrol.sql  
 自行安装nacos，网上很多。新建空project，导入各个module，如下：共6个
 ![image](https://user-images.githubusercontent.com/83743182/122862149-464b0500-d353-11eb-85fb-cfe306757c96.png)
 global libraries里添加上libs目录下的common-0.0.1-SNAPSHOT.jar, 这是已经package的common项目
@@ -64,6 +68,11 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 ![image](https://user-images.githubusercontent.com/83743182/123414521-9097e480-d5e6-11eb-9427-5b3aa95ffd1e.png)   
 14、MyUserDetailService使用了HttpServletRequest的注入，注意这里是代理模式，每个请求过来，注入的都是该请求对应的request；利用历史请求DefaultSavedRequest获取企业code，实现sas模式。   
 ![image](https://user-images.githubusercontent.com/83743182/123797363-af64e680-d918-11eb-95a6-dbb9a54e5eed.png)
+15、auserve拦截异常的坑，RestControllerAdvice里面如果捕获了InsufficientAuthenticationException，请不要返回错误，继续抛出异常，交由oauth处理，否则请求授权码模式到不了登录页面  
+![image](https://user-images.githubusercontent.com/83743182/125550884-38086b97-94e6-40b3-ad2f-9d1338fe64c7.png)
+16、json Long型转化，记得添加@JSONField(serializeUsing = LongToStringSerializer.class)； 否则js端会值会异常  ，mybatis的 worker-id: datacenter-id: 配置注意不要重复，避免分布式id产生重复  
+![image](https://user-images.githubusercontent.com/83743182/125551509-a6b446f1-d6ac-400f-b641-692a26228622.png)
+
 
 
 
