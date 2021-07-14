@@ -12,6 +12,9 @@
 ![image](https://user-images.githubusercontent.com/83743182/123797839-3023e280-d919-11eb-988b-fd2ead38835c.png)
 # 基础数据模型  
 ![image](https://user-images.githubusercontent.com/83743182/125550679-ddde7fae-defb-429f-ab37-ed5f5bd1844a.png)
+# 基础url  
+![image](https://user-images.githubusercontent.com/83743182/125554023-a7dabd40-39e8-4d27-bbd4-1783fa43f801.png)
+![image](https://user-images.githubusercontent.com/83743182/125554063-4947a8c2-bde2-4979-94a9-d6d8e639e45a.png)
 
 # 安装
 安装数据库：脚本user-center.sql  和 patrol.sql  
