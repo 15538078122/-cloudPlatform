@@ -1,5 +1,6 @@
 package com.hd.microauservice.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hd.common.vo.SyUserVo;
 import com.hd.microauservice.entity.SyUserEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -16,4 +17,6 @@ public interface SyUserService extends IService<SyUserEntity> {
 
     void createUser(SyUserVo syUserVo) throws Exception;
     void removeUser(SyUserVo syUserVo) throws Exception;
+
+    SyUserEntity getOneFromCach(String account);
 }

@@ -10,8 +10,12 @@ import com.hd.microauservice.entity.SyUserEntity;
 import com.hd.microauservice.mapper.SyUserMapper;
 import com.hd.microauservice.service.SyUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hd.microauservice.utils.RedisLockUtil;
 import com.hd.microauservice.utils.VoConvertUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -24,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -42,30 +48,54 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
     @Value("${config.USER_OP_IDENTIFICATION}")
     String  USER_OP_IDENTIFICATION;
 
+    @Autowired
+    RedisLockUtil redisLockUtil;
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor ={Exception.class},isolation = Isolation.DEFAULT)
-    public void createUser(SyUserVo syUserVo) throws Exception {
-        String account=syUserVo.getAccount();
-        if(account==null||account.isEmpty()){
-            throw new Exception("用户不能为空!");
+    public synchronized  void createUser(SyUserVo syUserVo) throws Exception {
+        long timeout = 15;
+        TimeUnit timeUnit = TimeUnit.SECONDS;
+        // UUID 作为 value
+        String lockValue= UUID.randomUUID().toString();
+        if (!redisLockUtil.lock("createUser", lockValue, timeout, timeUnit)){
+            throw new Exception("系统繁忙!");
         }
-        //检查用户是否存在
-        QueryWrapper queryWrapper=new QueryWrapper(){{
-            eq("account",syUserVo.getAccount());
-            eq("enterprise_id",syUserVo.getEnterpriseId());
-            eq("delete_flag",0);
-        }};
-        if (getOne(queryWrapper)!=null){
-            throw new Exception("用户已存在!");
-        }
+        try{
+            String account=syUserVo.getAccount();
+            if(account==null||account.isEmpty()){
+                throw new Exception("用户不能为空!");
+            }
+            //检查用户是否存在
+            QueryWrapper queryWrapper=new QueryWrapper(){{
+                eq("account",syUserVo.getAccount());
+                eq("enterprise_id",syUserVo.getEnterpriseId());
+                eq("delete_flag",0);
+            }};
+            if (getOne(queryWrapper)!=null){
+                throw new Exception("用户已存在!");
+            }
 
-        SyUserEntity syUserEntity=new SyUserEntity();
-        VoConvertUtils.convertObject(syUserVo,syUserEntity);
-        save(syUserEntity);
-        //检查用户中心是否有该用户
-        if(!userExistInCenter(syUserVo)){
-            if(!createUserForCenter(syUserVo)){
-                throw  new Exception("创建用户失败!");
+            SyUserEntity syUserEntity=new SyUserEntity();
+            VoConvertUtils.convertObject(syUserVo,syUserEntity);
+            save(syUserEntity);
+            //检查用户中心是否有该用户
+            if(!userExistInCenter(syUserVo)){
+                if(!createUserForCenter(syUserVo)){
+                    throw  new Exception("创建用户失败!");
+                }
+            }
+            else {
+                throw new Exception("认证中心用户已存在!");
+            }
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+        finally {
+            if (!redisLockUtil.unlock("createUser", lockValue)) {
+                log.error("redis分布式锁解锁异常 key 为"+"createUser");
             }
         }
     }
@@ -91,6 +121,17 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         if(!removeUserForCenter(syUserVo)){
             throw  new Exception("删除用户失败.");
         }
+    }
+
+    @Override
+    @Cacheable(value = "account",key="'h-'+#account")
+    public SyUserEntity getOneFromCach(String account) {
+        QueryWrapper queryWrapper=new QueryWrapper(){{
+            eq("account",account);
+            eq("delete_flag",0);
+        }};
+        SyUserEntity syUserEntity = getOne(queryWrapper);
+        return  syUserEntity;
     }
 
     private boolean removeUserForCenter(SyUserVo syUserVo) {

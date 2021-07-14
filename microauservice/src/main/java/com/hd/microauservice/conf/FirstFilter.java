@@ -46,7 +46,8 @@ public class FirstFilter implements Filter {
                 eq("account",tokenInfo.getAccount());
                 eq("delete_flag",0);
             }};
-            SyUserEntity syUserEntity = syUserService.getOne(queryWrapper);
+            //SyUserEntity syUserEntity = syUserService.getOne(queryWrapper);
+            SyUserEntity syUserEntity = syUserService.getOneFromCach(tokenInfo.getAccount());
             //修改user id未业务系统的user id
             tokenInfo.setId(syUserEntity.getId().toString());
             SecurityContext.SetCurTokenInfo(tokenInfo);
