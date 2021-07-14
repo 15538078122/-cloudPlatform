@@ -36,7 +36,6 @@ public class AccountController {
         qw.eq("enterprise",enterprise);
         //qw1.orderByDesc("id","account");
         MyPage<AccountEntity> accountEntityPage = accountService.selectAccounts(pageNum, pageSize,qw);
-        //        accountEntities.get(1).setAccount(null);
         return RetResponse.makeRsp(accountEntityPage);
     }
     @PostMapping("/account/{account}")
