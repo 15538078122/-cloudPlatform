@@ -7,9 +7,11 @@
 6、更具独立性，只专注于业务实现。通过设计便于业务数据读写分离  
 7、各个子系统模块均可根据需求，调整部署的实例数。   
 8、数据库主从、连接池、数据缓存、消息队列、运维监视（完善中）   
-9、nacos 服务发现  mongodb存日志
+9、nacos 服务发现  mongodb存日志  
+10、分布式锁
 # 软件架构
-![image](https://user-images.githubusercontent.com/83743182/123797839-3023e280-d919-11eb-988b-fd2ead38835c.png)
+![image](https://user-images.githubusercontent.com/83743182/125611044-aa7ef51e-4267-432f-84f7-2f3b2357c5f4.png)
+
 # 基础数据模型  
 ![image](https://user-images.githubusercontent.com/83743182/125550679-ddde7fae-defb-429f-ab37-ed5f5bd1844a.png)
 # 基础url  
