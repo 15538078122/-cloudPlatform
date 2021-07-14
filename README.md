@@ -10,7 +10,8 @@
 9、nacos 服务发现  mongodb存日志  
 10、分布式锁
 # 软件架构
-![image](https://user-images.githubusercontent.com/83743182/125610895-66af108a-0592-4182-8fe5-03ee12e3f5c1.png)
+![image](https://user-images.githubusercontent.com/83743182/125611044-aa7ef51e-4267-432f-84f7-2f3b2357c5f4.png)
+
 # 基础数据模型  
 ![image](https://user-images.githubusercontent.com/83743182/125550679-ddde7fae-defb-429f-ab37-ed5f5bd1844a.png)
 # 基础url  
