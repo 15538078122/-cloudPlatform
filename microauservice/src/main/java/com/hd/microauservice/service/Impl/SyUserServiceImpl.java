@@ -53,20 +53,29 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor ={Exception.class},isolation = Isolation.DEFAULT)
-    public synchronized  void createUser(SyUserVo syUserVo) throws Exception {
-        long timeout = 15;
+    /**
+     * 尽量不要使用synchronized，防止大并发是阻塞线程
+     */
+    //public synchronized  void createUser(SyUserVo syUserVo) throws Exception {
+    public void createUser(SyUserVo syUserVo) throws Exception {
+        //注意timeout的设置，大于执行块可能需要的最大时间，否则锁失效造成异常
+        long timeout = 30;
         TimeUnit timeUnit = TimeUnit.SECONDS;
         // UUID 作为 value
         String lockValue= UUID.randomUUID().toString();
+        //log.debug("获取分布式锁解锁 为"+lockValue);
         if (!redisLockUtil.lock("createUser", lockValue, timeout, timeUnit)){
             throw new Exception("系统繁忙!");
         }
+        //log.debug("已获取分布式锁解锁 为"+lockValue);
         try{
+            baseMapper.sleep();
             String account=syUserVo.getAccount();
             if(account==null||account.isEmpty()){
                 throw new Exception("用户不能为空!");
             }
             //检查用户是否存在
+            //两个sql执行，最长10s
             QueryWrapper queryWrapper=new QueryWrapper(){{
                 eq("account",syUserVo.getAccount());
                 eq("enterprise_id",syUserVo.getEnterpriseId());
@@ -80,6 +89,7 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
             VoConvertUtils.convertObject(syUserVo,syUserEntity);
             save(syUserEntity);
             //检查用户中心是否有该用户
+            //两个请求最长20s
             if(!userExistInCenter(syUserVo)){
                 if(!createUserForCenter(syUserVo)){
                     throw  new Exception("创建用户失败!");
@@ -95,8 +105,9 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         }
         finally {
             if (!redisLockUtil.unlock("createUser", lockValue)) {
-                log.error("redis分布式锁解锁异常 key 为"+"createUser");
+                log.error("redis分布式锁解锁异常 key："+"createUser-"+lockValue);
             }
+            //log.debug("释放分布式锁解锁 为"+lockValue);
         }
     }
 

@@ -40,7 +40,7 @@ spring:
             - Path=/microauserv/**
           metadata:
             connect-timeout: 2000
-            response-timeout: 5000 #针对具体服务的单次请求的默认超时时间
+            response-timeout: 15000 #针对具体服务的单次请求的默认超时时间
           filters:
             - StripPrefix=1
             - name: Deal
