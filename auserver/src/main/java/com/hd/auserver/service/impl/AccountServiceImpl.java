@@ -27,8 +27,8 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, AccountEntity
 
     @Override
     public MyPage<AccountEntity> selectAccounts(int pageNum, int pageSize, QueryWrapper queryWrapper) {
-        Page page1=new Page(2,2,false);
-        List<AccountEntity> accountEntities = customMapper.selectUser(page1);
+        Page page1=new Page(2,2,true);
+        List<AccountEntity> accountEntities = customMapper.selectUser("li",page1);
         Page<AccountEntity> page = new Page<>(pageNum, pageSize);
         Page<AccountEntity> accountEntityPage = this.baseMapper.selectPage(page, queryWrapper);
         return new MyPage<>(accountEntityPage.getCurrent(), accountEntityPage.getSize(), accountEntityPage.getTotal(), accountEntityPage.getRecords());

@@ -20,5 +20,6 @@
         select
             <include refid="Base_Column_List" />
         from account
+        where account like "%"#{account}"%"
     </select>
 </mapper>

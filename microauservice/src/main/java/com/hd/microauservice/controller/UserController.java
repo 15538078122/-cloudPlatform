@@ -5,23 +5,16 @@ import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import com.hd.common.model.RequiresPermissions;
 import com.hd.common.model.TokenInfo;
-import com.hd.common.vo.SyMenuBtnVo;
-import com.hd.common.vo.SyMenuVo;
 import com.hd.common.vo.SyUserVo;
 import com.hd.microauservice.conf.SecurityContext;
-import com.hd.microauservice.entity.SyMenuBtnEntity;
 import com.hd.microauservice.entity.SyUserEntity;
-import com.hd.microauservice.service.SyMenuBtnService;
-import com.hd.microauservice.service.SyMenuService;
 import com.hd.microauservice.service.SyUserService;
-import com.hd.microauservice.utils.VoConvertUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * @author liwei
@@ -53,7 +46,7 @@ public class UserController {
     @ApiOperation(value = "创建用户")
     @RequiresPermissions("user:create")
     @PostMapping("/user")
-    public RetResult createUser(@RequestBody SyUserVo syUserVo) throws Exception {
+    public RetResult createUser(@RequestBody @Validated SyUserVo syUserVo) throws Exception {
         TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
         syUserService.createUser(syUserVo.setEnterpriseId(tokenInfo.getCompanyCode()));
         return RetResponse.makeRsp("创建用户成功.");

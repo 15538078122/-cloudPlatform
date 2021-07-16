@@ -32,7 +32,7 @@ public class EnterpriseController  extends SuperQueryController {
     }
 
     @ApiOperation(value = "获取企业列表信息")
-    @RequiresPermissions("enterprise:list")
+    @RequiresPermissions(value = "enterprise:list",note = "分页获取企业列表")
     @GetMapping("/enterprise")
     public RetResult getEnterprise(@RequestParam("query") String query){
         PageQueryExpressionList pageQuery= JSON.parseObject(query,PageQueryExpressionList.class);
@@ -48,5 +48,21 @@ public class EnterpriseController  extends SuperQueryController {
         VoConvertUtils.convertObject(syEnterpriseVo,syEnterpriseEntity);
         syEnterpriseService.save(syEnterpriseEntity);
         return RetResponse.makeRsp("创建企业成功.");
+    }
+    @ApiOperation(value = "编辑企业")
+    @RequiresPermissions("enterprise:edit")
+    @PutMapping("/enterprise/{id}")
+    public RetResult editEnterprise(@PathVariable("id") Long id, @RequestBody SyEnterpriseVo syEnterpriseVo){
+        SyEnterpriseEntity syEnterpriseEntity=new SyEnterpriseEntity();
+        VoConvertUtils.convertObject(syEnterpriseVo,syEnterpriseEntity);
+        syEnterpriseService.updateById(syEnterpriseEntity);
+        return RetResponse.makeRsp("编辑企业成功.");
+    }
+    @ApiOperation(value = "删除企业")
+    @RequiresPermissions("enterprise:delete")
+    @DeleteMapping("/enterprise/{id}")
+    public RetResult deleteEnterprise(@PathVariable("id") Long id){
+        syEnterpriseService.removeById(id);
+        return RetResponse.makeRsp("删除企业成功.");
     }
 }

@@ -11,7 +11,6 @@ import com.hd.microauservice.entity.SyFunctionEntity;
 import com.hd.microauservice.entity.SyUrlMappingEntity;
 import com.hd.microauservice.service.*;
 import com.hd.microauservice.utils.VoConvertUtils;
-import com.sun.xml.internal.fastinfoset.vocab.Vocabulary;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -113,8 +112,12 @@ public class FunctionController {
     @GetMapping("/url-mapping")
     public RetResult getUrlMapping(String url,String note) {
         QueryWrapper queryWrapper=new QueryWrapper(){{
-            if(url!=null)        like("url",url);
-            if(note!=null)        like("notes",note);
+            if(url!=null) {
+                like("url",url);
+            }
+            if(note!=null) {
+                like("notes",note);
+            }
         }};
         List<SyUrlMappingEntity> syUrlMappingEntityList = syUrlMappingService.list(queryWrapper);
         List<SyUrlMappingVo> syUrlMappingVos=new ArrayList<>() ;

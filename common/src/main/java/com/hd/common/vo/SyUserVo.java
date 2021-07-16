@@ -4,20 +4,19 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.hd.common.utils.LongToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Author: liwei
  * @Description:
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 @ApiModel("用户")
 public class SyUserVo implements Serializable {
@@ -45,6 +44,8 @@ public class SyUserVo implements Serializable {
     /**
      * 登录账户
      */
+    @NotNull(message = "名称不能为空！")
+    @NotBlank(message = "名称不能为空！")
     private String account;
 
     /**

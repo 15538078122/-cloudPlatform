@@ -1,33 +1,26 @@
 package com.hd.microauservice.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.injector.methods.Delete;
-import com.baomidou.mybatisplus.core.injector.methods.DeleteById;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hd.common.RetResult;
 import com.hd.common.utils.HttpUtil;
 import com.hd.common.vo.SyUserVo;
 import com.hd.microauservice.entity.SyUserEntity;
 import com.hd.microauservice.mapper.SyUserMapper;
 import com.hd.microauservice.service.SyUserService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hd.microauservice.utils.RedisLockUtil;
 import com.hd.microauservice.utils.VoConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -69,7 +62,8 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         }
         //log.debug("已获取分布式锁解锁 为"+lockValue);
         try{
-            baseMapper.sleep();
+            //利用数据库select sleep 延时
+            //baseMapper.sleep();
             String account=syUserVo.getAccount();
             if(account==null||account.isEmpty()){
                 throw new Exception("用户不能为空!");
