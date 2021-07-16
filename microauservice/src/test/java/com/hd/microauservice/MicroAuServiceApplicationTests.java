@@ -3,15 +3,11 @@ package com.hd.microauservice;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hd.common.vo.SyUserVo;
-import com.hd.microauservice.entity.SyUserEntity;
 import com.hd.microauservice.service.SyUserService;
+import com.hd.microauservice.utils.GeneralSqlUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import com.hd.microauservice.utils.GeneralSqlUtil;
-
-import java.sql.Wrapper;
 
 @SpringBootTest
 class MicroAuServiceApplicationTests {
@@ -30,7 +26,7 @@ class MicroAuServiceApplicationTests {
 		// 表前缀，生成的实体类，不含前缀
 		String [] tablePrefixes = {};
 		// 表名，为空，生成所有的表
-		String [] tableNames = {"sy_system","sy_org","sy_user","sy_role","sy_role_perm","sy_user_role"};
+		String [] tableNames ={"sy_system"}; //{"sy_system","sy_org","sy_user","sy_role","sy_role_perm","sy_user_role"};
 		// 字段前缀
 		String [] fieldPrefixes = {};
 		// 基础包名

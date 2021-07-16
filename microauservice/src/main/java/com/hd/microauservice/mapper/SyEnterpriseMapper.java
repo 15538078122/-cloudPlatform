@@ -1,6 +1,6 @@
 package com.hd.microauservice.mapper;
 
-import com.hd.microauservice.entity.SySystemEntity;
+import com.hd.microauservice.entity.SyEnterpriseEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author wli
  * @since 2021-07-13
  */
-public interface SySystemMapper extends BaseMapper<SySystemEntity> {
+public interface SyEnterpriseMapper extends BaseMapper<SyEnterpriseEntity> {
 
 }

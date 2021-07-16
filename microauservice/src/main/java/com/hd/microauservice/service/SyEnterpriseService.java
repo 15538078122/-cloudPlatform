@@ -1,6 +1,6 @@
 package com.hd.microauservice.service;
 
-import com.hd.microauservice.entity.SySystemEntity;
+import com.hd.microauservice.entity.SyEnterpriseEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author wli
  * @since 2021-07-13
  */
-public interface SySystemService extends IService<SySystemEntity> {
+public interface SyEnterpriseService extends IService<SyEnterpriseEntity> {
 
 }

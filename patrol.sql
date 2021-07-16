@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80011
 File Encoding         : 65001
 
-Date: 2021-07-14 11:00:24
+Date: 2021-07-16 14:35:58
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -73,6 +73,27 @@ CREATE TABLE `sy_dict_item` (
 -- ----------------------------
 -- Records of sy_dict_item
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for sy_enterprise
+-- ----------------------------
+DROP TABLE IF EXISTS `sy_enterprise`;
+CREATE TABLE `sy_enterprise` (
+  `id` bigint(20) NOT NULL,
+  `enterprise_id` varchar(20) DEFAULT NULL COMMENT '企业编号(s00000：特殊企业，系统配置员使用关联菜单；s00001：特殊企业，企业管理员使用关联菜单)',
+  `name` varchar(200) DEFAULT NULL COMMENT '名称',
+  `note` varchar(250) DEFAULT NULL COMMENT '描述',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of sy_enterprise
+-- ----------------------------
+INSERT INTO `sy_enterprise` VALUES ('232323', 'root', 'xxx', 'we');
+INSERT INTO `sy_enterprise` VALUES ('1415910416516911105', null, 'dddd', '23');
+INSERT INTO `sy_enterprise` VALUES ('1415910559983079425', null, 'dddxxd', 'we');
+INSERT INTO `sy_enterprise` VALUES ('1415913494108442626', null, 'dddxxd', 'we');
+INSERT INTO `sy_enterprise` VALUES ('1415913627780911105', null, 'dd22dxxd', ' ew33');
 
 -- ----------------------------
 -- Table structure for sy_function
@@ -154,9 +175,13 @@ CREATE TABLE `sy_menu` (
 -- Records of sy_menu
 -- ----------------------------
 INSERT INTO `sy_menu` VALUES ('1414465565539700737', null, 'root', '0', '100', '100', '1', '系统管理', null, null, 'fa fa-map-o', '1');
-INSERT INTO `sy_menu` VALUES ('1414465743558545409', '1414465565539700737', 'root', '1', '100', '100.100', '1', '菜单管理', '/system/menu', null, 'fa fa-map-o', '1');
-INSERT INTO `sy_menu` VALUES ('1414467899229474818', '1414465565539700737', 'root', '1', '300', '100.200', '1', '功能管理', '/system/function', '444', 'fa fa-map-o', '1');
-INSERT INTO `sy_menu` VALUES ('1415133178829737986', null, 'root', '0', '200', null, null, '业务管理', null, null, 'fa fa-wrench', null);
+INSERT INTO `sy_menu` VALUES ('1414465743558545409', '1414465565539700737', 'root', '1', '100', '100.100', '1', '菜单管理', '/system/menu', null, 'fa fa-folder-open', '1');
+INSERT INTO `sy_menu` VALUES ('1414467899229474818', '1414465565539700737', 'root', '1', '300', '100.200', '1', '功能管理', '/system/function', '444', 'fa fa-gears (alias)', '1');
+INSERT INTO `sy_menu` VALUES ('1415148911756316673', '1415148599716876290', 'root', '1', '200', null, '1', '巡检点管理', '/business/checkPoint', '11', 'fa fa-binoculars', null);
+INSERT INTO `sy_menu` VALUES ('1415150615566487554', null, 'root', '0', null, '200', '1', '日常维护', '', null, 'fa fa-wrench', null);
+INSERT INTO `sy_menu` VALUES ('1415150911453663233', '1415150615566487554', 'root', '1', null, '200.100', '1', '巡检点管理', '/business/checkPoint', '日常维护巡检点', 'fa fa-binoculars', null);
+INSERT INTO `sy_menu` VALUES ('1415153731317796866', '1415150615566487554', 'root', '1', null, '200.200', '1', '常用巡检项', '/business/checkItem', '巡检项', 'fa fa-calendar-check-o', null);
+INSERT INTO `sy_menu` VALUES ('1415154221652905985', '1415150615566487554', 'root', '1', null, '200.300', '1', '工单模板', '/business/repairTemplate', '工单模板', 'fa fa-gavel', null);
 
 -- ----------------------------
 -- Table structure for sy_menu_btn
@@ -244,22 +269,6 @@ CREATE TABLE `sy_role_perm` (
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for sy_system
--- ----------------------------
-DROP TABLE IF EXISTS `sy_system`;
-CREATE TABLE `sy_system` (
-  `id` bigint(20) NOT NULL,
-  `enterprise_id` varchar(20) DEFAULT NULL COMMENT '企业编号(s00000：特殊企业，系统配置员使用关联菜单；s00001：特殊企业，企业管理员使用关联菜单)',
-  `name` varchar(200) DEFAULT NULL COMMENT '名称',
-  `note` varchar(250) DEFAULT NULL COMMENT '描述',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of sy_system
--- ----------------------------
-
--- ----------------------------
 -- Table structure for sy_url_mapping
 -- ----------------------------
 DROP TABLE IF EXISTS `sy_url_mapping`;
@@ -327,7 +336,8 @@ INSERT INTO `sy_user` VALUES ('1414886317858492418', null, 'root', '1', 'liwei',
 INSERT INTO `sy_user` VALUES ('1414886757534797825', null, 'root', '1', 'testuser', null, null, null, null, null, null, '1');
 INSERT INTO `sy_user` VALUES ('1414886873280811010', null, 'root', '1', 'testuser', null, null, null, null, null, null, '1');
 INSERT INTO `sy_user` VALUES ('1414886958668451841', null, 'root', '1', 'testuser', null, null, null, null, null, null, '1');
-INSERT INTO `sy_user` VALUES ('1414893218583285761', null, 'root', '1', 'testuser', null, null, null, null, null, null, '0');
+INSERT INTO `sy_user` VALUES ('1414893218583285761', null, 'root', '1', 'testuser', null, null, null, null, null, null, '1');
+INSERT INTO `sy_user` VALUES ('1415235021022957570', null, 'root', '1', 'testuser', null, null, null, null, null, null, '1');
 
 -- ----------------------------
 -- Table structure for sy_user_role

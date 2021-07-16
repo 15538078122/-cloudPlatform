@@ -26,7 +26,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://localhost:30001/public/code&scope=write read&company=abc",
+							"raw": "http://localhost:10001/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://localhost:30001/public/code&scope=write read&company=root",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -55,7 +55,7 @@
 								},
 								{
 									"key": "company",
-									"value": "abc"
+									"value": "root"
 								}
 							]
 						}
@@ -87,7 +87,7 @@
 							"urlencoded": [
 								{
 									"key": "code",
-									"value": "Egs2ap",
+									"value": "u0xG7K",
 									"type": "text"
 								}
 							],
@@ -215,7 +215,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&password=1234&grant_type=password&username=liwei&company=abc&scope=user",
+							"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&password=1234&grant_type=password&username=liwei&scope=user&company=root",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -247,10 +247,6 @@
 									"value": "liwei"
 								},
 								{
-									"key": "company",
-									"value": "abc"
-								},
-								{
 									"key": "scope",
 									"value": "read1",
 									"disabled": true
@@ -258,6 +254,10 @@
 								{
 									"key": "scope",
 									"value": "user"
+								},
+								{
+									"key": "company",
+									"value": "root"
 								}
 							]
 						}
@@ -382,7 +382,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&grant_type=refresh_token&redirect_uri=http://localhost:8000/public/code",
+							"raw": "http://localhost:10001/oauth/token?client_id=client&client_secret=secret123&grant_type=refresh_token",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -404,10 +404,6 @@
 								{
 									"key": "grant_type",
 									"value": "refresh_token"
-								},
-								{
-									"key": "redirect_uri",
-									"value": "http://localhost:8000/public/code"
 								}
 							]
 						}
@@ -430,12 +426,12 @@
 							"formdata": [
 								{
 									"key": "password",
-									"value": "admin",
+									"value": "testuser",
 									"type": "text"
 								},
 								{
 									"key": "enterprise",
-									"value": "abc",
+									"value": "root",
 									"type": "text"
 								}
 							],
@@ -603,6 +599,764 @@
 			]
 		},
 		{
+			"name": "菜单操作",
+			"item": [
+				{
+					"name": "请求当前用户菜单",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/menu/my",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"menu",
+								"my"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建菜单",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    enterpriseId: \"root\",\r\n    parentId:1414465565539700737,\r\n    type: 0,\r\n    enabled: 1,\r\n    name: \"菜单管理\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/menu",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"menu"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "编辑菜单",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"enabled\": 1,\r\n    \"enterpriseId\": \"root\",\r\n    \"id\": 1414465743558545409,\r\n    \"levelCode\": \"100\",\r\n    \"name\": \"菜单管理\",\r\n    \"parentId\": 1414465565539700737,\r\n    \"pathCode\": \"100.100\",\r\n    \"type\": 1,\r\n    \"isVisible\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/menu/1414426260477841410",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"menu",
+								"1414426260477841410"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除菜单",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:20001/microauserv/menu/1414426260477841410",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"menu",
+								"1414426260477841410"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建按钮",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    enterpriseId: \"root\",\r\n    menuId:1414465743558545409,\r\n    enabled: true,\r\n    name: \"删除按钮\",\r\n    \"isVisible\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/menu/btn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"menu",
+								"btn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "编辑按钮",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    id:1414475363865858050,\r\n    enterpriseId: \"root\",\r\n    menuId:1414465743558545409,\r\n    enabled: true,\r\n    name: \"删除按钮\",\r\n    \"isVisible\": true \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/menu/btn/1414475363865858050",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"menu",
+								"btn",
+								"1414475363865858050"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除按钮",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:20001/microauserv/menu/btn/1414426260477841410",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"menu",
+								"btn",
+								"1414426260477841410"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "功能操作",
+			"item": [
+				{
+					"name": "创建功能",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n    type: 0,\r\n \r\n    name: \"系统管理\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/function",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"function"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "编辑功能",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    id: 1414763942085136385,\r\n    parentId: 1414764039753699330,\r\n    levelCode: 100,\r\n    enterpriseId: \"root\",\r\n   \r\n    type: 1\r\n \r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/function/1414763942085136385",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"function",
+								"1414763942085136385"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除功能",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:20001/microauserv/function/1414763942085136385",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"function",
+								"1414763942085136385"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取功能tree",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/function",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"function"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建操作",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n    funcId: 1414763942085136385,\r\n \r\n    name: \"list\",\r\n    note: \"页面list操作\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/function/opr",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"function",
+								"opr"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "编辑操作",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n                            \"funcId\": 1414763942085136385,\r\n                            \"id\": 1414767899385794561,\r\n                            \"name\": \"list\",\r\n                            \"note\": \"页面list操作\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/function/opr/1414767899385794561",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"function",
+								"opr",
+								"1414767899385794561"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除操作",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:20001/microauserv/function/opr/1414767899385794561",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"function",
+								"opr",
+								"1414767899385794561"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取某个操作对应的Uri",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:20001/microauserv/function/opr/1414767899385794561/url",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"function",
+								"opr",
+								"1414767899385794561",
+								"url"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "更新某个操作对应的Uri",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n{\r\n    url:\"post /authbridge\",\r\n    permCode:\"permission:authbr\",\r\n    funcOpId:1414767899385794561\r\n},\r\n{\r\n    url:\"post /authbridge\",\r\n    permCode:\"permission:authbr\",\r\n    funcOpId:1414767899385794561\r\n}\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/function/opr/1414767899385794561/url",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"function",
+								"opr",
+								"1414767899385794561",
+								"url"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取所有urlmapping",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:20001/microauserv/url-mapping?url=get",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"url-mapping"
+							],
+							"query": [
+								{
+									"key": "url",
+									"value": "get"
+								},
+								{
+									"key": "note",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "用户操作",
+			"item": [
+				{
+					"name": "创建用户",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    account:\"testuser\",\r\n    passwordMd5:\"1234\",\r\n    enterpriseId:\"abc\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:20001/microauserv/user",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除用户",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:20001/microauserv/user/testuser",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"user",
+								"testuser"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "企业操作",
+			"item": [
+				{
+					"name": "获取企业list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:20001/microauserv/enterprise?query=%20%7B%20%22pageNum%22%3A%202%2C%22pageSize%22%3A%202%2CqueryData%3A%5B%7Bcolumn%3A%22name%22%2Cvalue%3A%22xx%22%2Ctype%3A%22like%22%20%20%7D%2C%7Bcolumn%3A%22note%22%2Cvalue%3A%22nnn%22%2Ctype%3A%22ne%22%7D%5D%2Corderby%3A%5B%7Bkey%3A%22id%22%2Cvalue%3A%22asc%22%7D%2C%7Bkey%3A%22name%22%2Cvalue%3A%22desc%22%7D%5D%7D",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"enterprise"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "%20%7B%20%22pageNum%22%3A%202%2C%22pageSize%22%3A%202%2CqueryData%3A%5B%7Bcolumn%3A%22name%22%2Cvalue%3A%22xx%22%2Ctype%3A%22like%22%20%20%7D%2C%7Bcolumn%3A%22note%22%2Cvalue%3A%22nnn%22%2Ctype%3A%22ne%22%7D%5D%2Corderby%3A%5B%7Bkey%3A%22id%22%2Cvalue%3A%22asc%22%7D%2C%7Bkey%3A%22name%22%2Cvalue%3A%22desc%22%7D%5D%7D"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建企业",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    name: \"dd22dxxd\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:20001/microauserv/enterprise",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "20001",
+							"path": [
+								"microauserv",
+								"enterprise"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "gatewaytest",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -678,6 +1432,11 @@
 						{
 							"key": "method",
 							"value": "post",
+							"type": "text"
+						},
+						{
+							"key": "companyCode",
+							"value": "root",
 							"type": "text"
 						}
 					],
