@@ -83,7 +83,9 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 ![image](https://user-images.githubusercontent.com/83743182/125553924-55000627-7600-4233-8ca9-5ce5bf0b6ded.png)
 19、关于超时  
   尽量不要使用synchronized，防止大并发是阻塞线程；使用分布式锁时注意：timeout的设置，大于执行块可能需要的最大时间，否则锁失效造成异常  
-  
+20、自定义统用分页查询  ，继承SuperQueryController后，可根据情况在查询前调用adaptiveQueryColumn来调整前端和后端的数据库字段差异  
+![image](https://user-images.githubusercontent.com/83743182/125904540-9d9ecf25-3cbb-4d9e-87d5-40a2abd6a17e.png)
+注意get 请求是一定要把参数encode下：query: { "pageNum": 2,"pageSize": 2,queryData:[{column:"name",value:"xx",type:"like"  },{column:"note",value:"nnn",type:"ne"}],orderby:[{key:"id",value:"asc"},{key:"name",value:"desc"}]}
   
 待续
 
