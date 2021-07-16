@@ -39,7 +39,7 @@ global libraries里添加上libs目录下的common-0.0.1-SNAPSHOT.jar, 这是已
 postman 导入gateway&oauth2&microservice-testing.postman_collection.json
 ![image](https://user-images.githubusercontent.com/83743182/122862436-b78ab800-d353-11eb-97ed-5224c7cc0f37.png)
 注意：授权码模式的两个url需要放到浏览器中访问。根据postman中的请求列表，开始你的访问吧
-# 系统几个关键坑介绍：
+# 系统若干技术问题介绍：
 有时间补。。。。。。 先列下：
 
 1、mvn问题，gateway和spring boot 的版本注意匹配问题。 oauth和spring boot版本匹配问题；不匹配可能会有异常发生。
@@ -81,7 +81,10 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 ![image](https://user-images.githubusercontent.com/83743182/125553851-8da53c9d-e8e7-49a6-bfe4-9ed84d6c2adc.png)
 18、启动tokeninfo认证时，swagger的请求需要排除  
 ![image](https://user-images.githubusercontent.com/83743182/125553924-55000627-7600-4233-8ca9-5ce5bf0b6ded.png)
-
+19、关于超时  
+  尽量不要使用synchronized，防止大并发是阻塞线程；使用分布式锁时注意：timeout的设置，大于执行块可能需要的最大时间，否则锁失效造成异常  
+  
+  
 待续
 
 
