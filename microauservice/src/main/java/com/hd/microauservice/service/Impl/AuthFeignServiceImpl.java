@@ -12,7 +12,7 @@ class AuthFeignServiceImpl implements AuthFeignService {
 
     @Override
     public RetResult auth(@RequestParam("account") String account, @RequestParam("scopes") String scopes,
-                          @RequestParam("uri") String uri, @RequestParam("method") String method, @RequestParam("companyCode") String companyCode) {
+                          @RequestParam("uri") String uri, @RequestParam("method") String method, @RequestParam("enterId") String enterpriseId) {
         return RetResponse.makeTimeOutRsp("sorry! 网络异常，服务暂时无法访问!");
     }
 }

@@ -1,14 +1,11 @@
 package com.hd.microauservice.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.baomidou.mybatisplus.annotation.Version;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
@@ -36,7 +33,7 @@ public class SyMenuEntity extends Model<SyMenuEntity> {
     private Long parentId;
 
     /**
-     * 租户id
+     * 企业id
      */
     @TableField("enterprise_id")
     private String enterpriseId;
@@ -92,5 +89,7 @@ public class SyMenuEntity extends Model<SyMenuEntity> {
 
     @TableField("is_visible")
     private Boolean isVisible;
-
+    public  SyMenuEntity(){
+        isVisible=true;
+    }
 }

@@ -1,7 +1,8 @@
 package com.hd.microauservice.mapper;
 
-import com.hd.microauservice.entity.SyUserEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.hd.microauservice.entity.SyUserEntity;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 /**
@@ -15,4 +16,6 @@ import org.apache.ibatis.annotations.Select;
 public interface SyUserMapper extends BaseMapper<SyUserEntity> {
     @Select("select sleep(5)")
     Long sleep();
+
+    Integer getUserDataPrivilege(@Param("userId") Long userId);
 }

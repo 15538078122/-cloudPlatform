@@ -17,4 +17,8 @@ import java.util.List;
 public interface SyMenuService extends IService<SyMenuEntity> {
 
     List<SyMenuVo> getCurrentUserMenu();
+    List<SyMenuVo> getAllMenu(String enterpriseId);
+    void createMenu(SyMenuEntity syMenuEntity);
+    void deleteMenu(Long menuId);
+    void update(SyMenuEntity syMenuEntity);
 }

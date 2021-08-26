@@ -1,14 +1,11 @@
 package com.hd.microauservice.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.baomidou.mybatisplus.annotation.Version;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
@@ -20,7 +17,6 @@ import lombok.experimental.Accessors;
  * @since 2021-07-13
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("sy_role")
 public class SyRoleEntity extends Model<SyRoleEntity> {
@@ -31,7 +27,7 @@ public class SyRoleEntity extends Model<SyRoleEntity> {
     private Long id;
 
     /**
-     * 租户id
+     * 企业id
      */
     @TableField("enterprise_id")
     private String enterpriseId;
@@ -45,8 +41,8 @@ public class SyRoleEntity extends Model<SyRoleEntity> {
     /**
      * 排序号
      */
-    @TableField("sort_")
-    private Integer sort;
+    @TableField("sort_num ")
+    private Integer sortNum;
 
     /**
      * 名称
@@ -55,7 +51,12 @@ public class SyRoleEntity extends Model<SyRoleEntity> {
     private String name;
 
     /**
-     * 备注
+     * 数据权限：0：所有；1：本级及以下；2：仅本级
+     */
+    @TableField("data_privilege")
+    private short dataPrivilege;
+
+    /**     * 备注
      */
     @TableField("note")
     private String note;

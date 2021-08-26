@@ -1,7 +1,10 @@
 package com.hd.microauservice.service;
 
-import com.hd.microauservice.entity.SyOrgEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hd.common.vo.SyOrgVo;
+import com.hd.microauservice.entity.SyOrgEntity;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-07-13
  */
 public interface SyOrgService extends IService<SyOrgEntity> {
+    List<SyOrgVo> getOrgTree(String enterpriseId);
 
+    List<SyOrgVo> getMyOrgTree();
+    List<SyOrgVo> getMyOrgTreeWithMen();
+
+    List<SyOrgEntity> getMyOrgList();
+
+    boolean haveTopOrg(String enterpriseId);
 }

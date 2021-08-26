@@ -1,17 +1,22 @@
 package com.hd.microauservice.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hd.common.model.TokenInfo;
 import com.hd.common.vo.SyMenuBtnVo;
 import com.hd.common.vo.SyMenuVo;
 import com.hd.microauservice.conf.SecurityContext;
+import com.hd.microauservice.entity.SyMenuBtnEntity;
 import com.hd.microauservice.entity.SyMenuEntity;
 import com.hd.microauservice.mapper.SyMenuMapper;
 import com.hd.microauservice.service.SyMenuBtnService;
 import com.hd.microauservice.service.SyMenuService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hd.microauservice.utils.VoConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +36,9 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
     SyMenuBtnService syMenuBtnService;
 
     @Override
-    public List<SyMenuVo> getCurrentUserMenu() {
-        //TODO: 根据权限获取菜单列表
+    public List<SyMenuVo> getAllMenu(String enterpriseId) {
         QueryWrapper queryWrapper=new QueryWrapper();
-        queryWrapper.eq("enterprise_id", SecurityContext.GetCurTokenInfo().getCompanyCode());
+        queryWrapper.eq("enterprise_id", enterpriseId);
         queryWrapper.orderByAsc("path_code");
 
         List<SyMenuEntity> list = super.list(queryWrapper);
@@ -50,9 +54,29 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
         }
 
         List<SyMenuVo> listTree=rearrange(listVo);
+        return  listTree;
+    }
+
+    @Override
+    public List<SyMenuVo> getCurrentUserMenu() {
+        //TODO: 根据权限获取菜单列表
+        TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
+        List<SyMenuEntity> list =baseMapper.selectUserMenu(tokenInfo.getId(),tokenInfo.getEnterpriseId());
+        List<SyMenuVo> listVo = new ArrayList<>();
+        for(SyMenuEntity syMenuEntity:list){
+            SyMenuVo syMenuVo = VoConvertUtils.syMenuToVo(syMenuEntity);
+            List<SyMenuBtnVo> btns = syMenuBtnService.getBtnsByMenuId(syMenuVo.getId());
+            if(btns.size()>0){
+                syMenuVo.setBtns(btns);
+            }
+            listVo.add(syMenuVo);
+        }
+
+        List<SyMenuVo> listTree=rearrange(listVo);
 
         return  listTree;
     }
+
 
     private List<SyMenuVo> rearrange(List<SyMenuVo> syMenuVos) {
         List<SyMenuVo> topMenu=new ArrayList<>();
@@ -82,5 +106,74 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
              }
         }
         return  topMenu;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
+    public void createMenu(SyMenuEntity syMenuEntity) {
+        //首先设置pathcode
+        if(syMenuEntity.getParentId()==null){
+            syMenuEntity.setPathCode(syMenuEntity.getLevelCode());
+        }
+        else {
+            String parentPathCode = getById(syMenuEntity.getParentId()).getPathCode();
+            syMenuEntity.setPathCode(String.format("%s.%s",parentPathCode,syMenuEntity.getLevelCode()));
+        }
+        save(syMenuEntity);
+        if(syMenuEntity.getType()==1){
+            //如果是菜单，先创建菜单的默认list按钮，有此按钮的授权才会显示其对应的菜单
+//            QueryWrapper queryWrapper = new QueryWrapper();
+//            queryWrapper. eq("path_code", syMenuEntity.getPathCode());
+//            syMenuEntity = baseMapper.selectOne(queryWrapper);
+            SyMenuBtnEntity syMenuBtnEntity=new SyMenuBtnEntity();
+            syMenuBtnEntity.setMenuId(syMenuEntity.getId());
+            syMenuBtnEntity.setIsVisible(false);
+            syMenuBtnEntity.setEnterpriseId(syMenuEntity.getEnterpriseId());
+            syMenuBtnEntity.setName("list");
+            syMenuBtnService.save(syMenuBtnEntity);
+        }
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
+    public void deleteMenu(Long menuId) {
+        //移除菜单及其子菜单、对应的按钮
+        SyMenuEntity syMenuEntity = getById(menuId);
+        deleteMenuRecursion(syMenuEntity);
+    }
+
+    @Override
+    public void update(SyMenuEntity syMenuEntity) {
+        //首先设置pathcode
+        if(syMenuEntity.getParentId()==null){
+            syMenuEntity.setPathCode(syMenuEntity.getLevelCode());
+        }
+        else {
+            String parentPathCode = getById(syMenuEntity.getParentId()).getPathCode();
+            syMenuEntity.setPathCode(String.format("%s.%s",parentPathCode,syMenuEntity.getLevelCode()));
+        }
+        updateById(syMenuEntity);
+    }
+
+    private void deleteMenuRecursion(SyMenuEntity syMenuEntity){
+        removeById(syMenuEntity.getId());
+        if(syMenuEntity.getType()==0){
+            //目录，删除子目录
+            QueryWrapper queryWrapper=new QueryWrapper();
+            queryWrapper.eq("parent_id",syMenuEntity.getId());
+            List<SyMenuEntity> syMenuEntities = list(queryWrapper);
+            for(SyMenuEntity item : syMenuEntities){
+                deleteMenuRecursion(item);
+            }
+        }
+        else {
+            //菜单，删除子按钮
+            QueryWrapper queryWrapper=new QueryWrapper();
+            queryWrapper.eq("menu_id",syMenuEntity.getId());
+            List<SyMenuBtnEntity> syMenuBtnEntities = syMenuBtnService.list(queryWrapper);
+            for(SyMenuBtnEntity item : syMenuBtnEntities){
+                syMenuBtnService.removeById(item.getId());
+            }
+        }
     }
 }

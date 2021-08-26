@@ -1,8 +1,8 @@
 package com.hd.microauservice.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.hd.common.vo.SyMenuBtnVo;
 import com.hd.microauservice.entity.SyMenuBtnEntity;
-import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
@@ -17,5 +17,4 @@ import java.util.List;
 public interface SyMenuBtnService extends IService<SyMenuBtnEntity> {
 
     List<SyMenuBtnVo> getBtnsByMenuId(Long menuId);
-
 }

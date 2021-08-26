@@ -1,9 +1,11 @@
 package com.hd.microauservice.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.hd.common.model.DataPrivilege;
 import com.hd.common.vo.SyUserVo;
 import com.hd.microauservice.entity.SyUserEntity;
-import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,7 +18,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface SyUserService extends IService<SyUserEntity> {
 
     void createUser(SyUserVo syUserVo) throws Exception;
-    void removeUser(SyUserVo syUserVo) throws Exception;
+    void removeUser(Long userId) throws Exception;
 
-    SyUserEntity getOneFromCach(String account);
+    SyUserEntity getOneFromCach(String account,String enterpriseId);
+    DataPrivilege getUserDataPrivilege(Long userId);
+    void updateUser(SyUserVo syUserVo) throws Exception;
+
+    SyUserVo getUser(String userId) throws Exception;
+
+    List<SyUserVo> getOrgUser(Long orgId);
 }

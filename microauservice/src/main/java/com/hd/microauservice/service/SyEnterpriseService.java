@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface SyEnterpriseService extends IService<SyEnterpriseEntity> {
 
+    void createEnterprise(SyEnterpriseEntity syEnterpriseEntity);
 }

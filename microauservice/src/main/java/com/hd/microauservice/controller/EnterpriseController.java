@@ -7,6 +7,7 @@ import com.hd.common.PageQueryExpressionList;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import com.hd.common.controller.SuperQueryController;
+import com.hd.common.model.QueryExpression;
 import com.hd.common.model.RequiresPermissions;
 import com.hd.common.vo.SyEnterpriseVo;
 import com.hd.microauservice.entity.SyEnterpriseEntity;
@@ -16,7 +17,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author liwei
@@ -37,23 +42,39 @@ public class EnterpriseController  extends SuperQueryController {
     public RetResult getEnterprise(@RequestParam("query") String query){
         PageQueryExpressionList pageQuery= JSON.parseObject(query,PageQueryExpressionList.class);
         adaptiveQueryColumn(pageQuery);
+        //不查询逻辑删除的
+        QueryExpression queryExpression=new QueryExpression();
+        queryExpression.setColumn("delete_flag");
+        queryExpression.setValue("0");
+        queryExpression.setType("eq");
+        pageQuery.getQueryData().add(queryExpression);
         Page<SyEnterpriseEntity> syEnterpriseEntityPage= selectPage(pageQuery,syEnterpriseService);
-        return RetResponse.makeRsp(new MyPage<>(syEnterpriseEntityPage.getCurrent(), syEnterpriseEntityPage.getSize(), syEnterpriseEntityPage.getTotal(), syEnterpriseEntityPage.getRecords()));
+        List<SyEnterpriseVo> listVo=new ArrayList<>();
+        for(SyEnterpriseEntity syEnterpriseEntity : syEnterpriseEntityPage.getRecords()){
+            SyEnterpriseVo syEnterpriseVo=new SyEnterpriseVo();
+            VoConvertUtils.convertObject(syEnterpriseEntity,syEnterpriseVo);
+            listVo.add(syEnterpriseVo);
+        }
+        return RetResponse.makeRsp(new MyPage<>(syEnterpriseEntityPage.getCurrent(), syEnterpriseEntityPage.getSize(), syEnterpriseEntityPage.getTotal(),listVo));
     }
     @ApiOperation(value = "创建企业")
     @RequiresPermissions("enterprise:create")
     @PostMapping("/enterprise")
-    public RetResult createEnterprise(@RequestBody SyEnterpriseVo syEnterpriseVo){
+    public RetResult createEnterprise(@RequestBody @Validated  SyEnterpriseVo syEnterpriseVo){
         SyEnterpriseEntity syEnterpriseEntity=new SyEnterpriseEntity();
         VoConvertUtils.convertObject(syEnterpriseVo,syEnterpriseEntity);
-        syEnterpriseService.save(syEnterpriseEntity);
+        syEnterpriseService.createEnterprise(syEnterpriseEntity);
         return RetResponse.makeRsp("创建企业成功.");
     }
     @ApiOperation(value = "编辑企业")
     @RequiresPermissions("enterprise:edit")
     @PutMapping("/enterprise/{id}")
-    public RetResult editEnterprise(@PathVariable("id") Long id, @RequestBody SyEnterpriseVo syEnterpriseVo){
-        SyEnterpriseEntity syEnterpriseEntity=new SyEnterpriseEntity();
+    public RetResult editEnterprise(@PathVariable("id") Long id, @RequestBody @Validated SyEnterpriseVo syEnterpriseVo) throws Exception {
+        SyEnterpriseEntity syEnterpriseEntity = syEnterpriseService.getById(id);
+        if(syEnterpriseEntity.getEnterpriseId().compareTo(syEnterpriseVo.getEnterpriseId())!=0){
+            throw new Exception("企业编码不可以修改!");
+        }
+        syEnterpriseEntity=new SyEnterpriseEntity();
         VoConvertUtils.convertObject(syEnterpriseVo,syEnterpriseEntity);
         syEnterpriseService.updateById(syEnterpriseEntity);
         return RetResponse.makeRsp("编辑企业成功.");

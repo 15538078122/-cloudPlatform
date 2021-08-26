@@ -2,12 +2,20 @@ package com.hd.microauservice;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.hd.common.utils.RSAEncrypt;
 import com.hd.common.vo.SyUserVo;
 import com.hd.microauservice.service.SyUserService;
 import com.hd.microauservice.utils.GeneralSqlUtil;
+import com.hd.microauservice.utils.JwtUtils;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @SpringBootTest
 class MicroAuServiceApplicationTests {
@@ -26,7 +34,7 @@ class MicroAuServiceApplicationTests {
 		// 表前缀，生成的实体类，不含前缀
 		String [] tablePrefixes = {};
 		// 表名，为空，生成所有的表
-		String [] tableNames ={"sy_system"}; //{"sy_system","sy_org","sy_user","sy_role","sy_role_perm","sy_user_role"};
+		String [] tableNames ={"sy_attach"}; //{"sy_dict","sy_dict_item","sy_system","sy_org","sy_user","sy_role","sy_role_perm","sy_user_role"};
 		// 字段前缀
 		String [] fieldPrefixes = {};
 		// 基础包名
@@ -53,4 +61,32 @@ class MicroAuServiceApplicationTests {
 
 		syUserService.list();
 	}
+
+	@Autowired
+	JwtUtils jwtUtils;
+
+	@Test
+	void  genRsaCipher() throws Exception {
+		String USER_OP_IDENTIFICATION="SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg";
+		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		byte[] cipherData= RSAEncrypt.encrypt(jwtUtils.rsaPublicKey,(USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
+		String userOpIdentificationEncode= Base64.encode(cipherData);
+		userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
+		System.out.println(userOpIdentificationEncode);
+	}
+
+	@Test
+	void PathMatcher(){
+		PathMatcher pathMatcher=new AntPathMatcher();
+		String templateUri="/usr/{accout}";
+		templateUri = templateUri.replaceAll("\\{[^}]*\\}","*");
+		templateUri="/usr/{accout}/sfsf/{sfsd}";
+		templateUri = templateUri.replaceAll("\\{[^}]*\\}","*");
+
+		boolean match = pathMatcher.match("/user/*", "/user/ere/root");
+		match = pathMatcher.match("/user/*/list", "/user/root/list");
+		match = pathMatcher.match("/user/root", "/user/root");
+		match = pathMatcher.match("/user/**", "/user/root/tyyt");
+	}
+
 }

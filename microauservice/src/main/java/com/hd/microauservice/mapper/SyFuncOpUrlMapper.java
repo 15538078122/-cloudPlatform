@@ -1,7 +1,10 @@
 package com.hd.microauservice.mapper;
 
-import com.hd.microauservice.entity.SyFuncOpUrlEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.hd.microauservice.entity.SyFuncOpUrlEntity;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2021-07-13
  */
 public interface SyFuncOpUrlMapper extends BaseMapper<SyFuncOpUrlEntity> {
-
+    List<SyFuncOpUrlEntity> selectUserPerm(@Param("userId") Long userId);
 }

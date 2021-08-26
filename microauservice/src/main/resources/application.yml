@@ -11,6 +11,10 @@ spring:
   profiles:
     active: local #local local dev   online
   datasource:
+#    url: "jdbc:mysql://1.192.212.229:3306/patrol?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true"
+#    url: "jdbc:mysql://192.168.3.78:3306/patrol?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true"
+#    username: root
+#    password: Huadao_@123
     url: "jdbc:mysql://127.0.0.1:3333/patrol?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai"
     username: root
     password: 123456
@@ -49,10 +53,10 @@ logging:
   level:
     root: error
     com.hd: debug
+    com.alibaba: error
     org.apache.tomcat: error
     org.apache.catalina: error
 config:
   scanUri: false
   user-center-uri: http://127.0.0.1:10001
   USER_OP_IDENTIFICATION: "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
-#    java -jar microservice-0.0.1-SNAPSHOT.jar  --server.port=8085

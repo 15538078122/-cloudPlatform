@@ -37,7 +37,8 @@ public class FirstFilter implements Filter {
         if(servletPath.indexOf("/auth")!=0 &&servletPath.indexOf("/swagger-ui.html")!=0
                 &&servletPath.indexOf("/webjars")!=0 &&servletPath.indexOf("/static")!=0
                 &&servletPath.indexOf("/null/swagger-resources")!=0&&servletPath.indexOf("/swagger-resources")!=0
-                &&servletPath.indexOf("/v2")!=0
+                &&servletPath.indexOf("/v2")!=0 && servletPath.indexOf("/csrf")!=0
+                &&servletPath.compareTo("/")!=0
         ){
             String tokenInfoJson=((HttpServletRequest)request).getHeader("token-info");
             log.debug("token-info: "+tokenInfoJson);
@@ -45,9 +46,10 @@ public class FirstFilter implements Filter {
             QueryWrapper queryWrapper=new QueryWrapper(){{
                 eq("account",tokenInfo.getAccount());
                 eq("delete_flag",0);
+                eq("enterprise_id",tokenInfo.getEnterpriseId());
             }};
             //SyUserEntity syUserEntity = syUserService.getOne(queryWrapper);
-            SyUserEntity syUserEntity = syUserService.getOneFromCach(tokenInfo.getAccount());
+            SyUserEntity syUserEntity = syUserService.getOneFromCach(tokenInfo.getAccount(),tokenInfo.getEnterpriseId());
             //修改user id未业务系统的user id
             tokenInfo.setId(syUserEntity.getId().toString());
             SecurityContext.SetCurTokenInfo(tokenInfo);

@@ -1,15 +1,26 @@
 package com.hd.microauservice.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hd.common.MyPage;
+import com.hd.common.PageQueryExpressionList;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
+import com.hd.common.controller.SuperQueryController;
 import com.hd.common.model.RequiresPermissions;
-import com.hd.common.vo.*;
+import com.hd.common.vo.SyFuncOpUrlVo;
+import com.hd.common.vo.SyFuncOperatorVo;
+import com.hd.common.vo.SyFunctionVo;
+import com.hd.common.vo.SyUrlMappingVo;
 import com.hd.microauservice.entity.SyFuncOpUrlEntity;
 import com.hd.microauservice.entity.SyFuncOperatorEntity;
 import com.hd.microauservice.entity.SyFunctionEntity;
 import com.hd.microauservice.entity.SyUrlMappingEntity;
-import com.hd.microauservice.service.*;
+import com.hd.microauservice.service.SyFuncOpUrlService;
+import com.hd.microauservice.service.SyFuncOperatorService;
+import com.hd.microauservice.service.SyFunctionService;
+import com.hd.microauservice.service.SyUrlMappingService;
 import com.hd.microauservice.utils.VoConvertUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,7 +38,7 @@ import java.util.List;
 //@RefreshScope
 @RestController
 @Slf4j
-public class FunctionController {
+public class FunctionController  extends SuperQueryController {
 
     @Autowired
     SyFunctionService  syFunctionService;
@@ -37,7 +48,9 @@ public class FunctionController {
     SyUrlMappingService syUrlMappingService;
     @Autowired
     SyFuncOpUrlService syFuncOpUrlService;
-
+    public FunctionController(){
+        //mapQueryCols.put("name","name");
+    }
     @ApiOperation(value = "获取所有功能")
     @RequiresPermissions("func:get")
     @GetMapping("/function")
@@ -54,7 +67,7 @@ public class FunctionController {
         SyFunctionEntity syFunctionEntity =new SyFunctionEntity();
         VoConvertUtils.convertObject(syFuncVo,syFunctionEntity);
         syFunctionService.save(syFunctionEntity);
-        return RetResponse.makeRsp("创建菜单成功");
+        return RetResponse.makeRsp("创建功能成功");
     }
     @ApiOperation(value = "编辑功能")
     @RequiresPermissions("func:edit")
@@ -63,7 +76,7 @@ public class FunctionController {
         SyFunctionEntity syFunctionEntity =new SyFunctionEntity();
         VoConvertUtils.convertObject(syFuncVo,syFunctionEntity);
         syFunctionService.updateById(syFunctionEntity);
-        return RetResponse.makeRsp("修改菜单成功");
+        return RetResponse.makeRsp("修改功能成功");
     }
     @ApiOperation(value = "获取单个功能")
     @RequiresPermissions("func:get")
@@ -107,26 +120,20 @@ public class FunctionController {
         syFuncOperatorService.removeById(funcOprId);
         return RetResponse.makeRsp("删除操作成功");
     }
-    @ApiOperation(value = "获取所有urlmapping")
+    @ApiOperation(value = "分页获取所有urlmapping")
     @RequiresPermissions("urlMaping:get")
     @GetMapping("/url-mapping")
-    public RetResult getUrlMapping(String url,String note) {
-        QueryWrapper queryWrapper=new QueryWrapper(){{
-            if(url!=null) {
-                like("url",url);
-            }
-            if(note!=null) {
-                like("notes",note);
-            }
-        }};
-        List<SyUrlMappingEntity> syUrlMappingEntityList = syUrlMappingService.list(queryWrapper);
-        List<SyUrlMappingVo> syUrlMappingVos=new ArrayList<>() ;
-        for (SyUrlMappingEntity syUrlMappingEntity : syUrlMappingEntityList){
+    public RetResult getUrlMapping(@RequestParam("query") String query) {
+        PageQueryExpressionList pageQuery= JSON.parseObject(query,PageQueryExpressionList.class);
+        adaptiveQueryColumn(pageQuery);
+        Page<SyUrlMappingEntity> syUrlMappingEntityPage= selectPage(pageQuery,syUrlMappingService);
+        List<SyUrlMappingVo> listVo=new ArrayList<>();
+        for(SyUrlMappingEntity syUrlMappingEntity : syUrlMappingEntityPage.getRecords()){
             SyUrlMappingVo syUrlMappingVo=new SyUrlMappingVo();
             VoConvertUtils.convertObject(syUrlMappingEntity,syUrlMappingVo);
-            syUrlMappingVos.add(syUrlMappingVo);
+            listVo.add(syUrlMappingVo);
         }
-        return RetResponse.makeRsp(syUrlMappingVos);
+        return RetResponse.makeRsp(new MyPage<>(syUrlMappingEntityPage.getCurrent(), syUrlMappingEntityPage.getSize(), syUrlMappingEntityPage.getTotal(),listVo));
     }
     @ApiOperation(value = "获取某个操作对应的Uri")
     @RequiresPermissions(value = "funcOpUrl:get",note = "获取某个操作对应的Uri")
@@ -157,6 +164,8 @@ public class FunctionController {
         for (SyFuncOpUrlVo syFuncOpUrlVo : syFuncOpUrlVos){
             SyFuncOpUrlEntity syFuncOpUrlEntity=new SyFuncOpUrlEntity();
             VoConvertUtils.convertObject(syFuncOpUrlVo,syFuncOpUrlEntity);
+            syFuncOpUrlEntity.setId(null);
+            syFuncOpUrlEntity.setFuncOpId(funcOprId);
             syFuncOpUrlEntityList.add(syFuncOpUrlEntity);
         }
         syFuncOpUrlService.saveBatch(syFuncOpUrlEntityList);
