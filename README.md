@@ -40,7 +40,7 @@ postman 导入gateway&oauth2&microservice-testing.postman_collection.json
 ![image](https://user-images.githubusercontent.com/83743182/122862436-b78ab800-d353-11eb-97ed-5224c7cc0f37.png)
 注意：授权码模式的两个url需要放到浏览器中访问。根据postman中的请求列表，开始你的访问吧
 # 系统若干技术问题介绍：
-有时间补。。。。。。 先列下：
+ 先列下：
 
 1、mvn问题，gateway和spring boot 的版本注意匹配问题。 oauth和spring boot版本匹配问题；不匹配可能会有异常发生。
 cloud最好选择dependencyManagement方式，避免自己指定version时发送不兼容。
