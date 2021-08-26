@@ -74,16 +74,17 @@ public class ApiUtils {
     }
     private static RequestPath getApiPath(AnnotatedElement annotatedElement) {
         List<String> methods = new ArrayList<>();
-        //RequestMapping a1 = annotatedElement.getAnnotation(RequestMapping.class);
+        RequestMapping a1 = annotatedElement.getAnnotation(RequestMapping.class);
         PostMapping     a2 = annotatedElement.getAnnotation(PostMapping.class);
         GetMapping      a3 = annotatedElement.getAnnotation(GetMapping.class);
         PutMapping      a4 = annotatedElement.getAnnotation(PutMapping.class);
         DeleteMapping   a5 = annotatedElement.getAnnotation(DeleteMapping.class);
 
         String []paths2=new String[0];
-//        if (a1 != null) {
-//            path= a1.value();
-//        }
+        if (a1 != null) {
+            methods.add("all");
+            paths2= a1.value();
+        }
         if (a2 != null) {
             methods.add("post");
             paths2= a2.value();

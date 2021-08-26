@@ -40,14 +40,14 @@ public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
                 scopeNew.remove("user");
                 token.setScope(scopeNew);
             }
-            String companyCode=authentication.getOAuth2Request().getRequestParameters().get("company");
-            user.setCompanyCode(companyCode);
+            String enterpriseId=authentication.getOAuth2Request().getRequestParameters().get("enterId");
+            user.setEnterpriseId(enterpriseId);
             user.setId("0000000000000000000");
         }
         //Set<String> tokenScope = token.getScope();
         //将额外的参数信息存入，用于生成token
         data.put("login_time", user.getLoginTime());
-        data.put("company_code", user.getCompanyCode());
+        data.put("enterprise_id", user.getEnterpriseId());
         data.put("id",user.getId());
         data.putAll(token.getAdditionalInformation());
         //自定义TOKEN包含的信息
@@ -69,7 +69,7 @@ public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
 
         String userName = (String) decode.get("user_name");
         String loginTime = (String) decode.get("login_time");
-        String companyCode = (String) decode.get("company_code");
+        String enterpriseId = (String) decode.get("enterprise_id");
 
         String clientId = (String) decode.get("client_id");
         List<String> scopes = new ArrayList<>();
@@ -96,7 +96,7 @@ public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
 
         UserInfo userInfo = new UserInfo(userName, "", grantedAuthorityList);
         userInfo.setLoginTime(loginTime);
-        userInfo.setCompanyCode(companyCode);
+        userInfo.setEnterpriseId(enterpriseId);
         //需要将解析出来的用户存入全局当中，不然无法转换成自定义的user类
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userInfo, null, grantedAuthorityList);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);

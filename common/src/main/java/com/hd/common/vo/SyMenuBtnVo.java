@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @Author: liwei
@@ -43,7 +42,7 @@ public class SyMenuBtnVo implements Serializable {
     @ApiModelProperty(value = "图标class")
     private String iconClass;
 
-    private Integer isVisible;
+    private Boolean isVisible;
 
 
 }

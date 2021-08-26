@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class TokenInfo {
     String id;
     String account;
-    String companyCode;
+    String enterpriseId;
     String scopes;
     String uri;
     String method;

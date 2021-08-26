@@ -10,12 +10,14 @@ import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFacto
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.security.KeyPair;
+import java.security.PrivateKey;
 
 @Configuration
 public class TokenConfig {
     /** JWT密钥 */
     private String signingKey = "fastboot";
-
+    PrivateKey rsaPrivateKey;
     /**
      * JWT 令牌转换器
      * @return
@@ -39,7 +41,10 @@ public class TokenConfig {
 
         //私钥设置
         KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(new ClassPathResource("jwt.jks"), "123456".toCharArray());
-        jwt.setKeyPair(keyStoreKeyFactory.getKeyPair("myjwt"));
+        //提示 myjwt 是别名
+        KeyPair keyPair = keyStoreKeyFactory.getKeyPair("myjwt");
+        jwt.setKeyPair(keyPair);
+        rsaPrivateKey = keyPair.getPrivate();
         return jwt;
     }
 

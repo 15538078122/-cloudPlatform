@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -31,6 +33,8 @@ public class SyMenuVo implements Serializable {
     @ApiModelProperty(value = "菜单类型->0:目录,1:菜单")
     private Short type;
 
+    @NotNull(message = "层级编码不能为空！")
+    @NotBlank(message = "层级编码不能为空！")
     private String levelCode;
 
     private String pathCode;
@@ -46,6 +50,7 @@ public class SyMenuVo implements Serializable {
     @ApiModelProperty(value = "图标class")
     private String iconClass;
 
+    //@JSONField(serialzeFeatures={SerializerFeature.WriteNullBooleanAsFalse})
     private Boolean isVisible;
 
     @ApiModelProperty(value = "子菜单")
@@ -53,5 +58,7 @@ public class SyMenuVo implements Serializable {
 
     @ApiModelProperty(value = "按钮")
     private List<SyMenuBtnVo> btns;
-
+    public  SyMenuVo(){
+        isVisible=true;
+    }
 }

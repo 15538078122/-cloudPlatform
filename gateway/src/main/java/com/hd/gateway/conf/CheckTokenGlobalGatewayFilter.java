@@ -7,8 +7,6 @@ package com.hd.gateway.conf;
 import com.alibaba.fastjson.JSON;
 import com.hd.common.RetResult;
 import com.hd.common.model.TokenInfo;
-import com.hd.gateway.GatewayApplication;
-import com.hd.gateway.utils.HttpUtil;
 import com.hd.gateway.utils.JwtUtils;
 import com.hd.gateway.utils.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +23,7 @@ import reactor.core.publisher.Mono;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 //全局过滤器，实现GlobalFilter接口，和Ordered接口即可。
@@ -63,7 +59,7 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
             String uri=exchange.getRequest().getPath().value();
             //url第一个分段一遍用作服务名识别，此处去掉
             tokenInfo.setUri(uri.substring(uri.indexOf("/",1)));
-            tokenInfo.setMethod(exchange.getRequest().getMethodValue());
+            tokenInfo.setMethod(exchange.getRequest().getMethodValue().toLowerCase());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseUtil.makeJsonResponse(exchange.getResponse(),

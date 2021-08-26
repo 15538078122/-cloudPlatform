@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @Author: liwei
@@ -38,6 +37,7 @@ public class SyFuncOpUrlVo implements Serializable {
      * 功能id
      */
     @ApiModelProperty(value = "对应的操作id")
+    @JSONField(serializeUsing = LongToStringSerializer.class)
     private Long funcOpId;
 
 }

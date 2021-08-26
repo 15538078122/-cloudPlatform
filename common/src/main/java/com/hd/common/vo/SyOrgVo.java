@@ -8,8 +8,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: liwei
@@ -26,6 +28,7 @@ public class SyOrgVo implements Serializable {
     /**
      * 上级id
      */
+    @JSONField(serializeUsing = LongToStringSerializer.class)
     @ApiModelProperty(value = "上级部门id")
     private Long parentId;
 
@@ -55,6 +58,8 @@ public class SyOrgVo implements Serializable {
     /**
      * 名称
      */
+    @NotNull(message = "部门名称不能为空！")
+    @NotBlank(message = "部门名称不能为空！")
     private String name;
 
     /**
@@ -73,5 +78,11 @@ public class SyOrgVo implements Serializable {
      */
     @ApiModelProperty(value = "图标样式")
     private String iconClass;
+
+    @ApiModelProperty(value = "子部门")
+    private List<SyOrgVo> childs;
+
+    @ApiModelProperty(value = "人员")
+    private List<SyUserVo> users;
 
 }

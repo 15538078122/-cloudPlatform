@@ -45,6 +45,9 @@ public abstract  class SuperQueryController {
         }
     }
     protected <T> Page<T> selectPage(PageQueryExpressionList pageQuery, IService iService){
+        if(pageQuery==null) {
+            pageQuery=new PageQueryExpressionList();
+        }
         QueryWrapper queryWrapper = new QueryWrapper();
         ParseQueryUtil.parseWhereSql(queryWrapper, pageQuery.getQueryData());
         ParseQueryUtil.parseOrderBySql(queryWrapper, pageQuery.getOrderby());

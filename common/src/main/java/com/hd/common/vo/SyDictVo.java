@@ -19,27 +19,47 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Accessors(chain = true)
-@ApiModel("系统/企业")
-public class SyEnterpriseVo implements Serializable {
+@ApiModel("字典项")
+public class SyDictVo implements Serializable {
 
     @JSONField(serializeUsing = LongToStringSerializer.class)
     private Long id;
 
-    /**
-     * 企业编号(root：特殊企业，系统配置员使用关联菜)
-     */
-    @NotNull(message = "企业编码不能为空！")
-    @NotBlank(message = "企业编码不能为空！")
-    @ApiModelProperty(value = "企业编号")
     private String enterpriseId;
+
+    /**
+     * 编号
+     */
+    @NotNull(message = "字典编码不能为空！")
+    @NotBlank(message = "字典编码不能为空！")
+    @ApiModelProperty(value = "字典编号")
+    private String code;
+
+    /**
+     * 排序号
+     */
+    private Integer sort;
+
+    /**
+     * 状态{1:启用,0:停用}
+     */
+    private Integer enabled;
+
+    /**
+     * 类别
+     */
+    private String cate;
 
     /**
      * 名称
      */
+    @NotNull(message = "字典名称不能为空！")
+    @NotBlank(message = "字典名称不能为空！")
+    @ApiModelProperty(value = "字典名称")
     private String name;
 
     /**
-     * 描述
+     * 备注
      */
     private String note;
 }

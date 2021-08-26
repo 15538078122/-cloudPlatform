@@ -1,7 +1,5 @@
 package com.hd.common;
 
-import org.springframework.http.HttpStatus;
-
 public enum RetCode {
     // 成功
     SUCCESS(200),
@@ -11,7 +9,6 @@ public enum RetCode {
 
     // 未认证（签名错误）
     UNAUTHORIZED(401),
-
     //禁止访问，权限不足
     FORBIDDEN(403),
     //客户端错误请求

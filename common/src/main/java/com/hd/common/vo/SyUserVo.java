@@ -1,22 +1,26 @@
 package com.hd.common.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hd.common.utils.LongToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: liwei
  * @Description:
  */
-@Data
+@Getter
+@Setter
 @Accessors(chain = true)
 @ApiModel("用户")
 public class SyUserVo implements Serializable {
@@ -51,6 +55,7 @@ public class SyUserVo implements Serializable {
     /**
      * 名称
      */
+    @JSONField(serialzeFeatures={SerializerFeature.WriteNullStringAsEmpty})
     private String name;
 
     /**
@@ -81,4 +86,8 @@ public class SyUserVo implements Serializable {
 
     @ApiModelProperty(value = "删除标志")
     private boolean deleteFlag;
+
+    @ApiModelProperty(value = "用户角色,不更新时，此字段为null")
+    private List<SyRoleVo> syRoleVos;
+
 }

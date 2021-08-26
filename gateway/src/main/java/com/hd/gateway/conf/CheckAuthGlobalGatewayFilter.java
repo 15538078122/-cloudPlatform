@@ -7,7 +7,6 @@ package com.hd.gateway.conf;
 import com.alibaba.fastjson.JSON;
 import com.hd.common.RetResult;
 import com.hd.common.model.TokenInfo;
-import com.hd.gateway.GatewayApplication;
 import com.hd.gateway.utils.HttpUtil;
 import com.hd.gateway.utils.JwtUtils;
 import com.hd.gateway.utils.ResponseUtil;
@@ -18,13 +17,10 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,9 +59,9 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
             params.put("scopes", tokenInfo.getScopes());
             params.put("uri", tokenInfo.getUri());
             params.put("method", tokenInfo.getMethod());
-            params.put("companyCode", tokenInfo.getCompanyCode());
+            params.put("enterId", tokenInfo.getEnterpriseId());
             //retResult=new RetResult(0,"",true);
-            retResult= HttpUtil.httpPost(authUri+"/authbridge?account={account}&scopes={scopes}&uri={uri}&method={method}&companyCode={companyCode}",params);
+            retResult= HttpUtil.httpPost(authUri+"/authbridge?account={account}&scopes={scopes}&uri={uri}&method={method}&enterId={enterId}",params);
         } catch (Exception e) {
             retResult = new RetResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), false);
         }

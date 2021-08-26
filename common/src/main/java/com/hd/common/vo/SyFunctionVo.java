@@ -44,6 +44,7 @@ public class SyFunctionVo implements Serializable {
     /**
      * 父id
      */
+    @JSONField(serializeUsing = LongToStringSerializer.class)
     private Long parentId;
 
     /**

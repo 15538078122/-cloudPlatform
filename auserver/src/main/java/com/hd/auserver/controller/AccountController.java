@@ -1,19 +1,15 @@
 package com.hd.auserver.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hd.auserver.entity.AccountEntity;
 import com.hd.auserver.service.AccountService;
 import com.hd.common.MyPage;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
-import com.hd.common.model.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
-import java.sql.Wrapper;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +35,11 @@ public class AccountController {
         return RetResponse.makeRsp(accountEntityPage);
     }
     @PostMapping("/account/{account}")
-    public RetResult Add(@PathVariable ("account")  String account,@RequestParam("enterprise") String enterprise,@RequestParam("password") String password) {
+    public RetResult Add(@PathVariable ("account")  String account,@RequestParam("enterprise") String enterprise,@RequestParam("password") String password) throws Exception {
+        //TODO: 创建用户时，pwd需要加密
+        //byte[] res = RSAEncrypt.decrypt(GenRsaFileTask.rsaPrivateKey, Base64.decode(password));
+        //password=new String(res);
+
         accountService.save(new AccountEntity(null,enterprise,account,passwordEncoder.encode(password),new Date()));
         return RetResponse.makeRsp("添加账号成功.");
     }
