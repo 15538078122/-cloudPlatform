@@ -86,9 +86,9 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 20、自定义统用分页查询  ，继承SuperQueryController后，可根据情况在查询前调用adaptiveQueryColumn来调整前端和后端的数据库字段差异  
 ![image](https://user-images.githubusercontent.com/83743182/125904540-9d9ecf25-3cbb-4d9e-87d5-40a2abd6a17e.png)
 注意get 请求是一定要把参数encode下：query: { "pageNum": 2,"pageSize": 2,queryData:[{column:"name",value:"xx",type:"like"  },{column:"note",value:"nnn",type:"ne"}],orderby:[{key:"id",value:"asc"},{key:"name",value:"desc"}]}
-21、增加动态rsa非对称加密和定时跟新密钥文件
-22、缓存增加设置不同分类的过期时间
-
+21、增加动态rsa非对称加密和定时跟新密钥文件  
+22、缓存增加设置不同分类的过期时间  
+23、权限过滤，url使用AntPathMatcher进行匹配检索
 待续
 
 
