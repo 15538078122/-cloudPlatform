@@ -1,4 +1,4 @@
-# 介绍
+# 介绍 多企业 多应用 基础平台
 1、认证OATH2.0，4种模式.   AUTHORIZATION_CODE,GRANT_TYPE, REFRESH_TOKEN,GRANT_TYPE_PASSWORD,IMPLICIT
 2、jwt rsa   
 3、更简洁的jwt client方式   
@@ -9,6 +9,8 @@
 8、数据库主从、连接池、数据缓存、消息队列、运维监视（完善中）   
 9、nacos 服务发现  mongodb存日志  
 10、分布式锁
+11、rsa动态密钥
+12、文件分片上传和分片下载  
 # 软件架构
 ![image](https://user-images.githubusercontent.com/83743182/125611044-aa7ef51e-4267-432f-84f7-2f3b2357c5f4.png)
 
