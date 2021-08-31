@@ -39,7 +39,12 @@ global libraries里添加上libs目录下的common-0.0.1-SNAPSHOT.jar, 这是已
 # 脚本使用说明
 postman 导入gateway&oauth2&microservice-testing.postman_collection.json
 ![image](https://user-images.githubusercontent.com/83743182/122862436-b78ab800-d353-11eb-97ed-5224c7cc0f37.png)
-注意：授权码模式的两个url需要放到浏览器中访问。根据postman中的请求列表，开始你的访问吧
+注意：授权码模式的两个url需要放到浏览器中访问。根据postman中的请求列表，开始你的访问吧  
+
+# ui
+![image](https://user-images.githubusercontent.com/83743182/131477976-33134c78-ef67-48bd-a546-f3ce88c252cf.png)
+
+
 # 系统若干技术问题介绍：
  先列下：
 
