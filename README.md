@@ -88,7 +88,10 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 注意get 请求是一定要把参数encode下：query: { "pageNum": 2,"pageSize": 2,queryData:[{column:"name",value:"xx",type:"like"  },{column:"note",value:"nnn",type:"ne"}],orderby:[{key:"id",value:"asc"},{key:"name",value:"desc"}]}
 21、增加动态rsa非对称加密和定时跟新密钥文件  
 22、缓存增加设置不同分类的过期时间  
-23、权限过滤，url使用AntPathMatcher进行匹配检索
+23、权限过滤，url使用AntPathMatcher进行匹配检索  
+24、增加文档断点上传和下载  
+![image](https://user-images.githubusercontent.com/83743182/131476532-a5451372-b4d8-4057-bdcf-e5817be2fae3.png)
+
 待续
 
 
