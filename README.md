@@ -1,4 +1,4 @@
-# 介绍 多企业 多应用 基础平台
+# 介绍 微服务架构 多企业 多应用 基础平台
 1、认证OATH2.0，4种模式.   AUTHORIZATION_CODE,GRANT_TYPE, REFRESH_TOKEN,GRANT_TYPE_PASSWORD,IMPLICIT
 2、jwt rsa   
 3、更简洁的jwt client方式   
@@ -11,9 +11,9 @@
 10、分布式锁  
 11、rsa动态密钥  
 12、文件分片上传和分片下载  
-# 软件架构
-![image](https://user-images.githubusercontent.com/83743182/125611044-aa7ef51e-4267-432f-84f7-2f3b2357c5f4.png)
-
+13、服务监视&心跳
+# 软件架构  
+![1630475301(1)](https://user-images.githubusercontent.com/83743182/131618807-d32acab0-45ac-42db-b2a5-87a89b9fe959.jpg)
 # 基础数据模型  
 ![image](https://user-images.githubusercontent.com/83743182/125550679-ddde7fae-defb-429f-ab37-ed5f5bd1844a.png)
 # 基础url  
@@ -99,6 +99,8 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 23、权限过滤，url使用AntPathMatcher进行匹配检索  
 24、增加文档断点上传和下载  
 ![image](https://user-images.githubusercontent.com/83743182/131476532-a5451372-b4d8-4057-bdcf-e5817be2fae3.png)
+25、服务监视
+![image](https://user-images.githubusercontent.com/83743182/131618487-85986518-bb74-45f1-8a47-2da6b75b5612.png)
 
 待续
 
