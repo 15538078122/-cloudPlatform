@@ -33,11 +33,11 @@ spring:
           filters:
             - StripPrefix=1
         -
-          id: microauserv
+          id: microsys
           # 目标服务地址（uri：地址，请求转发后的地址）
-          uri: lb://microauserv
+          uri: lb://microsys
           predicates:
-            - Path=/microauserv/**
+            - Path=/microsys/**
           metadata:
             connect-timeout: 2000
             response-timeout: 15000 #针对具体服务的单次请求的默认超时时间
@@ -55,7 +55,7 @@ spring:
                   - SERVER_ERROR
                 methods:
                   - GET
-microauserv:
+microsys:
   ribbon:
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule #配置规则 随机
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule #配置规则 轮询

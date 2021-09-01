@@ -1,0 +1,57 @@
+server:
+  port: 20002
+  tomcat:
+    accesslog:
+      enabled: true
+    basedir: ./tomcatlog
+spring:
+  application:
+    #authentication service
+    name: microsys
+  profiles:
+    active: local #local local dev   online
+  datasource:
+    url: "jdbc:mysql://127.0.0.1:3333/patrol?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai"
+    username: root
+    password: 123456
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      #初始化连接池的连接数量 大小，最小，最大
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      query-timeout: 30
+  redis:
+    port: 6379
+    host: localhost
+    password: lyjwd24133
+    jedis:
+      pool:
+        max-active: 8
+    database: 0
+    timeout: 5000
+  main:
+    allow-bean-definition-overriding: true
+mybatis-plus:
+  mapper-locations: classpath*:mybatis/*.xml
+  type-aliases-package: com.hd.microsysservice.entity
+  global-config:
+    worker-id:    1
+    datacenter-id:  2
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+logging:
+  level:
+    root: error
+    com.hd: debug
+    com.alibaba: error
+    org.apache.tomcat: error
+    org.apache.catalina: error
+config:
+  scanUri: false
+  user-center-uri: http://127.0.0.1:10001
+  USER_OP_IDENTIFICATION: "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
+  attach-path: D:/tmp123/attach/
+  heart-beat-uri: http://127.0.0.1:50001/heartbeat

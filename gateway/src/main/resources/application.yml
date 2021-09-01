@@ -22,3 +22,4 @@ config:
   session-timeout: 200   #minutes
   check-token: true       #是否检查令牌
   check-permission: true       #是否检查权限
+  heart-beat-uri: http://127.0.0.1:50001/heartbeat

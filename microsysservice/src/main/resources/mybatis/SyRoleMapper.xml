@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.microsysservice.mapper.SyRoleMapper">
+    <resultMap id="BaseResultMap" type="com.hd.microsysservice.entity.SyRoleEntity">
+    </resultMap>
+    <resultMap id="SyBtnVoResultMap" type="com.hd.common.vo.SyMenuBtnVo">
+    </resultMap>
+    <select id="getUserRole"  resultMap="BaseResultMap">
+        select distinct * from sy_role role
+        where exists(select 1 from sy_user_role usrR where usrR.user_id=#{userId} and usrR.role_id=role.id);
+    </select>
+
+    <select id="getRolePermBtn"  resultMap="SyBtnVoResultMap">
+       SELECT menuBtn.* from sy_role_perm rolePerm join sy_menu_btn menuBtn on rolePerm.menu_btn_id=menuBtn.id
+	    where rolePerm.role_id=#{roleId}
+    </select>
+
+</mapper>

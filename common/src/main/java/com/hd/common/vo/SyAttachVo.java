@@ -1,7 +1,6 @@
 package com.hd.common.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.hd.common.utils.LongToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -27,7 +26,7 @@ public class SyAttachVo implements Serializable {
     @JSONField(serializeUsing = LongToStringSerializer.class)
     private Long id;
 
-    @TableField("enterprise_id")
+    @ApiModelProperty("enterprise_id")
     private String enterpriseId;
 
     @ApiModelProperty(value = "文件大小")

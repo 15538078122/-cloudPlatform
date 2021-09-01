@@ -1,6 +1,8 @@
 server:
   port: 10001
 spring:
+  application:
+    name: auserver
   thymeleaf:
     enabled: true  #开启thymeleaf视图解析
     encoding: utf-8  #编码
@@ -34,3 +36,4 @@ logging:
 config:
   USER_OP_IDENTIFICATION: "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
   RSA_FILE_PATH:  "d:/tmp123/"
+  heart-beat-uri: http://127.0.0.1:50001/heartbeat
