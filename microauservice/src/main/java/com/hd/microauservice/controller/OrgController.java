@@ -3,9 +3,8 @@ package com.hd.microauservice.controller;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import com.hd.common.model.RequiresPermissions;
-import com.hd.common.model.TokenInfo;
 import com.hd.common.vo.SyOrgVo;
-import com.hd.microauservice.conf.SecurityContext;
+import com.hd.common.vo.SyUserVo;
 import com.hd.microauservice.entity.SyOrgEntity;
 import com.hd.microauservice.service.SyOrgService;
 import com.hd.microauservice.utils.EnterpriseVerifyUtil;
@@ -33,17 +32,7 @@ public class OrgController  {
     @RequiresPermissions("org:create")
     @PostMapping("/org")
     public RetResult createOrg(@RequestBody @Validated SyOrgVo syOrgVo) throws Exception {
-        EnterpriseVerifyUtil.verifyEnterId(syOrgVo.getEnterpriseId());
-        TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
-        if(syOrgVo.getParentId()==null){
-            //每个企业只能创建一个顶级
-            if(syOrgService.haveTopOrg(syOrgVo.getEnterpriseId())){
-                throw new Exception("顶级部门已存在!");
-            }
-        }
-        SyOrgEntity syOrgEntity=new SyOrgEntity();
-        VoConvertUtils.convertObject(syOrgVo,syOrgEntity);
-        syOrgService.save(syOrgEntity);
+        syOrgService.createOrg(syOrgVo);
         return RetResponse.makeRsp("创建部门成功.");
     }
     @ApiOperation(value = "获取部门tree")
@@ -69,6 +58,15 @@ public class OrgController  {
         List<SyOrgVo> listVo = syOrgService.getMyOrgTreeWithMen();
         return RetResponse.makeRsp(listVo);
     }
+
+    @ApiOperation(value = "获取自己有权限的部门人员")
+    @RequiresPermissions(value = "org:men",note ="获取自己有权限的部门人员" )
+    @GetMapping("/org/my/men")
+    public RetResult getOrgMymen() {
+        List<SyUserVo> listVo = syOrgService.getMyOrgMen();
+        return RetResponse.makeRsp(listVo);
+    }
+
     @ApiOperation(value = "编辑部门")
     @RequiresPermissions("org:edit")
     @PutMapping("/org/{id}")
@@ -84,8 +82,7 @@ public class OrgController  {
     @RequiresPermissions("org:delete")
     @DeleteMapping("/org/{id}")
     public RetResult delOrg(@PathVariable("id") Long orgId) {
-        EnterpriseVerifyUtil.verifyEnterId(syOrgService.getById(orgId).getEnterpriseId());
-        syOrgService.removeById(orgId);
+        syOrgService.delOrg(orgId);
         return RetResponse.makeRsp("删除部门成功");
     }
 }

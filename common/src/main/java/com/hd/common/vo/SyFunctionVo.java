@@ -1,6 +1,7 @@
 package com.hd.common.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hd.common.utils.LongToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -52,9 +53,11 @@ public class SyFunctionVo implements Serializable {
      */
     private String note;
 
-    @ApiModelProperty(value = "子菜单")
+    @ApiModelProperty(value = "子功能")
+    @JSONField(serialzeFeatures={ SerializerFeature.WriteNullListAsEmpty})
     private List<SyFunctionVo> childs;
 
     @ApiModelProperty(value = "操作")
+    @JSONField(serialzeFeatures={ SerializerFeature.WriteNullListAsEmpty})
     private List<SyFuncOperatorVo> oprs;
 }

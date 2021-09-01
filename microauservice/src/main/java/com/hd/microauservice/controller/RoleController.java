@@ -50,6 +50,15 @@ public class RoleController extends SuperQueryController {
         syRoleService.updateRole(syRoleVo);
         return RetResponse.makeRsp("修改角色成功");
     }
+
+    @ApiOperation(value = "获取角色详细")
+    @RequiresPermissions(value = "role:detail",note = "获取角色详细")
+    @GetMapping("/role/{id}")
+    public RetResult getRoleDetail(@PathVariable("id") Long RoleId) throws Exception {
+        SyRoleVo syRoleVo=syRoleService.getRoleDetail(RoleId);
+        return RetResponse.makeRsp(syRoleVo);
+    }
+
     @ApiOperation(value = "删除角色")
     @RequiresPermissions("role:delete")
     @DeleteMapping("/role/{id}")
@@ -72,6 +81,8 @@ public class RoleController extends SuperQueryController {
         queryExpression.setValue(enterId); //SecurityContext.GetCurTokenInfo().getenterpriseId()
         queryExpression.setType("eq");
         pageQuery.getQueryData().add(queryExpression);
+
+        //pageQuery.getOrderby().add(new KeyValuePair("sort_num","asc"));
 
         //adaptiveQueryColumn(pageQuery);
         Page<SyRoleEntity> syRoleEntityPage= selectPage(pageQuery,syRoleService);

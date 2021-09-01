@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Boolean auth(String account, String scopes, String uri, String method, String enterpriseId) {
         if(true) {
-            //return true;
+            return true;
         }
         //Thread.sleep(60);Thread.currentThread().getId()
         //scopes=scopes.toUpperCase();

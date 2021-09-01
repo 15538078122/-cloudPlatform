@@ -73,9 +73,7 @@ public class FunctionController  extends SuperQueryController {
     @RequiresPermissions("func:edit")
     @PutMapping("/function/{funcId}")
     public RetResult editFunc(@PathVariable("funcId") Long funcId,@RequestBody SyFunctionVo syFuncVo) throws Exception {
-        SyFunctionEntity syFunctionEntity =new SyFunctionEntity();
-        VoConvertUtils.convertObject(syFuncVo,syFunctionEntity);
-        syFunctionService.updateById(syFunctionEntity);
+        syFunctionService.updateFunc(funcId,syFuncVo);
         return RetResponse.makeRsp("修改功能成功");
     }
     @ApiOperation(value = "获取单个功能")
@@ -91,7 +89,7 @@ public class FunctionController  extends SuperQueryController {
     @RequiresPermissions("func:del")
     @DeleteMapping("/function/{funcId}")
     public RetResult delFunc(@PathVariable("funcId") Long funcId) throws Exception {
-        syFunctionService.removeById(funcId);
+        syFunctionService.deleteFunc(funcId);
         return RetResponse.makeRsp("删除功能成功");
     }
 

@@ -20,5 +20,7 @@ public interface SyMenuService extends IService<SyMenuEntity> {
     List<SyMenuVo> getAllMenu(String enterpriseId);
     void createMenu(SyMenuEntity syMenuEntity);
     void deleteMenu(Long menuId);
-    void update(SyMenuEntity syMenuEntity);
+    //void update(SyMenuEntity syMenuEntity);
+
+    void updateMenu(Long menuId, SyMenuVo syMenuVo) throws Exception;
 }

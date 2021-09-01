@@ -1,6 +1,7 @@
 package com.hd.common.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hd.common.utils.LongToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -54,10 +55,13 @@ public class SyMenuVo implements Serializable {
     private Boolean isVisible;
 
     @ApiModelProperty(value = "子菜单")
+    @JSONField(serialzeFeatures={ SerializerFeature.WriteNullListAsEmpty})
     private List<SyMenuVo> childs;
 
     @ApiModelProperty(value = "按钮")
+    @JSONField(serialzeFeatures={ SerializerFeature.WriteNullListAsEmpty})
     private List<SyMenuBtnVo> btns;
+
     public  SyMenuVo(){
         isVisible=true;
     }

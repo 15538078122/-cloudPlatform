@@ -1,5 +1,6 @@
 package com.hd.common.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,8 +12,8 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
+@AllArgsConstructor
 public class KeyValuePair implements Serializable {
-
     String key;
     String value;
 }

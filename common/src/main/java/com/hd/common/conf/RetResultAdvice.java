@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -14,6 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 //import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 
 @RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE+10000)
 public class RetResultAdvice implements ResponseBodyAdvice<Object> {
 
     //需要忽略拦截的类

@@ -24,9 +24,12 @@ import java.util.List;
 public class SyMenuBtnServiceImpl extends ServiceImpl<SyMenuBtnMapper, SyMenuBtnEntity> implements SyMenuBtnService {
 
     @Override
-    public List<SyMenuBtnVo> getBtnsByMenuId(Long menuId) {
+    public List<SyMenuBtnVo> getBtnsByMenuId(Long menuId,Boolean isAll) {
         QueryWrapper<SyMenuBtnEntity> queryWrapper=new QueryWrapper();
         queryWrapper.eq("menu_id",menuId);
+        if(!isAll){
+            queryWrapper.eq("is_visible",1);
+        }
         List<SyMenuBtnEntity> syMenuBtnEntities = this.baseMapper.selectList(queryWrapper);
         List<SyMenuBtnVo> syMenuBtnVos=new ArrayList<>();
         for (SyMenuBtnEntity syMenuBtnEntity : syMenuBtnEntities){

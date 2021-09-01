@@ -39,6 +39,7 @@ public class FirstFilter implements Filter {
                 &&servletPath.indexOf("/null/swagger-resources")!=0&&servletPath.indexOf("/swagger-resources")!=0
                 &&servletPath.indexOf("/v2")!=0 && servletPath.indexOf("/csrf")!=0
                 &&servletPath.compareTo("/")!=0
+                //&&false
         ){
             String tokenInfoJson=((HttpServletRequest)request).getHeader("token-info");
             log.debug("token-info: "+tokenInfoJson);

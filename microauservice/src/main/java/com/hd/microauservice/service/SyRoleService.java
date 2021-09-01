@@ -18,4 +18,6 @@ public interface SyRoleService extends IService<SyRoleEntity> {
     void updateRole(SyRoleVo syRoleVo);
 
     void removeRoleId(Long roleId);
+
+    SyRoleVo getRoleDetail(Long roleId);
 }

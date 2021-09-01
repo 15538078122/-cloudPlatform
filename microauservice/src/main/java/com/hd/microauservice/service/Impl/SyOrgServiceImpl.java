@@ -4,15 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hd.common.model.DataPrivilege;
 import com.hd.common.vo.SyOrgVo;
+import com.hd.common.vo.SyUserVo;
 import com.hd.microauservice.conf.SecurityContext;
 import com.hd.microauservice.entity.SyOrgEntity;
 import com.hd.microauservice.entity.SyUserEntity;
 import com.hd.microauservice.mapper.SyOrgMapper;
 import com.hd.microauservice.service.SyOrgService;
 import com.hd.microauservice.service.SyUserService;
+import com.hd.microauservice.utils.EnterpriseVerifyUtil;
 import com.hd.microauservice.utils.VoConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +40,7 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
     public List<SyOrgVo> getOrgTree(String enterpriseId) {
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.orderByAsc("path_code");
+        queryWrapper.eq("delete_flag", 0);
         queryWrapper.eq("enterprise_id",enterpriseId); //SecurityContext.GetCurTokenInfo().getEnterpriseId());
         List<SyOrgEntity> list = super.list(queryWrapper);
 
@@ -65,6 +71,7 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
         else if(userDataPrivilege.getValue()==DataPrivilege.LEVEL_AND_BELOW.getValue()){
             queryWrapper.likeRight("path_code",syOrgEntityCurUser.getPathCode());
         }
+        queryWrapper.eq("delete_flag", 0);
         List<SyOrgEntity> list = super.list(queryWrapper);
 
         List<SyOrgVo> listVo = new ArrayList<>();
@@ -92,12 +99,12 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
             return;
         }
         for(SyOrgVo syOrgVo:syOrgVos){
-            if(syOrgVo.getType()==1){
+            //if(syOrgVo.getType()==1){
                 syOrgVo.setUsers(syUserService.getOrgUser(syOrgVo.getId()));
-            }
-            else {
+            //}
+            //else {
                 getOrgMen(syOrgVo.getChilds());
-            }
+            //}
         }
     }
 
@@ -128,9 +135,63 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
     public boolean haveTopOrg(String enterpriseId) {
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("enterprise_id", enterpriseId);
+        queryWrapper.eq("delete_flag", 0);
         queryWrapper.isNull("parent_id");
         SyOrgEntity syOrgEntity = super.getOne(queryWrapper);
         return  syOrgEntity!=null;
+    }
+
+    @Override
+    public void createOrg(SyOrgVo syOrgVo) throws Exception {
+        EnterpriseVerifyUtil.verifyEnterId(syOrgVo.getEnterpriseId());
+        //TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
+        if(syOrgVo.getParentId()==null){
+            //每个企业只能创建一个顶级
+            if(haveTopOrg(syOrgVo.getEnterpriseId())){
+                throw new Exception("顶级部门已存在!");
+            }
+        }
+
+        SyOrgEntity syOrgEntity=new SyOrgEntity();
+        VoConvertUtils.convertObject(syOrgVo,syOrgEntity);
+        save(syOrgEntity);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
+    public void delOrg(Long orgId) {
+        SyOrgEntity syOrgEntity=getById(orgId);
+        EnterpriseVerifyUtil.verifyEnterId(syOrgEntity.getEnterpriseId());
+        deleteOrgRecursion(syOrgEntity);
+    }
+
+    @Override
+    public List<SyUserVo> getMyOrgMen() {
+        List<SyOrgVo> syOrgVos = getMyOrgTreeWithMen();
+        List<SyUserVo> syUserVos =new ArrayList<SyUserVo>();
+        for(SyOrgVo syOrgVo:syOrgVos){
+            if(syOrgVo.getUsers()!=null){
+                syUserVos.addAll(syOrgVo.getUsers());
+            }
+        }
+        return syUserVos;
+    }
+
+    private void deleteOrgRecursion(SyOrgEntity syOrgEntity) {
+        removeById(syOrgEntity.getId());
+        //删除部门下的人
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.eq("org_id",syOrgEntity.getId());
+        queryWrapper.eq("delete_flag", 0);
+        syUserService.remove(queryWrapper);
+
+        //删除子部门
+        queryWrapper=new QueryWrapper();
+        queryWrapper.eq("parent_id",syOrgEntity.getId());
+        List<SyOrgEntity> syOrgEntities = list(queryWrapper);
+        for(SyOrgEntity item : syOrgEntities){
+            deleteOrgRecursion(item);
+        }
     }
 
     private List<SyOrgVo> rearrange(List<SyOrgVo> syOrgVos) {

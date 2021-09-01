@@ -91,6 +91,5 @@ public class SyUserEntity extends Model<SyUserEntity> {
     private Date modifiedTime;
 
     @TableLogic("delete_flag")
-    //@TableField("delete_flag")
     boolean deleteFlag;
 }

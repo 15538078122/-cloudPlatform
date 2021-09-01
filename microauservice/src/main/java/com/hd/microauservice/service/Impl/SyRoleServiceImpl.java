@@ -11,9 +11,11 @@ import com.hd.microauservice.entity.SyRolePermEntity;
 import com.hd.microauservice.mapper.SyRoleMapper;
 import com.hd.microauservice.service.SyRolePermService;
 import com.hd.microauservice.service.SyRoleService;
+import com.hd.microauservice.utils.EnterpriseVerifyUtil;
 import com.hd.microauservice.utils.VoConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,9 @@ public class SyRoleServiceImpl extends ServiceImpl<SyRoleMapper, SyRoleEntity> i
 
     @Autowired
     SyRolePermService syRolePermService;
+
+    @Autowired
+    SyRoleService syRoleService;
 
     @Override
     public void createRole(SyRoleVo syRoleVo) throws Exception {
@@ -68,6 +73,22 @@ public class SyRoleServiceImpl extends ServiceImpl<SyRoleMapper, SyRoleEntity> i
     public void removeRoleId(Long roleId) {
         removeById(roleId);
         updatePerms(roleId,new ArrayList<>());
+    }
+
+    @Override
+    public SyRoleVo getRoleDetail(Long roleId) {
+        //验证存在模块
+        Assert.isTrue(roleId!=null,"id不能为NULL!");
+        SyRoleEntity syRoleEntity=syRoleService.getById(roleId);
+        Assert.isTrue(syRoleEntity!=null,String.format("角色(id=%s)不存在!",roleId));
+        EnterpriseVerifyUtil.verifyEnterId(syRoleEntity.getEnterpriseId());
+
+        SyRoleVo syRoleVo=new SyRoleVo();
+        VoConvertUtils.convertObject(syRoleEntity,syRoleVo);
+        //查询角色的授权按钮
+        List<SyMenuBtnVo> syMenuBtnVos = baseMapper.getRolePermBtn(roleId);
+        syRoleVo.setSyMenuBtnVos(syMenuBtnVos);
+        return syRoleVo;
     }
 
     private void updatePerms(Long roleId, List<SyMenuBtnVo> syMenuBtnVos) {

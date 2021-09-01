@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * <p>
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author wli
- * @since 2021-07-30
+ * @since 2021-08-30
  */
 @Data
 @Accessors(chain = true)
@@ -41,7 +41,7 @@ public class SyAttachEntity extends Model<SyAttachEntity> {
      * 上传时间
      */
     @TableField("upload_time")
-    private LocalDateTime uploadTime;
+    private Date uploadTime;
 
     /**
      * 上传人id
@@ -61,15 +61,6 @@ public class SyAttachEntity extends Model<SyAttachEntity> {
     @TableField("content_type")
     private String contentType;
 
-    /**
-     * 路径起始
-     */
-    @TableField("root_path")
-    private String rootPath;
-
-    /**
-     * 存储路径，包括存储文件名
-     */
-    @TableField("store_path")
-    private String storePath;
+    @TableField("file_new_name")
+    private String fileNewName;
 }

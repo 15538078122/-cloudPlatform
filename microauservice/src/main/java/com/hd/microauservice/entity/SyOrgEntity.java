@@ -1,12 +1,7 @@
 package com.hd.microauservice.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.baomidou.mybatisplus.annotation.Version;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -87,5 +82,7 @@ public class SyOrgEntity extends Model<SyOrgEntity> {
     @TableField("icon_class")
     private String iconClass;
 
+    @TableLogic("delete_flag")
+    boolean deleteFlag;
 
 }

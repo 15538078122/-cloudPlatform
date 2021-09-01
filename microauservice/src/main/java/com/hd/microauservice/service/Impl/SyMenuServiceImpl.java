@@ -11,6 +11,7 @@ import com.hd.microauservice.entity.SyMenuEntity;
 import com.hd.microauservice.mapper.SyMenuMapper;
 import com.hd.microauservice.service.SyMenuBtnService;
 import com.hd.microauservice.service.SyMenuService;
+import com.hd.microauservice.utils.EnterpriseVerifyUtil;
 import com.hd.microauservice.utils.VoConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
         List<SyMenuVo> listVo = new ArrayList<>();
         for(SyMenuEntity syMenuEntity:list){
             SyMenuVo syMenuVo = VoConvertUtils.syMenuToVo(syMenuEntity);
-            List<SyMenuBtnVo> btns = syMenuBtnService.getBtnsByMenuId(syMenuVo.getId());
+            List<SyMenuBtnVo> btns = syMenuBtnService.getBtnsByMenuId(syMenuVo.getId(),true);
             if(btns.size()>0){
                 syMenuVo.setBtns(btns);
             }
@@ -65,7 +66,7 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
         List<SyMenuVo> listVo = new ArrayList<>();
         for(SyMenuEntity syMenuEntity:list){
             SyMenuVo syMenuVo = VoConvertUtils.syMenuToVo(syMenuEntity);
-            List<SyMenuBtnVo> btns = syMenuBtnService.getBtnsByMenuId(syMenuVo.getId());
+            List<SyMenuBtnVo> btns = syMenuBtnService.getBtnsByMenuId(syMenuVo.getId(),false);
             if(btns.size()>0){
                 syMenuVo.setBtns(btns);
             }
@@ -142,17 +143,52 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
         deleteMenuRecursion(syMenuEntity);
     }
 
+//    @Override
+//    public void update(SyMenuEntity syMenuEntity) {
+//        //首先设置pathcode
+//        if(syMenuEntity.getParentId()==null){
+//            syMenuEntity.setPathCode(syMenuEntity.getLevelCode());
+//        }
+//        else {
+//            String parentPathCode = getById(syMenuEntity.getParentId()).getPathCode();
+//            syMenuEntity.setPathCode(String.format("%s.%s",parentPathCode,syMenuEntity.getLevelCode()));
+//        }
+//        updateById(syMenuEntity);
+//    }
+
     @Override
-    public void update(SyMenuEntity syMenuEntity) {
-        //首先设置pathcode
-        if(syMenuEntity.getParentId()==null){
-            syMenuEntity.setPathCode(syMenuEntity.getLevelCode());
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
+    public void updateMenu(Long menuId, SyMenuVo syMenuVo) throws Exception {
+        EnterpriseVerifyUtil.verifyEnterId(syMenuVo.getEnterpriseId());
+        SyMenuEntity syMenuEntityOld= getById(syMenuVo.getId());
+        if(syMenuEntityOld==null){
+            throw  new Exception(String.format("菜单(id=%s)不存在!",syMenuVo.getId()));
         }
-        else {
-            String parentPathCode = getById(syMenuEntity.getParentId()).getPathCode();
-            syMenuEntity.setPathCode(String.format("%s.%s",parentPathCode,syMenuEntity.getLevelCode()));
+        //更新关联编码
+        SyMenuEntity syMenuEntityNew = VoConvertUtils.syMenuToEntity(syMenuVo);
+        if(syMenuEntityOld.getPathCode().compareTo(syMenuEntityNew.getPathCode())!=0){
+            recurUpdatePathCode(syMenuEntityNew);
         }
-        updateById(syMenuEntity);
+        updateById(syMenuEntityNew);
+    }
+
+    private void recurUpdatePathCode(SyMenuEntity syMenuEntity) {
+        if(syMenuEntity.getType()==0){
+            //如果是目录，更新子级pathcode
+            QueryWrapper queryWrapper=new QueryWrapper();
+            queryWrapper.eq("parent_id",syMenuEntity.getId());
+            List<SyMenuEntity> syMenuEntities = list(queryWrapper);
+            for(SyMenuEntity item : syMenuEntities){
+                SyMenuEntity syMenuEntityNew=new SyMenuEntity(){{
+                   setId(item.getId());
+                   setIsVisible(item.getIsVisible());
+                   setType(item.getType());
+                }};
+                syMenuEntityNew.setPathCode(String.format("%s.%s",syMenuEntity.getPathCode(),item.getLevelCode()));
+                updateById(syMenuEntityNew);
+                recurUpdatePathCode(syMenuEntityNew);
+            }
+        }
     }
 
     private void deleteMenuRecursion(SyMenuEntity syMenuEntity){

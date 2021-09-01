@@ -16,6 +16,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,9 +81,7 @@ public class MenuController {
     @RequiresPermissions("menu:edit")
     @PutMapping("/menu/{id}")
     public RetResult editMenu(@PathVariable("id") Long menuId, @RequestBody @Validated SyMenuVo syMenuVo) throws Exception {
-        EnterpriseVerifyUtil.verifyEnterId(syMenuVo.getEnterpriseId());
-        //syMenuVo.setEnterpriseId(SecurityContext.GetCurTokenInfo().getenterpriseCode());
-        syMenuService.update(VoConvertUtils.syMenuToEntity(syMenuVo));
+        syMenuService.updateMenu(menuId,syMenuVo);
         return RetResponse.makeRsp("修改菜单成功");
     }
 
@@ -98,7 +97,8 @@ public class MenuController {
     @RequiresPermissions("menu:del")
     @DeleteMapping("/menu/{id}")
     public RetResult delMenu(@PathVariable("id") Long menuId) throws Exception {
-        EnterpriseVerifyUtil.verifyEnterId(syMenuService.getById(menuId).getEnterpriseId());
+        SyMenuEntity syMenuEntity=syMenuService.getById(menuId);
+        EnterpriseVerifyUtil.verifyEnterId(syMenuEntity.getEnterpriseId());
         syMenuService.deleteMenu(menuId);
         return RetResponse.makeRsp("删除菜单成功");
     }
@@ -126,7 +126,9 @@ public class MenuController {
     @RequiresPermissions("menuBtn:del")
     @DeleteMapping("/menu/btn/{id}")
     public RetResult delMenuBtn(@PathVariable("id") Long menuBtnId) throws Exception {
-        EnterpriseVerifyUtil.verifyEnterId(syMenuBtnService.getById(menuBtnId).getEnterpriseId());
+        SyMenuBtnEntity syMenuBtnEntity=syMenuBtnService.getById(menuBtnId);
+        EnterpriseVerifyUtil.verifyEnterId(syMenuBtnEntity.getEnterpriseId());
+        Assert.isTrue(syMenuBtnEntity.getName().compareTo("list")!=0,"特殊按钮项，不能删除!");
         syMenuBtnService.removeById(menuBtnId);
         return RetResponse.makeRsp("删除按钮成功");
     }

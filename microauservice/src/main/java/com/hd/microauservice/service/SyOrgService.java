@@ -2,6 +2,7 @@ package com.hd.microauservice.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hd.common.vo.SyOrgVo;
+import com.hd.common.vo.SyUserVo;
 import com.hd.microauservice.entity.SyOrgEntity;
 
 import java.util.List;
@@ -23,4 +24,10 @@ public interface SyOrgService extends IService<SyOrgEntity> {
     List<SyOrgEntity> getMyOrgList();
 
     boolean haveTopOrg(String enterpriseId);
+
+    void createOrg(SyOrgVo syOrgVo) throws Exception;
+
+    void delOrg(Long orgId);
+
+    List<SyUserVo> getMyOrgMen();
 }

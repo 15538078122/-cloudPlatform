@@ -1,6 +1,7 @@
 package com.hd.microauservice.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.hd.common.vo.SyMenuBtnVo;
 import com.hd.microauservice.entity.SyRoleEntity;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,4 +17,5 @@ import java.util.List;
  */
 public interface SyRoleMapper extends BaseMapper<SyRoleEntity> {
     List<SyRoleEntity> getUserRole(@Param("userId") Long userId);
+    List<SyMenuBtnVo> getRolePermBtn(@Param("roleId") Long roleId);
 }

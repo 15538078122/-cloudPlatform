@@ -17,4 +17,7 @@ import java.util.List;
 public interface SyFunctionService extends IService<SyFunctionEntity> {
 
     List<SyFunctionVo> getFuncTree();
+    void deleteFunc(Long funcId) throws Exception;
+
+    void updateFunc(Long funcId, SyFunctionVo syFuncVo);
 }

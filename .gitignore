@@ -30,4 +30,4 @@ tomcatlog/
 .md
 **/.mvn/
 !.gitignore
-
+note.txt
