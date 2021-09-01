@@ -11,6 +11,7 @@
 10、分布式锁  
 11、rsa动态密钥  
 12、文件分片上传和分片下载  
+13、服务监视&心跳
 # 软件架构   
 ![1630457763(1)](https://user-images.githubusercontent.com/83743182/131594644-f7acabc8-c722-4b54-a717-d771850a2a37.jpg)
 # 基础数据模型  
@@ -98,6 +99,8 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 23、权限过滤，url使用AntPathMatcher进行匹配检索  
 24、增加文档断点上传和下载  
 ![image](https://user-images.githubusercontent.com/83743182/131476532-a5451372-b4d8-4057-bdcf-e5817be2fae3.png)
+25、服务监视
+![image](https://user-images.githubusercontent.com/83743182/131618487-85986518-bb74-45f1-8a47-2da6b75b5612.png)
 
 待续
 
