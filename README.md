@@ -11,9 +11,8 @@
 10、分布式锁  
 11、rsa动态密钥  
 12、文件分片上传和分片下载  
-# 软件架构
-![image](https://user-images.githubusercontent.com/83743182/125611044-aa7ef51e-4267-432f-84f7-2f3b2357c5f4.png)
-
+# 软件架构   
+![1630457763(1)](https://user-images.githubusercontent.com/83743182/131594644-f7acabc8-c722-4b54-a717-d771850a2a37.jpg)
 # 基础数据模型  
 ![image](https://user-images.githubusercontent.com/83743182/125550679-ddde7fae-defb-429f-ab37-ed5f5bd1844a.png)
 # 基础url  
