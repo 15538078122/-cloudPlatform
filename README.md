@@ -1,4 +1,4 @@
-# 介绍
+# 介绍 多企业 多应用 基础平台
 1、认证OATH2.0，4种模式.   AUTHORIZATION_CODE,GRANT_TYPE, REFRESH_TOKEN,GRANT_TYPE_PASSWORD,IMPLICIT
 2、jwt rsa   
 3、更简洁的jwt client方式   
@@ -8,14 +8,17 @@
 7、各个子系统模块均可根据需求，调整部署的实例数。   
 8、数据库主从、连接池、数据缓存、消息队列、运维监视（完善中）   
 9、nacos 服务发现  mongodb存日志  
-10、分布式锁
+10、分布式锁  
+11、rsa动态密钥  
+12、文件分片上传和分片下载  
 # 软件架构
 ![image](https://user-images.githubusercontent.com/83743182/125611044-aa7ef51e-4267-432f-84f7-2f3b2357c5f4.png)
 
 # 基础数据模型  
 ![image](https://user-images.githubusercontent.com/83743182/125550679-ddde7fae-defb-429f-ab37-ed5f5bd1844a.png)
 # 基础url  
-![image](https://user-images.githubusercontent.com/83743182/125554023-a7dabd40-39e8-4d27-bbd4-1783fa43f801.png)
+![image](https://user-images.githubusercontent.com/83743182/131476894-2fa250fd-3bbd-45d9-8756-13a5dd6576f0.png)
+![image](https://user-images.githubusercontent.com/83743182/131476990-313fbbd9-fac1-4790-a906-a97f17927b02.png)
 ![image](https://user-images.githubusercontent.com/83743182/125554063-4947a8c2-bde2-4979-94a9-d6d8e639e45a.png)
 
 # 安装
@@ -38,9 +41,14 @@ global libraries里添加上libs目录下的common-0.0.1-SNAPSHOT.jar, 这是已
 # 脚本使用说明
 postman 导入gateway&oauth2&microservice-testing.postman_collection.json
 ![image](https://user-images.githubusercontent.com/83743182/122862436-b78ab800-d353-11eb-97ed-5224c7cc0f37.png)
-注意：授权码模式的两个url需要放到浏览器中访问。根据postman中的请求列表，开始你的访问吧
+注意：授权码模式的两个url需要放到浏览器中访问。根据postman中的请求列表，开始你的访问吧  
+
+# ui
+![image](https://user-images.githubusercontent.com/83743182/131477976-33134c78-ef67-48bd-a546-f3ce88c252cf.png)
+
+
 # 系统若干技术问题介绍：
-有时间补。。。。。。 先列下：
+ 先列下：
 
 1、mvn问题，gateway和spring boot 的版本注意匹配问题。 oauth和spring boot版本匹配问题；不匹配可能会有异常发生。
 cloud最好选择dependencyManagement方式，避免自己指定version时发送不兼容。
@@ -86,7 +94,12 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 20、自定义统用分页查询  ，继承SuperQueryController后，可根据情况在查询前调用adaptiveQueryColumn来调整前端和后端的数据库字段差异  
 ![image](https://user-images.githubusercontent.com/83743182/125904540-9d9ecf25-3cbb-4d9e-87d5-40a2abd6a17e.png)
 注意get 请求是一定要把参数encode下：query: { "pageNum": 2,"pageSize": 2,queryData:[{column:"name",value:"xx",type:"like"  },{column:"note",value:"nnn",type:"ne"}],orderby:[{key:"id",value:"asc"},{key:"name",value:"desc"}]}
-  
+21、增加动态rsa非对称加密和定时跟新密钥文件  
+22、缓存增加设置不同分类的过期时间  
+23、权限过滤，url使用AntPathMatcher进行匹配检索  
+24、增加文档断点上传和下载  
+![image](https://user-images.githubusercontent.com/83743182/131476532-a5451372-b4d8-4057-bdcf-e5817be2fae3.png)
+
 待续
 
 
