@@ -101,6 +101,20 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 ![image](https://user-images.githubusercontent.com/83743182/131476532-a5451372-b4d8-4057-bdcf-e5817be2fae3.png)
 25、服务监视
 ![image](https://user-images.githubusercontent.com/83743182/131618487-85986518-bb74-45f1-8a47-2da6b75b5612.png)
+![Uploading image.png…]()
+定时心跳的方式  
+26、gateway 使用 feign的异常解决。  NotReactiveWebApplicationCondition这个conditional造成HttpMessageConvertersAutoConfiguration没有注入。
+![image](https://user-images.githubusercontent.com/83743182/132784828-2414f34f-74be-4d16-beeb-cdc2fdac1abc.png)
+增加配置：  
+@Configuration
+public class FeignConfig {
+    @Bean
+    @ConditionalOnMissingBean
+    public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
+        return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
+    }
+}
+
 
 待续
 
