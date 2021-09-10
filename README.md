@@ -101,10 +101,12 @@ GetMapping   、PutMapping 、DeleteMapping ，不能使用RequestMapping注解�
 ![image](https://user-images.githubusercontent.com/83743182/131476532-a5451372-b4d8-4057-bdcf-e5817be2fae3.png)
 25、服务监视
 ![image](https://user-images.githubusercontent.com/83743182/131618487-85986518-bb74-45f1-8a47-2da6b75b5612.png)
-![Uploading image.png…]()
+![image](https://user-images.githubusercontent.com/83743182/132785347-48ece878-f597-48e1-bc21-67c21921728e.png)
 定时心跳的方式  
 26、gateway 使用 feign的异常解决。  NotReactiveWebApplicationCondition这个conditional造成HttpMessageConvertersAutoConfiguration没有注入。
 ![image](https://user-images.githubusercontent.com/83743182/132784828-2414f34f-74be-4d16-beeb-cdc2fdac1abc.png)
+![image](https://user-images.githubusercontent.com/83743182/132785371-aa3ff66e-cdf2-4087-996b-9169374a020b.png)
+26、gate way 调用 feign失败，HttpMessageConvertersAutoConfiguration的NotReactiveWebApplicationCondition条件造成没有自动注入  
 增加配置：  
 @Configuration
 public class FeignConfig {
