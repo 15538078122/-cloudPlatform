@@ -22,13 +22,13 @@ public class MyBCryptPasswordEncoder extends BCryptPasswordEncoder {
         }
         return  super.matches(pwd2, encodedPassword);
     }
-    private String RsaDecodePwd(String cipher) throws Exception {
+    public String RsaDecodePwd(String cipher) throws Exception {
         cipher =  java.net.URLDecoder.decode(cipher, "UTF-8");
         byte[] res = RSAEncrypt.decrypt(GenRsaFileTask.rsaPrivateKey, Base64.decode(cipher));
         String plainText=new String(res);
         return  plainText;
     }
-    private String RsaEncodePwd(String plainText) throws Exception {
+    public String RsaEncodePwd(String plainText) throws Exception {
         byte[] cipherData=RSAEncrypt.encrypt(RSAEncrypt.loadPublicKeyByStr(GenRsaFileTask.rsaPublicKey),plainText.getBytes());
         String cipher= Base64.encode(cipherData);
         cipher = java.net.URLEncoder.encode(cipher, "UTF-8");

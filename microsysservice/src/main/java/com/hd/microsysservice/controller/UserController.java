@@ -17,12 +17,13 @@ import com.hd.microsysservice.entity.SyOrgEntity;
 import com.hd.microsysservice.entity.SyUserEntity;
 import com.hd.microsysservice.service.SyOrgService;
 import com.hd.microsysservice.service.SyUserService;
-import com.hd.microsysservice.utils.EnterpriseVerifyUtil;
+import com.hd.microsysservice.utils.VerifyUtil;
 import com.hd.microsysservice.utils.VoConvertUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,7 +44,7 @@ public class UserController extends SuperQueryController {
 
 
     public UserController(){
-        mapQueryCols.put("enterpriseId","enterprise_id");
+        mapQueryCols.put("enterpriseId","enterpriseId");
     }
 
     @ApiOperation(value = "获取当前用户信息")
@@ -60,9 +61,9 @@ public class UserController extends SuperQueryController {
             eq("delete_flag",0);
         }};
        //SyUserEntity syUserEntity = syUserService.getOne(queryWrapper);
-        SyUserEntity syUserEntity = syUserService.getOneFromCach(tokenInfo.getAccount(),tokenInfo.getEnterpriseId());
+        SyUserEntity syUserEntity = syUserService.getUserByAccount(tokenInfo.getAccount(),tokenInfo.getEnterpriseId());
         SyUserVo syUserVo=new SyUserVo();
-        VoConvertUtils.convertObject(syUserEntity,syUserVo);
+        VoConvertUtils.copyObjectProperties(syUserEntity,syUserVo);
 
         return RetResponse.makeRsp(syUserVo);
     }
@@ -89,7 +90,7 @@ public class UserController extends SuperQueryController {
     @RequiresPermissions(value = "user:create",note =  "创建用户")
     @PostMapping("/user")
     public RetResult createUser(@RequestBody @Validated SyUserVo syUserVo) throws Exception {
-        EnterpriseVerifyUtil.verifyEnterId(syUserVo.getEnterpriseId());
+        VerifyUtil.verifyEnterId(syUserVo.getEnterpriseId());
         TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
         syUserService.createUser(syUserVo.setEnterpriseId(tokenInfo.getEnterpriseId()));
         return RetResponse.makeRsp("创建用户成功.");
@@ -101,6 +102,14 @@ public class UserController extends SuperQueryController {
         syUserService.updateUser(syUserVo);
         return RetResponse.makeRsp("编辑用户成功.");
     }
+    @ApiOperation(value = "修改密码")
+    @RequiresPermissions("user:changepwd")
+    @PutMapping("/user/chpwd")
+    public RetResult changepwd(@RequestBody SyUserVo syUserVo) throws Exception {
+        syUserService.changepwd(syUserVo);
+        return RetResponse.makeRsp("修改用户密码成功.");
+    }
+
     @ApiOperation(value = "移除用户")
     @RequiresPermissions("user:delete")
     @DeleteMapping("/user/{id}")
@@ -109,11 +118,22 @@ public class UserController extends SuperQueryController {
         return RetResponse.makeRsp("移除用户成功.");
     }
 
+
+//    @ApiOperation(value = "企业用户获取部门用户列表信息")
+//    @RequiresPermissions(value = "orgUser:list",note = "分页获取部门用户列表信息")
+//    @GetMapping("/org/{orgId}/user")
+//    public RetResult getOrgUserList2(@PathVariable("orgId") String orgId,@RequestParam("query") String query){
+//
+//        return  null;
+//    }
+
     @ApiOperation(value = "企业用户获取部门用户列表信息")
     @RequiresPermissions(value = "orgUser:list",note = "分页获取部门用户列表信息")
-    @GetMapping("/org/{orgId}/user")
-    public RetResult getOrgUserList(@PathVariable("orgId") String orgId,@RequestParam("query") String query) throws Exception {
-
+    @PostMapping("/org/user/list")
+    public RetResult getOrgUserList(@RequestParam("query") String query) throws Exception {
+        PageQueryExpressionList pageQuery= JSON.parseObject(query,PageQueryExpressionList.class);
+        adaptiveQueryColumn(pageQuery);
+        Long orgId=Long.parseLong(pageQuery.getQueryExpressionByColumn("orgId").getValue());
         //判断该用户是否有对应的部门权限，根据数据权限设置
         List<SyOrgEntity> syOrgEntities = syOrgService.getMyOrgList();
         SyOrgEntity syOrgEntityFind=null;
@@ -126,9 +146,6 @@ public class UserController extends SuperQueryController {
             throw new Exception("没有权限!");
         }
 
-        PageQueryExpressionList pageQuery= JSON.parseObject(query,PageQueryExpressionList.class);
-        adaptiveQueryColumn(pageQuery);
-
         TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
 
         QueryExpression queryExpression=new QueryExpression();
@@ -137,13 +154,13 @@ public class UserController extends SuperQueryController {
         queryExpression.setType("eq");
         pageQuery.getQueryData().add(queryExpression);
 
-        queryExpression=new QueryExpression();
-        queryExpression.setColumn("org_id");
-        queryExpression.setValue(orgId);
-        queryExpression.setType("eq");
-        pageQuery.getQueryData().add(queryExpression);
-        queryExpression=new QueryExpression();
+//        queryExpression=new QueryExpression();
+//        queryExpression.setColumn("org_id");
+//        queryExpression.setValue(orgId.toString());
+//        queryExpression.setType("eq");
+//        pageQuery.getQueryData().add(queryExpression);
 
+//        queryExpression=new QueryExpression();
 //        queryExpression.setColumn("enterprise_id");
 //        queryExpression.setValue(tokenInfo.getEnterpriseId());
 //        queryExpression.setType("eq");
@@ -153,36 +170,40 @@ public class UserController extends SuperQueryController {
         List<SyUserVo> listVo=new ArrayList<>();
         for(SyUserEntity syUserEntity : syUserEntityPage.getRecords()){
             SyUserVo syUserVo=new SyUserVo();
-            VoConvertUtils.convertObject(syUserEntity,syUserVo);
+            VoConvertUtils.copyObjectProperties(syUserEntity,syUserVo);
             listVo.add(syUserVo);
         }
         return RetResponse.makeRsp(new MyPage<>(syUserEntityPage.getCurrent(), syUserEntityPage.getSize(), syUserEntityPage.getTotal(),listVo));
     }
 
     @ApiOperation(value = "root获取部门用户列表信息")
-    @RequiresPermissions(value = "orgUser:list",note = "root分页获取部门用户列表信息")
-    @GetMapping("/root/org/{orgId}/user")
-    public RetResult getRootOrgUserList(@PathVariable("orgId") String orgId,@RequestParam("query") String query) throws Exception {
+    @RequiresPermissions(value = "orgUserForRoot:list",note = "root分页获取部门用户列表信息")
+    @PostMapping("/root/org/user/list")
+    public RetResult getRootOrgUserList(@RequestParam("query") String query) throws Exception {
         PageQueryExpressionList pageQuery= JSON.parseObject(query,PageQueryExpressionList.class);
+        Assert.isTrue(pageQuery!=null,"查询参数错误!");
         adaptiveQueryColumn(pageQuery);
+        QueryExpression queryExpression = pageQuery.getQueryExpressionByColumn("orgId");
+        Assert.isTrue(queryExpression!=null,"查询参数错误!");
+        Long orgId=Long.parseLong(queryExpression.getValue());
 
-        QueryExpression queryExpression=new QueryExpression();
+        queryExpression=new QueryExpression();
         queryExpression.setColumn("delete_flag");
         queryExpression.setValue("0");
         queryExpression.setType("eq");
         pageQuery.getQueryData().add(queryExpression);
 
-        queryExpression=new QueryExpression();
-        queryExpression.setColumn("org_id");
-        queryExpression.setValue(orgId);
-        queryExpression.setType("eq");
-        pageQuery.getQueryData().add(queryExpression);
+//        queryExpression=new QueryExpression();
+//        queryExpression.setColumn("org_id");
+//        queryExpression.setValue(orgId);
+//        queryExpression.setType("eq");
+//        pageQuery.getQueryData().add(queryExpression);
 
         Page<SyUserEntity> syUserEntityPage= selectPage(pageQuery,syUserService);
         List<SyUserVo> listVo=new ArrayList<>();
         for(SyUserEntity syUserEntity : syUserEntityPage.getRecords()){
             SyUserVo syUserVo=new SyUserVo();
-            VoConvertUtils.convertObject(syUserEntity,syUserVo);
+            VoConvertUtils.copyObjectProperties(syUserEntity,syUserVo);
             listVo.add(syUserVo);
         }
         return RetResponse.makeRsp(new MyPage<>(syUserEntityPage.getCurrent(), syUserEntityPage.getSize(), syUserEntityPage.getTotal(),listVo));

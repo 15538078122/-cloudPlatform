@@ -39,9 +39,9 @@ public class AccountController {
         //TODO: 创建用户时，pwd需要加密
         //byte[] res = RSAEncrypt.decrypt(GenRsaFileTask.rsaPrivateKey, Base64.decode(password));
         //password=new String(res);
-
-        accountService.save(new AccountEntity(null,enterprise,account,passwordEncoder.encode(password),new Date()));
-        return RetResponse.makeRsp("添加账号成功.");
+        AccountEntity accountEntity = new AccountEntity(null, enterprise, account, passwordEncoder.encode(password), new Date());
+        accountService.save(accountEntity);
+        return RetResponse.makeRsp("添加账号成功.",accountEntity.getId());
     }
 
     @GetMapping("/account/{account}")
@@ -63,5 +63,12 @@ public class AccountController {
         qw.eq("enterprise",enterprise);
         accountService.remove(qw);
         return RetResponse.makeRsp("删除账号成功.");
+    }
+
+    @PutMapping("/account/{account}")
+    public RetResult changePwd(@PathVariable ("account")  String account,@RequestParam("enterprise") String enterprise,@RequestParam("password") String password,@RequestParam("passwordOld") String passwordOld) throws Exception {
+        //TODO: 修改用户密码，pwd需要加密
+        accountService.changePwd(account, enterprise, password, passwordOld);
+        return RetResponse.makeRsp("修改密码成功.");
     }
 }

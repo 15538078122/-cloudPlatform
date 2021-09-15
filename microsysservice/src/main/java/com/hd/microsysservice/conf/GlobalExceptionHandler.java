@@ -37,6 +37,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
         if(e instanceof BindException){
             return RetResponse.makeErrRsp(((BindException)e).getBindingResult().getFieldError().getDefaultMessage());
         }
+        e.printStackTrace();
         return RetResponse.makeErrRsp(e.getMessage());
     }
 

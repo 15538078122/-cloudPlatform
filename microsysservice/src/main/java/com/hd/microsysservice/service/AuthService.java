@@ -1,5 +1,7 @@
 package com.hd.microsysservice.service;
 
+import com.hd.common.model.TokenInfo;
+
 public interface AuthService {
-    Boolean auth(String account, String scopes, String uri, String method, String enterpriseId);
+    Long auth(TokenInfo tokenInfo);
 }

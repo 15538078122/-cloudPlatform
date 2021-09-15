@@ -2,12 +2,11 @@ package com.hd.microsysservice.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-
-import java.util.Date;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.util.Date;
 
 /**
  * <p>
@@ -88,6 +87,12 @@ public class SyUserEntity extends Model<SyUserEntity> {
     @TableField("modified_time")
     private Date modifiedTime;
 
+    @TableField("id_center")
+    private Long idCenter;
+
     @TableLogic("delete_flag")
     boolean deleteFlag;
+
+    @TableField("head_pic")
+    Long headPic;
 }

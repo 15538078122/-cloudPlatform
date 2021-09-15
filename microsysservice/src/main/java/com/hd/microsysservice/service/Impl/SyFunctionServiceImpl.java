@@ -43,7 +43,7 @@ public class SyFunctionServiceImpl extends ServiceImpl<SyFunctionMapper, SyFunct
         List<SyFunctionVo> listVo = new ArrayList<>();
         for(SyFunctionEntity syFunctionEntity:list){
             SyFunctionVo syFunctionVo=new SyFunctionVo();
-            VoConvertUtils.convertObject(syFunctionEntity,syFunctionVo);
+            VoConvertUtils.copyObjectProperties(syFunctionEntity,syFunctionVo);
             List<SyFuncOperatorVo> oprs = syFuncOperatorService.getOprsByFuncId(syFunctionVo.getId());
             if(oprs.size()>0){
                 syFunctionVo.setOprs(oprs);
@@ -100,7 +100,7 @@ public class SyFunctionServiceImpl extends ServiceImpl<SyFunctionMapper, SyFunct
         Assert.notNull(syFunctionEntityOld,String.format("菜单(id=%s)不存在!",syFuncVo.getId()));
         //更新关联编码
         SyFunctionEntity syFunctionEntityNew = new SyFunctionEntity();
-        VoConvertUtils.convertObject(syFuncVo,syFunctionEntityNew);
+        VoConvertUtils.copyObjectProperties(syFuncVo,syFunctionEntityNew);
         if(syFunctionEntityOld.getPathCode().compareTo(syFunctionEntityNew.getPathCode())!=0){
            recurUpdatePathCode(syFunctionEntityNew);
         }

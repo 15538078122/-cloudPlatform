@@ -34,6 +34,21 @@ public class AttachController extends SuperQueryController {
     public AttachController() {
         //mapQueryCols.put("name", "name");
     }
+    @ApiOperation(value = "上传单个文件")
+    @RequiresPermissions(value = "attach:uploadone", note = "上传单个文件")
+    @PostMapping("/attach/uploadone")
+    public RetResult attachUploadOne(HttpServletRequest request, HttpServletResponse response, @Validated SyAttachVo syAttachVo, MultipartFile file) {
+        try {
+
+            Long id=syAttachService.attachUploadOne(request, response, syAttachVo, file);
+            if(id==-1){
+                return RetResponse.makeRsp(RetCode.FAIL.code,"上传失败!");
+            }
+            return RetResponse.makeRsp("上传成功",id.toString());
+        } catch (Exception e) {
+            return RetResponse.makeErrRsp("上传失败:"+e.getMessage());
+        }
+    }
 
     @ApiOperation(value = "上传分片")
     @RequiresPermissions(value = "attach:upload", note = "上传分片")
@@ -52,21 +67,23 @@ public class AttachController extends SuperQueryController {
     public RetResult attachMerge(String guid, Integer chunks,@Validated SyAttachVo syAttachVo) {
         try {
             List<Integer> chunksExist=new ArrayList<>();
-            if(!syAttachService.attachMerge(guid, chunks,syAttachVo,chunksExist)){
+            Long id=syAttachService.attachMerge(guid, chunks,syAttachVo,chunksExist);
+            if(id==-1){
                 return RetResponse.makeRsp(RetCode.FAIL.code,"合并文档失败!",chunksExist);
             }
+            return RetResponse.makeRsp("合并成功",id.toString());
         } catch (Exception e) {
             return RetResponse.makeRsp(RetCode.FAIL.code,"合并文档失败!",new ArrayList<Integer>());
         }
-        return RetResponse.makeRsp("合并成功");
     }
 
     @ApiOperation(value = "分片下载文档")
     @RequiresPermissions(value = "attach:get", note = "分片下载文档")
     @GetMapping("/attach/{id}")
     public void downloadAttach(@PathVariable("id") Long attachId,HttpServletResponse response
-           ,@RequestHeader(name = "Range", required = false) String range) {
+           ,@RequestHeader(name = "Range", required = false) String range) throws InterruptedException {
         log.debug("range---"+range);
+        //Thread.sleep(5000*90);
        syAttachService.downloadAttach(attachId,response, range);
     }
 

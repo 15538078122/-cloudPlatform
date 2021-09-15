@@ -1,5 +1,6 @@
 package com.hd.micromonitorservice.conf;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -15,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @Description:  spring 初始化执行事件
  */
 @Component
+@Slf4j
 public class ApplicationStartup implements ApplicationListener<ContextRefreshedEvent> {
 
     private volatile AtomicBoolean isInit=new AtomicBoolean(false);
@@ -26,7 +28,8 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         }
         //isInit.set(false);
         // 初始化完成后.清空redis缓存
-        delAllRedisKey();
+        //delAllRedisKey();
+
     }
 
     @Autowired

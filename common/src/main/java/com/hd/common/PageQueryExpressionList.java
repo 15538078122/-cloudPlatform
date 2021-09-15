@@ -14,4 +14,12 @@ public class PageQueryExpressionList extends PageQuery<List<QueryExpression>>{
     public PageQueryExpressionList(){
         queryData=new ArrayList<>();
     }
+    public QueryExpression getQueryExpressionByColumn(String column){
+        for (QueryExpression queryExpression:queryData){
+            if(queryExpression.getColumn().compareTo(column)==0){
+                return queryExpression;
+            }
+        }
+        return null;
+    }
 }

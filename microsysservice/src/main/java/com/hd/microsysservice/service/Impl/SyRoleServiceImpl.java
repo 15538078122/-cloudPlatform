@@ -11,7 +11,7 @@ import com.hd.microsysservice.entity.SyRolePermEntity;
 import com.hd.microsysservice.mapper.SyRoleMapper;
 import com.hd.microsysservice.service.SyRolePermService;
 import com.hd.microsysservice.service.SyRoleService;
-import com.hd.microsysservice.utils.EnterpriseVerifyUtil;
+import com.hd.microsysservice.utils.VerifyUtil;
 import com.hd.microsysservice.utils.VoConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class SyRoleServiceImpl extends ServiceImpl<SyRoleMapper, SyRoleEntity> i
         }
 
         SyRoleEntity syRoleEntity=new SyRoleEntity();
-        VoConvertUtils.convertObject(syRoleVo,syRoleEntity);
+        VoConvertUtils.copyObjectProperties(syRoleVo,syRoleEntity);
         save(syRoleEntity);
         //更新权限
         if (syRoleVo.getSyMenuBtnVos() != null) {
@@ -61,7 +61,7 @@ public class SyRoleServiceImpl extends ServiceImpl<SyRoleMapper, SyRoleEntity> i
     @Override
     public void updateRole(SyRoleVo syRoleVo) {
         SyRoleEntity syRoleEntity=new SyRoleEntity();
-        VoConvertUtils.convertObject(syRoleVo,syRoleEntity);
+        VoConvertUtils.copyObjectProperties(syRoleVo,syRoleEntity);
         updateById(syRoleEntity);
         //更新权限
         if (syRoleVo.getSyMenuBtnVos() != null) {
@@ -81,10 +81,10 @@ public class SyRoleServiceImpl extends ServiceImpl<SyRoleMapper, SyRoleEntity> i
         Assert.isTrue(roleId!=null,"id不能为NULL!");
         SyRoleEntity syRoleEntity=syRoleService.getById(roleId);
         Assert.isTrue(syRoleEntity!=null,String.format("角色(id=%s)不存在!",roleId));
-        EnterpriseVerifyUtil.verifyEnterId(syRoleEntity.getEnterpriseId());
+        VerifyUtil.verifyEnterId(syRoleEntity.getEnterpriseId());
 
         SyRoleVo syRoleVo=new SyRoleVo();
-        VoConvertUtils.convertObject(syRoleEntity,syRoleVo);
+        VoConvertUtils.copyObjectProperties(syRoleEntity,syRoleVo);
         //查询角色的授权按钮
         List<SyMenuBtnVo> syMenuBtnVos = baseMapper.getRolePermBtn(roleId);
         syRoleVo.setSyMenuBtnVos(syMenuBtnVos);

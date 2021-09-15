@@ -7,7 +7,7 @@ package com.hd.gateway.conf;
 import com.alibaba.fastjson.JSON;
 import com.hd.common.RetResult;
 import com.hd.common.model.TokenInfo;
-import com.hd.gateway.utils.HttpUtil;
+import com.hd.gateway.service.MicroSysService;
 import com.hd.gateway.utils.JwtUtils;
 import com.hd.gateway.utils.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +17,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -31,6 +32,9 @@ import java.util.Map;
 public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    MicroSysService microSysService;
 
     @Value("${config.auth-uri}")
     String authUri;
@@ -61,14 +65,18 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
             params.put("method", tokenInfo.getMethod());
             params.put("enterId", tokenInfo.getEnterpriseId());
             //retResult=new RetResult(0,"",true);
-            retResult= HttpUtil.httpPost(authUri+"/authbridge?account={account}&scopes={scopes}&uri={uri}&method={method}&enterId={enterId}",params);
+            //retResult= HttpUtil.httpPost(authUri+"/sys/authbridge?account={account}&scopes={scopes}&uri={uri}&method={method}&enterId={enterId}",params);
+            retResult = microSysService.authbridge(tokenInfo);
+
         } catch (Exception e) {
-            retResult = new RetResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), false);
+            retResult = new RetResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), "-1");
         }
 
         boolean permitted=false;
+        Long userId=-1L;
         if(retResult.getData()!=null){
-            permitted = (Boolean) retResult.getData();
+            userId=Long.parseLong(retResult.getData().toString());
+            permitted = (userId!=-1L);
         }
 
         if (!permitted)  {
@@ -76,8 +84,14 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
             retResult = new RetResult(HttpStatus.UNAUTHORIZED.value(), "授权异常!", false);
             return ResponseUtil.makeJsonResponse(exchange.getResponse(), retResult);
         }
+        else {
+            //把tokeninfo中center user id改成业务系统的user id
+            tokenInfo.setId(userId.toString());
+        }
         //TODO: 记录访问日志
-        return chain.filter(exchange);
+        ServerHttpRequest request = exchange.getRequest().mutate().header("token-info", JSON.toJSONString(tokenInfo)).build();
+        ServerWebExchange buildExchange = exchange.mutate().request(request).build();
+        return chain.filter(buildExchange);
     }
 
     @Override

@@ -40,9 +40,10 @@ public class EnterpriseController extends SuperQueryController {
 
     @ApiOperation(value = "获取企业列表信息")
     @RequiresPermissions(value = "enterprise:list", note = "分页获取企业列表")
-    @GetMapping("/enterprise")
+    @PostMapping("/enterprise/list")
     public RetResult getEnterprise(@RequestParam("query") String query) {
         PageQueryExpressionList pageQuery = JSON.parseObject(query, PageQueryExpressionList.class);
+        Assert.isTrue(pageQuery!=null,"查询参数错误!");
         adaptiveQueryColumn(pageQuery);
         //不查询逻辑删除的
         QueryExpression queryExpression = new QueryExpression();
@@ -54,7 +55,7 @@ public class EnterpriseController extends SuperQueryController {
         List<SyEnterpriseVo> listVo = new ArrayList<>();
         for (SyEnterpriseEntity syEnterpriseEntity : syEnterpriseEntityPage.getRecords()) {
             SyEnterpriseVo syEnterpriseVo = new SyEnterpriseVo();
-            VoConvertUtils.convertObject(syEnterpriseEntity, syEnterpriseVo);
+            VoConvertUtils.copyObjectProperties(syEnterpriseEntity, syEnterpriseVo);
             listVo.add(syEnterpriseVo);
         }
         return RetResponse.makeRsp(new MyPage<>(syEnterpriseEntityPage.getCurrent(), syEnterpriseEntityPage.getSize(), syEnterpriseEntityPage.getTotal(), listVo));
@@ -65,7 +66,7 @@ public class EnterpriseController extends SuperQueryController {
     @PostMapping("/enterprise")
     public RetResult createEnterprise(@RequestBody @Validated SyEnterpriseVo syEnterpriseVo) {
         SyEnterpriseEntity syEnterpriseEntity = new SyEnterpriseEntity();
-        VoConvertUtils.convertObject(syEnterpriseVo, syEnterpriseEntity);
+        VoConvertUtils.copyObjectProperties(syEnterpriseVo, syEnterpriseEntity);
         syEnterpriseService.createEnterprise(syEnterpriseEntity);
         return RetResponse.makeRsp("创建企业成功.");
     }
@@ -79,7 +80,7 @@ public class EnterpriseController extends SuperQueryController {
             throw new Exception("企业编码不可以修改!");
         }
         syEnterpriseEntity = new SyEnterpriseEntity();
-        VoConvertUtils.convertObject(syEnterpriseVo, syEnterpriseEntity);
+        VoConvertUtils.copyObjectProperties(syEnterpriseVo, syEnterpriseEntity);
         syEnterpriseService.updateById(syEnterpriseEntity);
         return RetResponse.makeRsp("编辑企业成功.");
     }

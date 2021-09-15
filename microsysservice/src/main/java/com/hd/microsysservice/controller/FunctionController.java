@@ -65,7 +65,7 @@ public class FunctionController  extends SuperQueryController {
     @PostMapping("/function")
     public RetResult createFunc(@RequestBody SyFunctionVo syFuncVo) throws Exception {
         SyFunctionEntity syFunctionEntity =new SyFunctionEntity();
-        VoConvertUtils.convertObject(syFuncVo,syFunctionEntity);
+        VoConvertUtils.copyObjectProperties(syFuncVo,syFunctionEntity);
         syFunctionService.save(syFunctionEntity);
         return RetResponse.makeRsp("创建功能成功");
     }
@@ -82,7 +82,7 @@ public class FunctionController  extends SuperQueryController {
     public RetResult getFunc(@PathVariable("funcId") Long funcId) throws Exception {
         SyFunctionEntity syFunctionEntity = syFunctionService.getById(funcId);
         SyFunctionVo syFunctionVo =new SyFunctionVo();
-        VoConvertUtils.convertObject(syFunctionEntity,syFunctionVo);
+        VoConvertUtils.copyObjectProperties(syFunctionEntity,syFunctionVo);
         return RetResponse.makeRsp(syFunctionVo);
     }
     @ApiOperation(value = "删除功能")
@@ -98,7 +98,7 @@ public class FunctionController  extends SuperQueryController {
     @PostMapping("/function/opr")
     public RetResult createFuncOpr(@RequestBody SyFuncOperatorVo syFuncOprVo) throws Exception {
         SyFuncOperatorEntity syFuncOperatorEntity =new SyFuncOperatorEntity();
-        VoConvertUtils.convertObject(syFuncOprVo,syFuncOperatorEntity);
+        VoConvertUtils.copyObjectProperties(syFuncOprVo,syFuncOperatorEntity);
         syFuncOperatorService.save(syFuncOperatorEntity);
         return RetResponse.makeRsp("创建操作成功");
     }
@@ -107,7 +107,7 @@ public class FunctionController  extends SuperQueryController {
     @PutMapping("/function/opr/{funcOprId}")
     public RetResult editFuncOpr(@PathVariable("funcOprId") Long funcOprId,@RequestBody SyFuncOperatorVo syFuncOprVo) throws Exception {
         SyFuncOperatorEntity syFuncOperatorEntity =new SyFuncOperatorEntity();
-        VoConvertUtils.convertObject(syFuncOprVo,syFuncOperatorEntity);
+        VoConvertUtils.copyObjectProperties(syFuncOprVo,syFuncOperatorEntity);
         syFuncOperatorService.updateById(syFuncOperatorEntity);
         return RetResponse.makeRsp("修改操作成功");
     }
@@ -117,6 +117,14 @@ public class FunctionController  extends SuperQueryController {
     public RetResult delFuncOpr(@PathVariable("funcOprId") Long funcOprId) throws Exception {
         syFuncOperatorService.removeById(funcOprId);
         return RetResponse.makeRsp("删除操作成功");
+    }
+    SyUrlMappingService.SyUrlMappingVoConvertUtils syUrlMappingVoConvertUtils=new SyUrlMappingService.SyUrlMappingVoConvertUtils();
+    @ApiOperation(value = "urlmapping 添加")
+    @RequiresPermissions("urlMaping:add")
+    @PostMapping("/url-mapping")
+    public RetResult addUrlMapping(@RequestBody SyUrlMappingVo syUrlMappingVo){
+        syUrlMappingService.save(syUrlMappingVoConvertUtils.convertToT1(syUrlMappingVo));
+        return RetResponse.makeRsp("添加成功");
     }
     @ApiOperation(value = "分页获取所有urlmapping")
     @RequiresPermissions("urlMaping:get")
@@ -128,7 +136,7 @@ public class FunctionController  extends SuperQueryController {
         List<SyUrlMappingVo> listVo=new ArrayList<>();
         for(SyUrlMappingEntity syUrlMappingEntity : syUrlMappingEntityPage.getRecords()){
             SyUrlMappingVo syUrlMappingVo=new SyUrlMappingVo();
-            VoConvertUtils.convertObject(syUrlMappingEntity,syUrlMappingVo);
+            VoConvertUtils.copyObjectProperties(syUrlMappingEntity,syUrlMappingVo);
             listVo.add(syUrlMappingVo);
         }
         return RetResponse.makeRsp(new MyPage<>(syUrlMappingEntityPage.getCurrent(), syUrlMappingEntityPage.getSize(), syUrlMappingEntityPage.getTotal(),listVo));
@@ -144,7 +152,7 @@ public class FunctionController  extends SuperQueryController {
         List<SyFuncOpUrlVo> syFuncOpUrlVoList=new ArrayList<>() ;
         for (SyFuncOpUrlEntity syFuncOpUrlEntity : syFuncOpUrlEntityList){
             SyFuncOpUrlVo syFuncOpUrlVo=new SyFuncOpUrlVo();
-            VoConvertUtils.convertObject(syFuncOpUrlEntity,syFuncOpUrlVo);
+            VoConvertUtils.copyObjectProperties(syFuncOpUrlEntity,syFuncOpUrlVo);
             syFuncOpUrlVoList.add(syFuncOpUrlVo);
         }
         return RetResponse.makeRsp(syFuncOpUrlVoList);
@@ -161,7 +169,7 @@ public class FunctionController  extends SuperQueryController {
         List<SyFuncOpUrlEntity> syFuncOpUrlEntityList=new ArrayList<>() ;
         for (SyFuncOpUrlVo syFuncOpUrlVo : syFuncOpUrlVos){
             SyFuncOpUrlEntity syFuncOpUrlEntity=new SyFuncOpUrlEntity();
-            VoConvertUtils.convertObject(syFuncOpUrlVo,syFuncOpUrlEntity);
+            VoConvertUtils.copyObjectProperties(syFuncOpUrlVo,syFuncOpUrlEntity);
             syFuncOpUrlEntity.setId(null);
             syFuncOpUrlEntity.setFuncOpId(funcOprId);
             syFuncOpUrlEntityList.add(syFuncOpUrlEntity);

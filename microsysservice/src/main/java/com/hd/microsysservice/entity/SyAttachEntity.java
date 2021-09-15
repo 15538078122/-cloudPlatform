@@ -28,6 +28,10 @@ public class SyAttachEntity extends Model<SyAttachEntity> {
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
+    public void  setId(Long id){
+        this.id=id;
+    }
+
     @TableField("enterprise_id")
     private String enterpriseId;
 

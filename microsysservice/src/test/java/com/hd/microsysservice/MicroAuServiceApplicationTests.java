@@ -38,7 +38,7 @@ class MicroAuServiceApplicationTests {
 		// 字段前缀
 		String [] fieldPrefixes = {};
 		// 基础包名
-		String packageName = "com.hd.microauservice";
+		String packageName = "com.hd.microsysservice";
 		GeneralSqlUtil.execute(dbType, dbUrl, username, password, driver, tablePrefixes, tableNames, packageName, fieldPrefixes);
 	}
 

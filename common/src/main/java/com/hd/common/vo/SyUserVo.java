@@ -64,18 +64,25 @@ public class SyUserVo implements Serializable {
     private String passwordMd5;
 
     /**
+     * 密码hash值
+     */
+    private String passwordMd5Old;
+    /**
      * 电话
      */
+    @JSONField(serialzeFeatures={SerializerFeature.WriteNullStringAsEmpty})
     private String phone;
 
     /**
      * 手机
      */
+    @JSONField(serialzeFeatures={SerializerFeature.WriteNullStringAsEmpty})
     private String mobile;
 
     /**
      * 职务
      */
+    @JSONField(serialzeFeatures={SerializerFeature.WriteNullStringAsEmpty})
     @ApiModelProperty(value = "职务")
     private String jobName;
 
@@ -86,6 +93,9 @@ public class SyUserVo implements Serializable {
 
     @ApiModelProperty(value = "删除标志")
     private boolean deleteFlag;
+
+    @ApiModelProperty(value = "用户头像")
+    private Long headPic;
 
     @ApiModelProperty(value = "用户角色,不更新时，此字段为null")
     private List<SyRoleVo> syRoleVos;

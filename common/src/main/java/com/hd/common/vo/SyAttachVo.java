@@ -8,8 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -42,8 +40,8 @@ public class SyAttachVo implements Serializable {
     @ApiModelProperty(value = "上传人name")
     private String uploadByName;
 
-    @NotNull(message = "上传文件名不能为空！")
-    @NotBlank(message = "上传文件名不能为空！")
+    //@NotNull(message = "上传文件名不能为空！")
+    //@NotBlank(message = "上传文件名不能为空！")
     private String fileName;
 
     @ApiModelProperty(value = "文件mimetype")

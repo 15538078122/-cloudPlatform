@@ -43,7 +43,7 @@ public class Swagger2Config {
                 //标题
                 .title("Micro authentication service RESTful APIs")
                 .description("通过访问swagger-ui.html,实现接口测试、文档生成")
-                .termsOfServiceUrl("http://localhost:20002")
+                .termsOfServiceUrl("http://localhost:50001/")
                 //设置联系方式
                 //.contact(new Contact("wli", "https://xxxxxx/xxx", "xxxxx@xx.com"))
                 .version("21.06.25")

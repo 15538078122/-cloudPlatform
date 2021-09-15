@@ -14,7 +14,7 @@ ribbon:
 feign:
   hystrix:
     enabled: true
-micromonitor:
+microsys:
   ribbon:
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule #配置规则 随机
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule #配置规则 轮询
@@ -29,7 +29,7 @@ micromonitor:
     MaxAutoRetries: 1 #对当前实例的重试次数
 hystrix:
   command:
-    "FallbackFeignServiceDemo#test2(String)":  #default全局有效，service id指定应用有效
+    "MicroSysService#addUrlMapping(SyUrlMappingVo)":  #default全局有效，service id指定应用有效
       execution:
         timeout:
           #是否开启超时熔断
@@ -37,7 +37,7 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 5000 #断路器超时时间，默认1000ms
-    "AuthFeignService#auth(String,String,String,String,String)":  #default全局有效，service id指定应用有效
+    "default":  #default全局有效，service id指定应用有效
       execution:
         timeout:
           #是否开启超时熔断

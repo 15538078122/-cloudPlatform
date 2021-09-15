@@ -6,7 +6,6 @@ import com.hd.common.vo.SyMenuBtnVo;
 import com.hd.microsysservice.entity.SyMenuBtnEntity;
 import com.hd.microsysservice.mapper.SyMenuBtnMapper;
 import com.hd.microsysservice.service.SyMenuBtnService;
-import com.hd.microsysservice.utils.VoConvertUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ import java.util.List;
 @Service
 public class SyMenuBtnServiceImpl extends ServiceImpl<SyMenuBtnMapper, SyMenuBtnEntity> implements SyMenuBtnService {
 
+    SyMenuBtnService.SyMenuBtnVoConvertUtils syMenuBtnVoConvertUtils=new SyMenuBtnService.SyMenuBtnVoConvertUtils();
     @Override
     public List<SyMenuBtnVo> getBtnsByMenuId(Long menuId,Boolean isAll) {
         QueryWrapper<SyMenuBtnEntity> queryWrapper=new QueryWrapper();
@@ -33,7 +33,7 @@ public class SyMenuBtnServiceImpl extends ServiceImpl<SyMenuBtnMapper, SyMenuBtn
         List<SyMenuBtnEntity> syMenuBtnEntities = this.baseMapper.selectList(queryWrapper);
         List<SyMenuBtnVo> syMenuBtnVos=new ArrayList<>();
         for (SyMenuBtnEntity syMenuBtnEntity : syMenuBtnEntities){
-            syMenuBtnVos.add(VoConvertUtils.syMenuBtnToVo(syMenuBtnEntity));
+            syMenuBtnVos.add(syMenuBtnVoConvertUtils.convertToT2(syMenuBtnEntity));
         }
         return  syMenuBtnVos;
     }

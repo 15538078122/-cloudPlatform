@@ -1,0 +1,62 @@
+server:
+  port: 20003
+  servlet:
+    context-path: /monitor
+  tomcat:
+    accesslog:
+      enabled: false
+    basedir: ./tomcatlog
+spring:
+  application:
+    #authentication service
+    name: micromonitor
+  datasource:
+    url: "jdbc:mysql://192.168.3.78:3306/platsys?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai"
+    username: root
+    password: Huadao_@123
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      #初始化连接池的连接数量 大小，最小，最大
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      query-timeout: 30
+  redis:
+    port: 6379
+    host: localhost
+    password:
+    jedis:
+      pool:
+        max-active: 8
+    database: 0
+    timeout: 5000
+  main:
+    allow-bean-definition-overriding: true
+  data:
+    mongodb:
+      #      host: localhost
+      #      port: 27017
+      #      database: test
+      uri: mongodb://localhost:27017/gatewaylogs
+mybatis-plus:
+  mapper-locations: classpath*:mybatis/*.xml
+  type-aliases-package: com.hd.micromonitorservice.entity
+  global-config:
+    worker-id:    1
+    datacenter-id:  2
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+logging:
+  level:
+    root: error
+    com.hd: info
+    com.alibaba: error
+    org.apache.tomcat: error
+    org.apache.catalina: error
+config:
+  scanUri: false
+  user-center-uri: http://127.0.0.1:10001
+  USER_OP_IDENTIFICATION: "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
+  attach-path: /usr/local/attach/
+  heart-beat-uri: http://127.0.0.1:20003/monitor/heartbeat

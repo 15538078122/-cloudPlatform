@@ -2,6 +2,7 @@ package com.hd.microsysservice.conf;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -31,5 +32,14 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
         //将所有/static/** 访问都映射到classpath:/static/ 目录下
         registry.addResourceHandler("/static/**").addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX +"/static/");
         super.addResourceHandlers(registry);
+    }
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("GET","HEAD","POST","PUT","DELETE","OPTIONS")
+                .allowCredentials(true)
+                .maxAge(3600)
+                .allowedHeaders("*");
     }
 }

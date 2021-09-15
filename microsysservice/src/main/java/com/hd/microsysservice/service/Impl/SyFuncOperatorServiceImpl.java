@@ -31,7 +31,7 @@ public class SyFuncOperatorServiceImpl extends ServiceImpl<SyFuncOperatorMapper,
         List<SyFuncOperatorVo> syFuncOperatorVos=new ArrayList<>();
         for (SyFuncOperatorEntity syFuncOperatorEntity : syFuncOperatorEntities){
             SyFuncOperatorVo syFuncOperatorVo=new SyFuncOperatorVo();
-            VoConvertUtils.convertObject(syFuncOperatorEntity,syFuncOperatorVo);
+            VoConvertUtils.copyObjectProperties(syFuncOperatorEntity,syFuncOperatorVo);
             syFuncOperatorVos.add(syFuncOperatorVo);
         }
         return  syFuncOperatorVos;

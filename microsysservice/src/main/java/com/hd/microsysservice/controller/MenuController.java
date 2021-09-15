@@ -10,8 +10,7 @@ import com.hd.microsysservice.entity.SyMenuBtnEntity;
 import com.hd.microsysservice.entity.SyMenuEntity;
 import com.hd.microsysservice.service.SyMenuBtnService;
 import com.hd.microsysservice.service.SyMenuService;
-import com.hd.microsysservice.utils.EnterpriseVerifyUtil;
-import com.hd.microsysservice.utils.VoConvertUtils;
+import com.hd.microsysservice.utils.VerifyUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +61,8 @@ public class MenuController {
     @RequiresPermissions("enterprise:menu")
     @GetMapping("/menu")
     public RetResult getEnterpriseMenu(String enterId) throws Exception {
-        EnterpriseVerifyUtil.verifyEnterId(enterId);
+        //Thread.sleep(5000*90);
+        VerifyUtil.verifyEnterId(enterId);
         List<SyMenuVo> listVo = syMenuService.getAllMenu(enterId);
         return RetResponse.makeRsp(listVo);
     }
@@ -71,9 +71,9 @@ public class MenuController {
     @RequiresPermissions("menu:create")
     @PostMapping("/menu")
     public RetResult createMenu(@RequestBody  @Validated SyMenuVo syMenuVo) throws Exception {
-        EnterpriseVerifyUtil.verifyEnterId(syMenuVo.getEnterpriseId());
+        VerifyUtil.verifyEnterId(syMenuVo.getEnterpriseId());
         //syMenuVo.setEnterpriseId(enterpriseId);
-        syMenuService.createMenu(VoConvertUtils.syMenuToEntity(syMenuVo));
+        syMenuService.createMenu(syMenuVoConvertUtils.convertToT1(syMenuVo));
         return RetResponse.makeRsp("创建菜单成功");
     }
 
@@ -90,7 +90,7 @@ public class MenuController {
     @GetMapping("/menu/{id}")
     public RetResult getMenu(@PathVariable("id") Long menuId) throws Exception {
         SyMenuEntity syMenuEntity = syMenuService.getById(menuId);
-        return RetResponse.makeRsp(VoConvertUtils.syMenuToVo(syMenuEntity));
+        return RetResponse.makeRsp(syMenuVoConvertUtils.convertToT2(syMenuEntity));
     }
 
     @ApiOperation(value = "删除菜单")
@@ -98,7 +98,7 @@ public class MenuController {
     @DeleteMapping("/menu/{id}")
     public RetResult delMenu(@PathVariable("id") Long menuId) throws Exception {
         SyMenuEntity syMenuEntity=syMenuService.getById(menuId);
-        EnterpriseVerifyUtil.verifyEnterId(syMenuEntity.getEnterpriseId());
+        VerifyUtil.verifyEnterId(syMenuEntity.getEnterpriseId());
         syMenuService.deleteMenu(menuId);
         return RetResponse.makeRsp("删除菜单成功");
     }
@@ -107,8 +107,8 @@ public class MenuController {
     @RequiresPermissions("menuBtn:create")
     @PostMapping("/menu/btn")
     public RetResult createMenuBtn(@RequestBody SyMenuBtnVo syMenuBtnVo) throws Exception {
-        EnterpriseVerifyUtil.verifyEnterId(syMenuBtnVo.getEnterpriseId());
-        syMenuBtnService.save(VoConvertUtils.syMenuBtnToEntity(syMenuBtnVo));
+        VerifyUtil.verifyEnterId(syMenuBtnVo.getEnterpriseId());
+        syMenuBtnService.save(syMenuBtnVoConvertUtils.convertToT1(syMenuBtnVo));
         return RetResponse.makeRsp("创建按钮成功");
     }
 
@@ -116,8 +116,8 @@ public class MenuController {
     @RequiresPermissions("menuBtn:edit")
     @PutMapping("/menu/btn/{id}")
     public RetResult editMenuBtn(@PathVariable("id") Long menuId, @RequestBody SyMenuBtnVo syMenuBtnVo) throws Exception {
-        EnterpriseVerifyUtil.verifyEnterId(syMenuBtnVo.getEnterpriseId());
-        SyMenuBtnEntity syMenuBtnEntity = VoConvertUtils.syMenuBtnToEntity(syMenuBtnVo);
+        VerifyUtil.verifyEnterId(syMenuBtnVo.getEnterpriseId());
+        SyMenuBtnEntity syMenuBtnEntity =syMenuBtnVoConvertUtils.convertToT1(syMenuBtnVo);
         syMenuBtnService.updateById(syMenuBtnEntity);
         return RetResponse.makeRsp("修改按钮成功");
     }
@@ -127,10 +127,11 @@ public class MenuController {
     @DeleteMapping("/menu/btn/{id}")
     public RetResult delMenuBtn(@PathVariable("id") Long menuBtnId) throws Exception {
         SyMenuBtnEntity syMenuBtnEntity=syMenuBtnService.getById(menuBtnId);
-        EnterpriseVerifyUtil.verifyEnterId(syMenuBtnEntity.getEnterpriseId());
+        VerifyUtil.verifyEnterId(syMenuBtnEntity.getEnterpriseId());
         Assert.isTrue(syMenuBtnEntity.getName().compareTo("list")!=0,"特殊按钮项，不能删除!");
         syMenuBtnService.removeById(menuBtnId);
         return RetResponse.makeRsp("删除按钮成功");
     }
-
+    SyMenuBtnService.SyMenuBtnVoConvertUtils syMenuBtnVoConvertUtils=new SyMenuBtnService.SyMenuBtnVoConvertUtils();
+    SyMenuService.SyMenuVoConvertUtils syMenuVoConvertUtils=new SyMenuService.SyMenuVoConvertUtils();
 }

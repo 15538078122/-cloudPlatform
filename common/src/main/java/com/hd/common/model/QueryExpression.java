@@ -27,4 +27,11 @@ public class QueryExpression implements Serializable {
      * 连接类型，如like,equals,gt,ge,lt,le
      */
     private String type;
+    public String getValue(){
+        if(value==null) {
+            return  "";
+        }
+        return  value;
+    }
+
 }

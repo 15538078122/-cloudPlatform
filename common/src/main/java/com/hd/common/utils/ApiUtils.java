@@ -22,7 +22,7 @@ import java.util.Map;
 public class ApiUtils {
     public final static List<Api> API_LIST = new ArrayList<>();
 
-    public static List<Api> ScanApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public static List<Api> ScanApplicationContext(ApplicationContext applicationContext,String servletContextPath) throws BeansException {
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(RestController.class);
         //controler 上的@RefreshScope会造成加载了两个bean，进而scan重复
         beans.forEach((name, bean) -> {
@@ -47,7 +47,7 @@ public class ApiUtils {
                     }
                     //   api路径
                     List<String> pathList = new ArrayList<>();
-                    pathList.add(String.format("%s %s%s",methodPath.method,rootPath[0],methodPath.path).replace("//","/"));
+                    pathList.add(String.format("%s %s%s",methodPath.method,servletContextPath+rootPath[0],methodPath.path).replace("//","/"));
                     Api api = new Api();
                     api.setClassName(className)
                             .setMethodName(method.getName())

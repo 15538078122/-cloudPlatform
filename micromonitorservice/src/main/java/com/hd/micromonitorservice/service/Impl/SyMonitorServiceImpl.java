@@ -38,7 +38,7 @@ public class SyMonitorServiceImpl extends ServiceImpl<SyMonitorMapper, SyMonitor
         List<SyMonitorVo> syMonitorVos=new ArrayList<>();
         for(SyMonitorEntity syMonitorEntity:syMonitorEntities){
             SyMonitorVo syMonitorVo=new SyMonitorVo();
-            VoConvertUtils.convertObject(syMonitorEntity,syMonitorVo);
+            VoConvertUtils.copyObjectProperties(syMonitorEntity,syMonitorVo);
             if(((new Date()).getTime() - syMonitorVo.getHeartbeatTm().getTime())>1000*35){
                 //35s
                 syMonitorVo.setOnLine(false);

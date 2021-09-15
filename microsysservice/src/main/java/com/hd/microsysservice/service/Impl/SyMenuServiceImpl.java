@@ -11,8 +11,7 @@ import com.hd.microsysservice.entity.SyMenuEntity;
 import com.hd.microsysservice.mapper.SyMenuMapper;
 import com.hd.microsysservice.service.SyMenuBtnService;
 import com.hd.microsysservice.service.SyMenuService;
-import com.hd.microsysservice.utils.EnterpriseVerifyUtil;
-import com.hd.microsysservice.utils.VoConvertUtils;
+import com.hd.microsysservice.utils.VerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -36,6 +35,8 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
     @Autowired
     SyMenuBtnService syMenuBtnService;
 
+    SyMenuService.SyMenuVoConvertUtils syMenuVoConvertUtils=new SyMenuService.SyMenuVoConvertUtils();
+
     @Override
     public List<SyMenuVo> getAllMenu(String enterpriseId) {
         QueryWrapper queryWrapper=new QueryWrapper();
@@ -46,7 +47,7 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
 
         List<SyMenuVo> listVo = new ArrayList<>();
         for(SyMenuEntity syMenuEntity:list){
-            SyMenuVo syMenuVo = VoConvertUtils.syMenuToVo(syMenuEntity);
+            SyMenuVo syMenuVo = syMenuVoConvertUtils.convertToT2(syMenuEntity);
             List<SyMenuBtnVo> btns = syMenuBtnService.getBtnsByMenuId(syMenuVo.getId(),true);
             if(btns.size()>0){
                 syMenuVo.setBtns(btns);
@@ -65,7 +66,7 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
         List<SyMenuEntity> list =baseMapper.selectUserMenu(tokenInfo.getId(),tokenInfo.getEnterpriseId());
         List<SyMenuVo> listVo = new ArrayList<>();
         for(SyMenuEntity syMenuEntity:list){
-            SyMenuVo syMenuVo = VoConvertUtils.syMenuToVo(syMenuEntity);
+            SyMenuVo syMenuVo = syMenuVoConvertUtils.convertToT2(syMenuEntity);
             List<SyMenuBtnVo> btns = syMenuBtnService.getBtnsByMenuId(syMenuVo.getId(),false);
             if(btns.size()>0){
                 syMenuVo.setBtns(btns);
@@ -159,13 +160,13 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
     public void updateMenu(Long menuId, SyMenuVo syMenuVo) throws Exception {
-        EnterpriseVerifyUtil.verifyEnterId(syMenuVo.getEnterpriseId());
+        VerifyUtil.verifyEnterId(syMenuVo.getEnterpriseId());
         SyMenuEntity syMenuEntityOld= getById(syMenuVo.getId());
         if(syMenuEntityOld==null){
             throw  new Exception(String.format("菜单(id=%s)不存在!",syMenuVo.getId()));
         }
         //更新关联编码
-        SyMenuEntity syMenuEntityNew = VoConvertUtils.syMenuToEntity(syMenuVo);
+        SyMenuEntity syMenuEntityNew = syMenuVoConvertUtils.convertToT1(syMenuVo);
         if(syMenuEntityOld.getPathCode().compareTo(syMenuEntityNew.getPathCode())!=0){
             recurUpdatePathCode(syMenuEntityNew);
         }

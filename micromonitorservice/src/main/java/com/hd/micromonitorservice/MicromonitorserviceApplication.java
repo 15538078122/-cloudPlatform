@@ -26,4 +26,40 @@ public class MicromonitorserviceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MicromonitorserviceApplication.class, args);
 	}
+
+
+	/**
+	 * 修改dispatch拦截路径
+	 * @param dispatcherServlet
+	 * @return
+	 */
+//	@Bean
+//	public ServletRegistrationBean dispatcherRegistration(DispatcherServlet dispatcherServlet) {
+//		ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet);
+//		registration.getUrlMappings().clear();
+//		registration.addUrlMappings("/*");
+//		//registration.addUrlMappings("*.json");
+//		return registration;
+//	}
+	//@Bean
+//	public ServletRegistrationBean restServlet(){
+//		//注解扫描上下文
+//		AnnotationConfigWebApplicationContext applicationContext
+//				= new AnnotationConfigWebApplicationContext();
+//		//base package
+//		//applicationContext.scan("com.jerryl.rest");
+//		//通过构造函数指定dispatcherServlet的上下文
+//		DispatcherServlet rest_dispatcherServlet
+//				= new MyDispatcherServlet(applicationContext);
+//
+//		//用ServletRegistrationBean包装servlet
+//		ServletRegistrationBean registrationBean
+//				= new ServletRegistrationBean(rest_dispatcherServlet);
+//		registrationBean.setLoadOnStartup(1);
+//		//指定urlmapping
+//		registrationBean.addUrlMappings("/xxxxxx/*");
+//		//指定name，如果不指定默认为dispatcherServlet
+//		registrationBean.setName("rest");
+//		return registrationBean;
+//	}
 }

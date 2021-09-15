@@ -1,12 +1,11 @@
 package com.hd.microsysservice.service.Impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.hd.microsysservice.entity.SyUrlMappingEntity;
-import com.hd.microsysservice.entity.SyUserEntity;
+import com.hd.common.model.TokenInfo;
 import com.hd.microsysservice.service.AuthService;
 import com.hd.microsysservice.service.SyFuncOpUrlService;
 import com.hd.microsysservice.service.SyUrlMappingService;
 import com.hd.microsysservice.service.SyUserService;
+import com.hd.microsysservice.utils.UserCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,6 +28,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     SyUserService syUserService;
 
+    @Autowired
+    UserCommonUtil userCommonUtil;
+
     HashMap<String, List<String>> scopePermissionList = new HashMap<>();
 
     List permissionCodeList = new ArrayList<String>(
@@ -47,43 +49,64 @@ public class AuthServiceImpl implements AuthService {
         scopePermissionList.put("write", permissionCodeList);
     }
     @Override
-    public Boolean auth(String account, String scopes, String uri, String method, String enterpriseId) {
-        if(true) {
-            return true;
-        }
+    /**
+     * 返回：失败-1；成功：userId，如果是client id登录，返回0；
+     */
+    public Long auth(TokenInfo tokenInfo) {
         //Thread.sleep(60);Thread.currentThread().getId()
         //scopes=scopes.toUpperCase();
+        String scopes=tokenInfo.getScopes();
         List scopeList = Arrays.asList(scopes.split(","));
-        QueryWrapper<SyUrlMappingEntity> queryWrapper = new QueryWrapper();
-        queryWrapper.eq("url", method.toLowerCase() + " " + uri);
-        queryWrapper.or().eq("url", "all " + uri);
-        SyUrlMappingEntity syUrlMappingEntity = syUrlMappingService.getOne(queryWrapper);
-        String permissionCode=syUrlMappingEntity==null?null:syUrlMappingEntity.getPermCode();
-        permissionCode = syUrlMappingService.getPermissionCode(method.toLowerCase(),uri);
-        log.debug(String.format("check auth:\nenterpriseId:%s,user:%s,scope:%s\nuri:%s permCode:%s", enterpriseId, account, scopes
+        Long userId=-1L;
+        if (scopeList.contains("user")) {
+            Long UserIdByCenterUserId = userCommonUtil.getUserIdByCenterUserIdFromCach(Long.parseLong(tokenInfo.getId()));
+            //SyUserEntity syUserEntity = syUserService.getUserByAccount(account,enterpriseId);
+
+            if(UserIdByCenterUserId==null){
+                return userId;
+            }
+            userId=UserIdByCenterUserId;
+            if(false){
+                return userId;
+            }
+        }
+        else {
+            userId = 0L;
+        }
+        String method=tokenInfo.getMethod();
+        String uri=tokenInfo.getUri();
+//        QueryWrapper<SyUrlMappingEntity> queryWrapper = new QueryWrapper();
+//        queryWrapper.eq("url", method.toLowerCase() + " " + uri);
+//        queryWrapper.or().eq("url", "all " + uri);
+//        SyUrlMappingEntity syUrlMappingEntity = syUrlMappingService.getOne(queryWrapper);
+//        syUrlMappingEntity==null?null:syUrlMappingEntity.getPermCode();
+        String permissionCode= syUrlMappingService.getPermissionCode(method.toLowerCase(),uri);
+        String enterpriseId=tokenInfo.getEnterpriseId();
+        String account=tokenInfo.getAccount();
+        log.debug(String.format("check auth:\nenterpriseId:%s,user:%s,scope:%s,uri:%s,permCode:%s", enterpriseId, account, scopes
                                 ,uri,permissionCode));
         if (permissionCode == null) {
             //不限制
-            return true;
+            return userId;
         }
         //TODO: 具体的权限判断
         //sas模式 需要加入条件enterpriseId
         //首先判断scope
         if (scopeList.contains("user")) {
-            SyUserEntity syUserEntity = syUserService.getOneFromCach(account,enterpriseId);
-            List userPermissionList = syFuncOpUrlService.selectUserPerm(syUserEntity.getId());
+            List userPermissionList = syFuncOpUrlService.selectUserPerm(userId);
             //如果scope是user，使用用户的permission判断
             if (userPermissionList.contains(permissionCode)) {
-                return true;
+                return userId;
             }
         } else {
             //根据scope 判断,不管user是谁
             for (Object scope : scopeList) {
                 if ((scopePermissionList.get(scope) != null) && scopePermissionList.get(scope).contains(permissionCode)) {
-                    return true;
+                    return userId;
                 }
             }
         }
-        return false;
+        userId=-1L;
+        return userId;
     }
 }

@@ -23,9 +23,6 @@ public class MicroServiceController {
     @Value("${server.port}")
     String port;
 
-    @Value("${custom.property}")
-    String customProperty;
-
     @Autowired
     FallbackFeignServiceDemo iFallbackFeignServiceDemo;
 

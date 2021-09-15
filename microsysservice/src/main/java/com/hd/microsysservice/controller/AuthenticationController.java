@@ -1,16 +1,16 @@
 package com.hd.microsysservice.controller;
 
+import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import com.hd.common.model.RequiresPermissions;
-import com.hd.microsysservice.service.*;
+import com.hd.common.model.TokenInfo;
+import com.hd.microsysservice.service.AuthFeignService;
+import com.hd.microsysservice.service.AuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "url权限验证Controller")
 //@RefreshScope
@@ -28,10 +28,9 @@ public class AuthenticationController {
     @RequiresPermissions("permission:auth")
     @ApiOperation(value = "url权限验证func")
     @PostMapping(value = "/auth")
-    public Boolean auth(@RequestParam("account") String account, @RequestParam("scopes") String scopes, @RequestParam("uri") String uri
-            , @RequestParam("method") String method, @RequestParam("enterId") String enterpriseId) throws InterruptedException {
+    public RetResult auth(@RequestBody TokenInfo tokenInfo) throws InterruptedException {
 
-        return authService.auth(account,scopes,uri,method,enterpriseId);
+        return RetResponse.makeRsp("登录成功",authService.auth(tokenInfo).toString());
     }
 
     /**
@@ -48,16 +47,16 @@ public class AuthenticationController {
     @RequiresPermissions("permission:authbr")
     @ApiOperation(value = "url权限验证bridge func")
     @PostMapping(value = "/authbridge")
-    public RetResult authbridge(@RequestParam("account") String account, @RequestParam("scopes") String scopes, @RequestParam("uri") String uri
-            , @RequestParam("method") String method, @RequestParam("enterId") String enterpriseId) throws Exception {
-        //        int dd = 1 / 0;
+//    public RetResult authbridge(@RequestParam("account") String account, @RequestParam("scopes") String scopes, @RequestParam("uri") String uri
+//            , @RequestParam("method") String method, @RequestParam("enterId") String enterpriseId) throws Exception {
+    public RetResult authbridge(@RequestBody TokenInfo tokenInfo) throws Exception {
                 //Thread.sleep(400);
         //        int i = 0;
         //        while (i++ < Integer.MAX_VALUE / 5) {
         //            i += i * (new Random()).nextInt();
         //        }
 
-        RetResult retResult = authFeignService.auth(account, scopes, uri, method, enterpriseId);
+        RetResult retResult = authFeignService.auth(tokenInfo);
 
         return retResult;
     }

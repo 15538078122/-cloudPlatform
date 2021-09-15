@@ -50,7 +50,7 @@ public class JwtUtils {
         Jwt jwt = JwtHelper.decodeAndVerify(token, rsaVerifier);
         String claimsStr = jwt.getClaims();
         JSONObject  jsonObj = (JSONObject)JSONObject.parse(claimsStr);
-        String username = jsonObj.getString("user_name");
+        String userAccount = jsonObj.getString("user_name");
         String loginTime = jsonObj.getString("login_time");
         String enterpriseId = jsonObj.getString("enterprise_id");
         String id = jsonObj.getString("id");
@@ -68,7 +68,7 @@ public class JwtUtils {
                 scope+=",";
             }
         }
-        TokenInfo tokenInfo=new TokenInfo(id,username,enterpriseId,scope,null,null,loginTime);
+        TokenInfo tokenInfo=new TokenInfo(id,userAccount,enterpriseId,scope,null,null,loginTime);
         return  tokenInfo;
 
     }

@@ -1,8 +1,9 @@
 package com.hd.microsysservice.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.hd.common.vo.SyMenuVo;
 import com.hd.microsysservice.entity.SyMenuEntity;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.hd.microsysservice.utils.VoConvertUtils;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface SyMenuService extends IService<SyMenuEntity> {
     //void update(SyMenuEntity syMenuEntity);
 
     void updateMenu(Long menuId, SyMenuVo syMenuVo) throws Exception;
+    class SyMenuVoConvertUtils  extends VoConvertUtils<SyMenuEntity, SyMenuVo> {
+    }
 }

@@ -11,7 +11,7 @@ import com.hd.microsysservice.entity.SyUserEntity;
 import com.hd.microsysservice.mapper.SyOrgMapper;
 import com.hd.microsysservice.service.SyOrgService;
 import com.hd.microsysservice.service.SyUserService;
-import com.hd.microsysservice.utils.EnterpriseVerifyUtil;
+import com.hd.microsysservice.utils.VerifyUtil;
 import com.hd.microsysservice.utils.VoConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,7 +47,7 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
         List<SyOrgVo> listVo = new ArrayList<>();
         for(SyOrgEntity syOrgEntity:list){
             SyOrgVo syOrgVo=new SyOrgVo();
-            VoConvertUtils.convertObject(syOrgEntity,syOrgVo);
+            VoConvertUtils.copyObjectProperties(syOrgEntity,syOrgVo);
             listVo.add(syOrgVo);
         }
 
@@ -58,7 +58,7 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
 
     @Override
     public List<SyOrgVo> getMyOrgTree() {
-        SyUserEntity syUserEntity = syUserService.getOneFromCach(SecurityContext.GetCurTokenInfo().getAccount(), SecurityContext.GetCurTokenInfo().getEnterpriseId());
+        SyUserEntity syUserEntity = syUserService.getUserByAccount(SecurityContext.GetCurTokenInfo().getAccount(), SecurityContext.GetCurTokenInfo().getEnterpriseId());
         SyOrgEntity syOrgEntityCurUser = baseMapper.selectById(syUserEntity.getOrgId());
         DataPrivilege userDataPrivilege = syUserService.getUserDataPrivilege(syUserEntity.getId());
 
@@ -77,7 +77,7 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
         List<SyOrgVo> listVo = new ArrayList<>();
         for(SyOrgEntity syOrgEntity:list){
             SyOrgVo syOrgVo=new SyOrgVo();
-            VoConvertUtils.convertObject(syOrgEntity,syOrgVo);
+            VoConvertUtils.copyObjectProperties(syOrgEntity,syOrgVo);
             listVo.add(syOrgVo);
         }
 
@@ -113,7 +113,7 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
      * 根据数据权限获取当前用户可访问的org
      */
     public List<SyOrgEntity> getMyOrgList() {
-        SyUserEntity syUserEntity = syUserService.getOneFromCach(SecurityContext.GetCurTokenInfo().getAccount(), SecurityContext.GetCurTokenInfo().getEnterpriseId());
+        SyUserEntity syUserEntity = syUserService.getUserByAccount(SecurityContext.GetCurTokenInfo().getAccount(), SecurityContext.GetCurTokenInfo().getEnterpriseId());
         SyOrgEntity syOrgEntityCurUser = baseMapper.selectById(syUserEntity.getOrgId());
         DataPrivilege userDataPrivilege = syUserService.getUserDataPrivilege(syUserEntity.getId());
 
@@ -143,7 +143,7 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
 
     @Override
     public void createOrg(SyOrgVo syOrgVo) throws Exception {
-        EnterpriseVerifyUtil.verifyEnterId(syOrgVo.getEnterpriseId());
+        VerifyUtil.verifyEnterId(syOrgVo.getEnterpriseId());
         //TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
         if(syOrgVo.getParentId()==null){
             //每个企业只能创建一个顶级
@@ -153,7 +153,7 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
         }
 
         SyOrgEntity syOrgEntity=new SyOrgEntity();
-        VoConvertUtils.convertObject(syOrgVo,syOrgEntity);
+        VoConvertUtils.copyObjectProperties(syOrgVo,syOrgEntity);
         save(syOrgEntity);
     }
 
@@ -161,20 +161,28 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
     public void delOrg(Long orgId) {
         SyOrgEntity syOrgEntity=getById(orgId);
-        EnterpriseVerifyUtil.verifyEnterId(syOrgEntity.getEnterpriseId());
+        VerifyUtil.verifyEnterId(syOrgEntity.getEnterpriseId());
         deleteOrgRecursion(syOrgEntity);
     }
 
     @Override
     public List<SyUserVo> getMyOrgMen() {
         List<SyOrgVo> syOrgVos = getMyOrgTreeWithMen();
+        List<SyUserVo> syUserVos =getMyOrgMenRecursion(syOrgVos);
+
+        return syUserVos;
+    }
+    private  List<SyUserVo> getMyOrgMenRecursion( List<SyOrgVo> syOrgVos){
         List<SyUserVo> syUserVos =new ArrayList<SyUserVo>();
         for(SyOrgVo syOrgVo:syOrgVos){
             if(syOrgVo.getUsers()!=null){
                 syUserVos.addAll(syOrgVo.getUsers());
             }
+            if(syOrgVo.getChilds()!=null){
+                syUserVos.addAll(getMyOrgMenRecursion(syOrgVo.getChilds()));
+            }
         }
-        return syUserVos;
+        return  syUserVos;
     }
 
     private void deleteOrgRecursion(SyOrgEntity syOrgEntity) {

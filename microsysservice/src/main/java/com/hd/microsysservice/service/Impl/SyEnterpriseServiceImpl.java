@@ -1,5 +1,6 @@
 package com.hd.microsysservice.service.Impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hd.common.vo.SyMenuBtnVo;
 import com.hd.common.vo.SyMenuVo;
 import com.hd.microsysservice.entity.SyEnterpriseEntity;
@@ -7,10 +8,8 @@ import com.hd.microsysservice.entity.SyMenuBtnEntity;
 import com.hd.microsysservice.entity.SyMenuEntity;
 import com.hd.microsysservice.mapper.SyEnterpriseMapper;
 import com.hd.microsysservice.service.SyEnterpriseService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hd.microsysservice.service.SyMenuBtnService;
 import com.hd.microsysservice.service.SyMenuService;
-import com.hd.microsysservice.utils.VoConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -45,7 +44,7 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
             copyMenu(menuvo,syEnterpriseEntity.getEnterpriseId(),null);
         });
     }
-
+    SyMenuService.SyMenuVoConvertUtils syMenuVoConvertUtils=new SyMenuService.SyMenuVoConvertUtils();
     /**
      * 递归复制menu
      * @param menuvo
@@ -54,7 +53,7 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
         menuvo.setEnterpriseId(enterId);
         menuvo.setParentId(parentMenuId);
         menuvo.setId(null);
-        SyMenuEntity syMenuEntity = VoConvertUtils.syMenuToEntity(menuvo);
+        SyMenuEntity syMenuEntity = syMenuVoConvertUtils.convertToT1(menuvo);
         syMenuService.save(syMenuEntity);
         if(menuvo.getType()==0){
             //目录,创建子目录
@@ -72,10 +71,12 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
                     btn.setEnterpriseId(enterId);
                     btn.setMenuId(syMenuEntity.getId());
                     btn.setId(null);
-                    SyMenuBtnEntity syMenuBtnEntity = VoConvertUtils.syMenuBtnToEntity(btn);
+                    SyMenuBtnEntity syMenuBtnEntity = syMenuBtnVoConvertUtils.convertToT1(btn);
                     syMenuBtnService.save(syMenuBtnEntity);
                 });
             }
         }
     }
+    SyMenuBtnService.SyMenuBtnVoConvertUtils syMenuBtnVoConvertUtils=new SyMenuBtnService.SyMenuBtnVoConvertUtils();
+
 }

@@ -16,6 +16,7 @@ public class GatewayApplicationTests {
     public void contextLoads() {
         //TODO 此处调用接口方法
         System.out.println("contextLoads");
+
     }
 
     @Test

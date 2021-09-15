@@ -32,9 +32,11 @@ public interface SyAttachService extends IService<SyAttachEntity> {
      * @return
      * @throws Exception
      */
-     Boolean attachMerge(String guid, Integer chunks, SyAttachVo syAttachVo,List<Integer> chunksExist) throws Exception;
+     Long attachMerge(String guid, Integer chunks, SyAttachVo syAttachVo,List<Integer> chunksExist) throws Exception;
 
     void downloadAttach(Long attachId, HttpServletResponse response, String range);
 
     void removeAttach(String attachId);
+
+    Long attachUploadOne(HttpServletRequest request, HttpServletResponse response, SyAttachVo syAttachVo, MultipartFile file);
 }

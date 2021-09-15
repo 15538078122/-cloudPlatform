@@ -3,6 +3,7 @@ package com.hd.common.conf;
 import com.alibaba.fastjson.JSONObject;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE+10000)
+@Slf4j
 public class RetResultAdvice implements ResponseBodyAdvice<Object> {
 
     //需要忽略拦截的类
@@ -56,6 +58,7 @@ public class RetResultAdvice implements ResponseBodyAdvice<Object> {
         }
         //如果是swagger处理的对象，直接返回，否则swagger访问异常
         //return RetResponse.makeRsp("",o);
+        //log.error(oStr);
         return o;
     }
 }

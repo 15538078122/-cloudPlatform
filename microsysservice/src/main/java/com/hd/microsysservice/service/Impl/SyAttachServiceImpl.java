@@ -1,5 +1,6 @@
 package com.hd.microsysservice.service.Impl;
 
+import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hd.common.model.TokenInfo;
 import com.hd.common.vo.SyAttachVo;
@@ -7,13 +8,17 @@ import com.hd.microsysservice.conf.SecurityContext;
 import com.hd.microsysservice.entity.SyAttachEntity;
 import com.hd.microsysservice.mapper.SyAttachMapper;
 import com.hd.microsysservice.service.SyAttachService;
-import com.hd.microsysservice.utils.EnterpriseVerifyUtil;
+import com.hd.microsysservice.utils.VerifyUtil;
 import com.hd.microsysservice.utils.FileRange;
 import com.hd.microsysservice.utils.VoConvertUtils;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,7 +43,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author wli
@@ -50,17 +55,20 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
     @Value("${config.attach-path}")
     String attachPath;
 
+    @Autowired
+    IdentifierGenerator identifierGenerator;
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
     @Override
     public void attachUpload(HttpServletRequest request, HttpServletResponse response, String guid, Integer chunk, MultipartFile file) throws IOException {
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
-        Assert.isTrue(isMultipart,String.format("没有上传文档数据!"));
+        Assert.isTrue(isMultipart, String.format("没有上传文档数据!"));
 
         if (chunk == null) {
-                chunk = 0;
-            }
+            chunk = 0;
+        }
         // 临时目录用来存放所有分片文件
-        String tempFileDir = attachPath +  guid;
+        String tempFileDir = attachPath + guid;
         File parentFileDir = new File(tempFileDir);
         if (!parentFileDir.exists()) {
             parentFileDir.mkdirs();
@@ -70,14 +78,15 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
         FileUtils.copyInputStreamToFile(file.getInputStream(), tempPartFile);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
     @Override
-    public Boolean attachMerge(String guid, Integer chunks, SyAttachVo syAttachVo,List<Integer> chunksExist) throws IOException {
+    public Long attachMerge(String guid, Integer chunks, SyAttachVo syAttachVo, List<Integer> chunksExist) throws IOException {
         TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
         syAttachVo.setEnterpriseId(tokenInfo.getEnterpriseId());
         syAttachVo.setUploadBy(Long.parseLong(tokenInfo.getId()));
         syAttachVo.setUploadTime(new Date());
         // 得到 destFile 就是最终的文件
-        String fileName=syAttachVo.getFileName();
+        String fileName = syAttachVo.getFileName();
         String fileNewName = fileName.substring(fileName.lastIndexOf("."));
         //时间格式化格式
         Date currentTime = new Date();
@@ -85,37 +94,35 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
         //获取当前时间并作为时间戳
         String timeStamp = simpleDateFormat.format(currentTime);
         //拼接新的文件名
-        fileNewName=timeStamp+fileName;
+        fileNewName = timeStamp + fileName;
 
         simpleDateFormat = new SimpleDateFormat("yyyyMM");
         timeStamp = simpleDateFormat.format(currentTime);
-        syAttachVo.setFileNewName(timeStamp+"/"+fileNewName);
+        syAttachVo.setFileNewName(timeStamp + "/" + fileNewName);
 
         File parentFileDir = new File(attachPath + guid);
         if (parentFileDir.isDirectory()) {
             File destFile = new File(attachPath + timeStamp, fileNewName);
-            if(destFile.exists()){
+            if (destFile.exists()) {
                 destFile.delete();
             }
 
             //检查存在的文件trunks
-            for (int i = 0; i < chunks; i++)
-            {
+            for (int i = 0; i < chunks; i++) {
                 File partFile = new File(parentFileDir, guid + "_" + i + ".part");
-                if(partFile.exists()){
+                if (partFile.exists()) {
                     chunksExist.add(i);
                 }
             }
-            if(chunksExist.size()!=chunks){
-                return false;
+            if (chunksExist.size() != chunks) {
+                return -1L;
             }
             //先得到文件的上级目录，并创建上级目录，在创建文件
             destFile.getParentFile().mkdir();
             destFile.createNewFile();
 
             //for (int i = 0; i < parentFileDir.listFiles().length; i++)
-            for (int i = 0; i < chunks; i++)
-            {
+            for (int i = 0; i < chunks; i++) {
                 File partFile = new File(parentFileDir, guid + "_" + i + ".part");
                 FileOutputStream destfos = new FileOutputStream(destFile, true);
                 //遍历"所有分片文件"到"最终文件"中
@@ -124,25 +131,25 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
             }
             // 删除临时目录中的分片文件
             FileUtils.deleteDirectory(parentFileDir);
+            //保存
+            syAttachVo.setFileSize(destFile.length());
+            SyAttachEntity syAttachEntity = new SyAttachEntity();
+            VoConvertUtils.copyObjectProperties(syAttachVo, syAttachEntity);
+            save(syAttachEntity);
+            return syAttachEntity.getId();
+        } else {
+            return -1L;
         }
-        else {
-            return  false;
-        }
-        //保存
-        SyAttachEntity syAttachEntity=new SyAttachEntity();
-        VoConvertUtils.convertObject(syAttachVo,syAttachEntity);
-        save(syAttachEntity);
-        return  true;
     }
 
     @Override
     public void downloadAttach(Long attachId, HttpServletResponse response, String range) {
         SyAttachEntity syAttachEntity = getById(attachId);
-        Assert.isTrue(syAttachEntity!=null,String.format("文档Id:%s不存在!", attachId));
-        String filePath = attachPath+ syAttachEntity.getFileNewName();
+        Assert.isTrue(syAttachEntity != null, String.format("文档Id:%s不存在!", attachId));
+        String filePath = attachPath + syAttachEntity.getFileNewName();
 
         File file = new File(filePath);
-        String filename =syAttachEntity.getFileName();
+        String filename = syAttachEntity.getFileName();
         // file.getName();
         long length = file.length();
         FileRange full = new FileRange(0, length - 1, length);
@@ -160,7 +167,7 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
                 throw new RuntimeException(msg);
             }
             dealRanges(full, range, ranges, response, length);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("文件下载异常：" + e.getMessage());
         }
         // 如果浏览器支持内容类型，则设置为“内联”，否则将弹出“另存为”对话框. attachment inline
@@ -187,7 +194,7 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
             outputRange(response, ranges, input, output, full, length);
             output.flush();
             response.flushBuffer();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("文件下载异常：" + e.getMessage());
         }
     }
@@ -195,21 +202,66 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
     @Override
     public void removeAttach(String attachId) {
         SyAttachEntity syAttachEntity = getById(attachId);
-        Assert.isTrue(syAttachEntity!=null,String.format("文档Id:%s不存在!", attachId));
-        EnterpriseVerifyUtil.verifyEnterId(syAttachEntity.getEnterpriseId());
-        String filePath = attachPath+ syAttachEntity.getFileNewName();
+        Assert.isTrue(syAttachEntity != null, String.format("文档Id:%s不存在!", attachId));
+        VerifyUtil.verifyEnterId(syAttachEntity.getEnterpriseId());
+        String filePath = attachPath + syAttachEntity.getFileNewName();
         File file = new File(filePath);
         file.delete();
         removeById(attachId);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
+    @Override
+    public Long attachUploadOne(HttpServletRequest request, HttpServletResponse response, SyAttachVo syAttachVo, MultipartFile file) {
+
+        Number number = identifierGenerator.nextId(null);
+        boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+        Assert.isTrue(isMultipart, String.format("没有上传文档数据!"));
+        TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
+        syAttachVo.setEnterpriseId(tokenInfo.getEnterpriseId());
+        syAttachVo.setUploadBy(Long.parseLong(tokenInfo.getId()));
+        syAttachVo.setUploadTime(new Date());
+        syAttachVo.setFileName(file.getOriginalFilename());
+        syAttachVo.setFileSize(file.getSize());
+        // 得到 destFile 就是最终的文件
+        String fileName = syAttachVo.getFileName();
+        String fileNewName = fileName.substring(fileName.lastIndexOf("."));
+        //时间格式化格式
+        Date currentTime = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        //获取当前时间并作为时间戳
+        String timeStamp = simpleDateFormat.format(currentTime);
+        //拼接新的文件名
+        fileNewName = timeStamp + fileName;
+
+        simpleDateFormat = new SimpleDateFormat("yyyyMM");
+        timeStamp = simpleDateFormat.format(currentTime);
+        syAttachVo.setFileNewName(timeStamp + "/" + fileNewName);
+
+        try {
+            File destFile = new File(attachPath + timeStamp, fileNewName);
+            if (destFile.exists()) {
+                destFile.delete();
+            }
+            FileUtils.copyInputStreamToFile(file.getInputStream(), destFile);
+            //保存
+            SyAttachEntity syAttachEntity = new SyAttachEntity();
+            VoConvertUtils.copyObjectProperties(syAttachVo, syAttachEntity);
+            save(syAttachEntity);
+            return syAttachEntity.getId();
+        } catch (Exception ex) {
+            return -1L;
+        }
+    }
+
     /**
      * 处理请求中的Range(多个range或者一个range，每个range范围)
-     * @author kevin
-     * @param range :
-     * @param ranges :
+     *
+     * @param range    :
+     * @param ranges   :
      * @param response :
-     * @param length :
+     * @param length   :
+     * @author kevin
      * @date 2021/1/17
      */
     private void dealRanges(FileRange full, String range, List<FileRange> ranges, HttpServletResponse response,
@@ -250,7 +302,7 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
                 //ranges.add(new FileRange(start, end, end - start + 1));
                 ranges.add(new FileRange(start, end, length));
             }
-        }else{
+        } else {
             //如果未传入Range，默认下载整个文件
             ranges.add(full);
         }
@@ -258,13 +310,14 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
 
     /**
      * output写流输出到response
-     * @author kevin
+     *
      * @param response :
-     * @param ranges :
-     * @param input :
-     * @param output :
-     * @param full :
-     * @param length :
+     * @param ranges   :
+     * @param input    :
+     * @param output   :
+     * @param full     :
+     * @param length   :
+     * @author kevin
      * @date 2021/1/17
      */
     private void outputRange(HttpServletResponse response, List<FileRange> ranges, RandomAccessFile input,
@@ -276,8 +329,7 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
             response.setHeader("Content-length", String.valueOf(full.length));
             response.setStatus(HttpServletResponse.SC_OK);
             FileRange.copy(input, output, length, full.start, full.length);
-        }
-        else if (ranges.size() == 1) {
+        } else if (ranges.size() == 1) {
             // 返回文件的一个分段.
             FileRange r = ranges.get(0);
             response.setContentType("application/octet-stream;charset=UTF-8");

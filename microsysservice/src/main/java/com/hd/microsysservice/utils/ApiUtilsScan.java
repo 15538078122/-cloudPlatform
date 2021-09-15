@@ -32,10 +32,13 @@ public class ApiUtilsScan implements ApplicationContextAware {
     @Value("${config.scanUri}")
     boolean  scanUri;
 
+    @Value("${server.servlet.context-path}")
+    String servletContextPath;
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         if(scanUri){
-            List<Api> apis = ApiUtils.ScanApplicationContext(applicationContext);
+            List<Api> apis = ApiUtils.ScanApplicationContext(applicationContext,servletContextPath);
             QueryWrapper qw = new QueryWrapper();
             syUrlMappingService.remove(null);
             for(Api api:apis){

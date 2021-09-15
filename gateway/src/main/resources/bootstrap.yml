@@ -10,8 +10,8 @@ spring:
         service: gateway
     gateway:
       httpclient:
-        connect-timeout: 2000
-        response-timeout: PT3s  #全局单次请求的默认超时时间
+#        connect-timeout: 2000
+#        response-timeout: PT2s  #全局单次请求的默认超时时间
       globalcors:
         cors-configurations:
           '[/**]':  #匹配所有请求
@@ -23,15 +23,22 @@ spring:
               - DELETE
       routes:
         -
-          id: auservice
-          uri: lb://microauserv
+          id: micromonitor
+          uri: lb://micromonitor
           predicates:
-            - Path=/auservice/**
+            - Path=/micromonitor/**
           metadata:
               connect-timeout: 2000
-              response-timeout: 3000
+              response-timeout: 2000
           filters:
             - StripPrefix=1
+            - name: Retry
+              args:
+                retries: 1
+                series:
+                  - SERVER_ERROR
+                methods:
+                  - GET
         -
           id: microsys
           # 目标服务地址（uri：地址，请求转发后的地址）
@@ -40,7 +47,60 @@ spring:
             - Path=/microsys/**
           metadata:
             connect-timeout: 2000
-            response-timeout: 15000 #针对具体服务的单次请求的默认超时时间
+            response-timeout: 2000 #针对具体服务的单次请求的默认超时时间
+          filters:
+            - StripPrefix=1
+            - name: Deal
+#            - name: MyHystrix
+#              args:
+#                fallbackUri: forward:/defaultfallback
+#                timeout:
+#                  sys-attach-merge: 30000
+#                  sys-attach-upload: 30000
+#                  sys-attach-.1attachid.2: 30000
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/defaultfallback
+            - name: Retry
+              args:
+                retries: 1
+                series:
+                  - SERVER_ERROR
+                methods:
+                  - GET
+        -
+          id: microattach
+          # 目标服务地址（uri：地址，请求转发后的地址）
+          uri: lb://microsys
+          predicates:
+            - Path=/microattach/**
+          metadata:
+            connect-timeout: 2000
+            response-timeout: 20000 #针对具体服务的单次请求的默认超时时间
+          filters:
+            - StripPrefix=1
+            - name: Deal
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/defaultfallback
+            - name: Retry
+              args:
+                retries: 1
+                series:
+                  - SERVER_ERROR
+                methods:
+                  - GET
+        -
+          id: basicconfig
+          # 目标服务地址（uri：地址，请求转发后的地址）
+          uri: lb://basicconfig
+          predicates:
+            - Path=/basicconfig/**
+          metadata:
+            connect-timeout: 2000
+            response-timeout: 2000 #针对具体服务的单次请求的默认超时时间
           filters:
             - StripPrefix=1
             - name: Deal
@@ -62,12 +122,12 @@ microsys:
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RetryRule #配置规则 重试
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.WeightedResponseTimeRule #配置规则 响应时间权重
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.BestAvailableRule #配置规则 最空闲连接策略
-    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.WeightedResponseTimeRule
-#    ConnectTimeout: 5 #请求连接超时时间
-#    ReadTimeout: 100 #请求处理的超时时间
-#    OkToRetryOnAllOperations: true #ribbon超时时对所有请求都进行重试
-#    MaxAutoRetriesNextServer: 1 #切换实例的重试次数
-#    MaxAutoRetries: 2 #对当前实例的重试次数
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule
+    ConnectTimeout: 2000 #请求连接超时时间
+    ReadTimeout: 2000 #请求处理的超时时间
+    OkToRetryOnAllOperations: false #对所有请求都进行重试
+    MaxAutoRetriesNextServer: 2 #切换实例的重试次数
+    MaxAutoRetries: 1 #对当前实例的重试次数
 
 hystrix:
   command:
@@ -76,4 +136,4 @@ hystrix:
         isolation:
           thread:
             # 全局熔断器5s超时
-            timeoutInMilliseconds: 15000 #全局请求的默认超时时间（包含重试的时间）
+            timeoutInMilliseconds: 30000 #全局请求的默认超时时间（包含重试的时间）
