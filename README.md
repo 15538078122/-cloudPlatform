@@ -116,6 +116,8 @@ public class FeignConfig {
         return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
     }
 }
+27、关于modules下spring 的配置，这里配置只是为了在idea里面查看方便，并没有分配多个application context容器。
+![image](https://user-images.githubusercontent.com/83743182/133537034-d4f88332-3999-4b9a-8dea-107a19a8905f.png)
 
 
 待续
