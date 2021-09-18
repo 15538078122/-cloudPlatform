@@ -2,12 +2,15 @@ package com.hd.auserver.config;
 
 import com.hd.common.utils.RSAEncrypt;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * @Author: liwei
  * @Description:
  */
+@Slf4j
 public class MyBCryptPasswordEncoder extends BCryptPasswordEncoder {
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
@@ -20,7 +23,12 @@ public class MyBCryptPasswordEncoder extends BCryptPasswordEncoder {
         } catch (Exception e) {
            return false;
         }
-        return  super.matches(pwd2, encodedPassword);
+        if(!super.matches(pwd2, encodedPassword)){
+            log.debug("用户名或密码错误！");
+            throw new BadCredentialsException("用户名或密码错误！");
+            //return false;
+        }
+        return  true;
     }
     public String RsaDecodePwd(String cipher) throws Exception {
         cipher =  java.net.URLDecoder.decode(cipher, "UTF-8");

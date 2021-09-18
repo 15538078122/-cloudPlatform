@@ -2,6 +2,7 @@ package com.hd.microsysservice.conf;
 
 import com.hd.common.RetResult;
 import com.hd.common.utils.HttpUtil;
+import com.hd.microsysservice.utils.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +31,7 @@ public class HeartBeatTask  {
         Map<String, String> params = new HashMap<String, String>();
         //params.put("account", tokenInfo.getAccount());
         try {
-            //configData= (ConfigData)SpringContextUtil.getBean("configData");
+            ConfigData configData44= (ConfigData) SpringContextUtil.getBean("configData");
             RetResult retResult = HttpUtil.httpGet(configData.getHeartbeaturi()+"/"+configData.getAppname(),params);
         }
         catch (Exception e) {

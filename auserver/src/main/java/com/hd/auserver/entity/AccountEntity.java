@@ -1,10 +1,7 @@
 package com.hd.auserver.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,4 +37,6 @@ public class AccountEntity extends Model<AccountEntity> {
     @TableField("create_time")
     private Date createTime;
 
+    @TableLogic("delete_flag")
+    boolean deleteFlag;
 }

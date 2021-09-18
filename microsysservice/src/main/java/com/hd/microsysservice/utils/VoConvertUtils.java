@@ -1,9 +1,5 @@
 package com.hd.microsysservice.utils;
 
-import com.hd.common.vo.SyMenuBtnVo;
-import com.hd.common.vo.SyMenuVo;
-import com.hd.microsysservice.entity.SyMenuBtnEntity;
-import com.hd.microsysservice.entity.SyMenuEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
 
@@ -50,7 +46,17 @@ public class VoConvertUtils<T1,T2> {
         }
         return toList;
     }
-
+    public List<T1> convertToListT1(List<T2> fromList) {
+        Assert.notNull(fromList, "源对象不能为空！");
+        //Assert.notNull(toList, "目标对象不能为空！");
+        List<T1> toList=new ArrayList<>();
+        for(T2 t2:fromList){
+            T1 t1=createT1();
+            BeanUtils.copyProperties(t2, t1);
+            toList.add(t1);
+        }
+        return toList;
+    }
     private  Class<T1> clazz1;
     private  Class<T2> clazz2;
     public VoConvertUtils(){

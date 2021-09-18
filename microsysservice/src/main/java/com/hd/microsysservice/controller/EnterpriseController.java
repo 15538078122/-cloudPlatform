@@ -7,11 +7,11 @@ import com.hd.common.PageQueryExpressionList;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import com.hd.common.controller.SuperQueryController;
-import com.hd.common.model.QueryExpression;
 import com.hd.common.model.RequiresPermissions;
 import com.hd.common.vo.SyEnterpriseVo;
 import com.hd.microsysservice.entity.SyEnterpriseEntity;
 import com.hd.microsysservice.service.SyEnterpriseService;
+import com.hd.microsysservice.utils.VerifyUtil;
 import com.hd.microsysservice.utils.VoConvertUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,11 +46,12 @@ public class EnterpriseController extends SuperQueryController {
         Assert.isTrue(pageQuery!=null,"查询参数错误!");
         adaptiveQueryColumn(pageQuery);
         //不查询逻辑删除的
-        QueryExpression queryExpression = new QueryExpression();
-        queryExpression.setColumn("delete_flag");
-        queryExpression.setValue("0");
-        queryExpression.setType("eq");
-        pageQuery.getQueryData().add(queryExpression);
+//        QueryExpression queryExpression = new QueryExpression();
+//        queryExpression.setColumn("delete_flag");
+//        queryExpression.setValue("0");
+//        queryExpression.setType("eq");
+//        pageQuery.getQueryData().add(queryExpression);
+
         Page<SyEnterpriseEntity> syEnterpriseEntityPage = selectPage(pageQuery, syEnterpriseService);
         List<SyEnterpriseVo> listVo = new ArrayList<>();
         for (SyEnterpriseEntity syEnterpriseEntity : syEnterpriseEntityPage.getRecords()) {
@@ -64,10 +65,14 @@ public class EnterpriseController extends SuperQueryController {
     @ApiOperation(value = "创建企业")
     @RequiresPermissions("enterprise:create")
     @PostMapping("/enterprise")
-    public RetResult createEnterprise(@RequestBody @Validated SyEnterpriseVo syEnterpriseVo) {
+    public RetResult createEnterprise(@RequestBody @Validated SyEnterpriseVo syEnterpriseVo) throws Exception {
         SyEnterpriseEntity syEnterpriseEntity = new SyEnterpriseEntity();
+        Boolean createRoles=false;
+        if(syEnterpriseVo.getCreateRoles()!=null){
+            createRoles=syEnterpriseVo.getCreateRoles()==1;
+        }
         VoConvertUtils.copyObjectProperties(syEnterpriseVo, syEnterpriseEntity);
-        syEnterpriseService.createEnterprise(syEnterpriseEntity);
+        syEnterpriseService.createEnterprise(syEnterpriseEntity,createRoles);
         return RetResponse.makeRsp("创建企业成功.");
     }
 
@@ -88,11 +93,16 @@ public class EnterpriseController extends SuperQueryController {
     @ApiOperation(value = "删除企业")
     @RequiresPermissions("enterprise:delete")
     @DeleteMapping("/enterprise/{id}")
-    public RetResult deleteEnterprise(@PathVariable("id") Long id) {
-        SyEnterpriseEntity syEnterpriseEntity = syEnterpriseService.getById(id);
-        Assert.isTrue(syEnterpriseEntity!=null,String.format("企业Id:%s不存在!", id));
-        Assert.isTrue(syEnterpriseEntity.getEnterpriseId().compareTo("root")!=0,String.format("不能删除特殊企业%s!","root"));
-        syEnterpriseService.removeById(id);
+    public RetResult deleteEnterprise(@PathVariable("id") Long id) throws Exception {
+        syEnterpriseService.removeEnterpriseById(id);
+        return RetResponse.makeRsp("删除企业成功.");
+    }
+    @ApiOperation(value = "物理删除企业")
+    @RequiresPermissions("enterprise:deletePhysically")
+    @DeleteMapping("/enterprise/physically/{id}")
+    public RetResult deleteEnterprisePhysically(@PathVariable("id") Long id) throws Exception {
+        VerifyUtil.verifyEnterId("root");
+        syEnterpriseService.deleteEnterprisePhysically(id);
         return RetResponse.makeRsp("删除企业成功.");
     }
 }

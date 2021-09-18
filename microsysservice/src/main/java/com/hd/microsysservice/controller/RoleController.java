@@ -1,13 +1,12 @@
 package com.hd.microsysservice.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hd.common.MyPage;
 import com.hd.common.PageQueryExpressionList;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import com.hd.common.controller.SuperQueryController;
-import com.hd.common.model.QueryExpression;
+import com.hd.common.model.KeyValuePair;
 import com.hd.common.model.RequiresPermissions;
 import com.hd.common.vo.SyRoleVo;
 import com.hd.microsysservice.entity.SyRoleEntity;
@@ -18,7 +17,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,13 +70,14 @@ public class RoleController extends SuperQueryController {
     @RequiresPermissions(value = "role:list",note = "分页获取角色列表")
     @PostMapping("/role/list")
     public RetResult getRoles(String query){
-        PageQueryExpressionList pageQuery= JSON.parseObject(query,PageQueryExpressionList.class);
-        Assert.isTrue(pageQuery!=null,"查询参数错误!");
+        PageQueryExpressionList pageQuery=VerifyUtil.verifyQueryParam(query,"enterpriseId","enterpriseId不能为空!");
+        //PageQueryExpressionList pageQuery= JSON.parseObject(query,PageQueryExpressionList.class);
+        //Assert.isTrue(pageQuery!=null,"查询参数错误!");
         adaptiveQueryColumn(pageQuery);
-        QueryExpression queryExpression = pageQuery.getQueryExpressionByColumn("enterpriseId");
-        Assert.isTrue(queryExpression!=null,"enterpriseId不能为空!");
-        String enterId=queryExpression.getValue();
-        VerifyUtil.verifyEnterId(enterId);
+//        QueryExpression queryExpression = pageQuery.getQueryExpressionByColumn("enterpriseId");
+//        Assert.isTrue(queryExpression!=null,"enterpriseId不能为空!");
+//        String enterId=queryExpression.getValue();
+//        VerifyUtil.verifyEnterId(enterId);
 
 //        QueryExpression queryExpression=new QueryExpression();
 //        queryExpression.setColumn("enterpriseId");
@@ -86,7 +85,9 @@ public class RoleController extends SuperQueryController {
 //        queryExpression.setType("eq");
 //        pageQuery.getQueryData().add(queryExpression);
 
-        //pageQuery.getOrderby().add(new KeyValuePair("sort_num","asc"));
+        if(pageQuery.getOrderby().size()==0){
+            pageQuery.getOrderby().add(new KeyValuePair("sortNum","asc"));
+        }
 
         Page<SyRoleEntity> syRoleEntityPage= selectPage(pageQuery,syRoleService);
         List<SyRoleVo> listVo=new ArrayList<>();

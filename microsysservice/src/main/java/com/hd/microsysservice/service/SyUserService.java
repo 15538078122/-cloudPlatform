@@ -29,4 +29,5 @@ public interface SyUserService extends IService<SyUserEntity> {
     List<SyUserVo> getOrgUser(Long orgId);
 
     void changepwd(SyUserVo syUserVo) throws Exception;
+    boolean removeAllUserForCenter(String enterpriseId) throws Exception;
 }

@@ -28,6 +28,9 @@ public class ApiUtilsScan implements ApplicationContextAware {
     @Value("${config.scanUri}")
     boolean  scanUri;
 
+    /**
+     * 由于需要feign在注入ApplicationContext时还未生效，所以此扫描在task定时中调用
+     */
     @Value("${server.servlet.context-path}")
     String servletContextPath;
     public  void  scanUri(MicroSysService microSysService) {

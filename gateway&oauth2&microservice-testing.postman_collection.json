@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b64fd452-5c71-4f0f-a7fe-cb96a9b2bf3b",
+		"_postman_id": "b7188d3a-3c58-4505-a2b4-297ba66f8735",
 		"name": "gateway&oauth2&microservice-testing",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -272,11 +272,6 @@
 								{
 									"key": "grant_type",
 									"value": "password"
-								},
-								{
-									"key": "scope",
-									"value": "read1",
-									"disabled": true
 								},
 								{
 									"key": "scope",
@@ -656,7 +651,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/menu/my",
+							"raw": "http://{{host1}}:20001/microsys/sys/menu/my",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -664,6 +659,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"menu",
 								"my"
 							]
@@ -695,7 +691,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/menu/myenterprise",
+							"raw": "http://{{host1}}:20001/microsys/sys/menu/myenterprise",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -703,6 +699,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"menu",
 								"myenterprise"
 							]
@@ -734,7 +731,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/menu?enterId=root",
+							"raw": "http://{{host1}}:20001/microsys/sys/menu?enterId=root",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -742,6 +739,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"menu"
 							],
 							"query": [
@@ -1080,7 +1078,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:20001/microsys/function",
+							"raw": "http://localhost:20001/microsys/sys/function",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1088,6 +1086,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"function"
 							]
 						}
@@ -1305,6 +1304,47 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "保存uri",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:20002/sys/url-mapping?permCode=123",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20002",
+							"path": [
+								"sys",
+								"url-mapping"
+							],
+							"query": [
+								{
+									"key": "permCode",
+									"value": "123"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1327,7 +1367,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    account: \"liwei18\",\r\n    passwordMd5:\"1234\",\r\n    enterpriseId:\"root\",\r\n    syRoleVos: [{id:12121},{id:3445}]\r\n\r\n}",
+							"raw": "{\r\n    account: \"root6\",\r\n    passwordMd5:\"1234\",\r\n    enterpriseId:\"root\",\r\n    syRoleVos: []\r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1335,7 +1375,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/user",
+							"raw": "http://{{host1}}:20001/microsys/sys/user",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -1343,6 +1383,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"user"
 							]
 						}
@@ -1374,7 +1415,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/cur-user/info",
+							"raw": "http://{{host1}}:20001/microsys/sys/cur-user/info",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -1382,6 +1423,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"cur-user",
 								"info"
 							]
@@ -1395,7 +1437,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
@@ -1403,8 +1445,23 @@
 								"value": "Bearer {{token}}"
 							}
 						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "query",
+									"value": " { \"pageNum\": 1,\"pageSize\": 10,queryData:[{column:\"orgId\",value:\"1416950954728886274\",type:\"eq\"}],orderby:[{key:\"name\",value:\"desc\"}]}",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "http://127.0.0.1:20001/microsys/org/1416951234841284609/user?query= %7B%20%22pageNum%22%3A%201%2C%22pageSize%22%3A%20200%2CqueryData%3A%5B%5D%2Corderby%3A%5B%5D%7D",
+							"raw": "http://127.0.0.1:20001/microsys/sys/org/user/list",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1415,14 +1472,16 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"org",
-								"1416951234841284609",
-								"user"
+								"user",
+								"list"
 							],
 							"query": [
 								{
 									"key": "query",
-									"value": " %7B%20%22pageNum%22%3A%201%2C%22pageSize%22%3A%20200%2CqueryData%3A%5B%5D%2Corderby%3A%5B%5D%7D"
+									"value": " { \"pageNum\": 1,\"pageSize\": 200,queryData:[],orderby:[]}",
+									"disabled": true
 								}
 							]
 						}
@@ -1435,7 +1494,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
@@ -1443,8 +1502,18 @@
 								"value": "Bearer {{token}}"
 							}
 						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "query",
+									"value": " { \"pageNum\": 1,\"pageSize\": 200,queryData:[{column:\"orgId\",value:\"565565\",type:\"eq\"  }],orderby:[{key:\"account\",value:\"asc\"}]}",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
-							"raw": "http://127.0.0.1:20001/microsys/root/org/1416951234841284609/user?query= { \"pageNum\": 1,\"pageSize\": 200,queryData:[{column:\"enterpriseId\",value:\"root\",type:\"eq\"  }],orderby:[{key:\"account\",value:\"asc\"}]}",
+							"raw": "http://127.0.0.1:20001/microsys/sys/root/org/user/list",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1455,16 +1524,11 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"root",
 								"org",
-								"1416951234841284609",
-								"user"
-							],
-							"query": [
-								{
-									"key": "query",
-									"value": " { \"pageNum\": 1,\"pageSize\": 200,queryData:[{column:\"enterpriseId\",value:\"root\",type:\"eq\"  }],orderby:[{key:\"account\",value:\"asc\"}]}"
-								}
+								"user",
+								"list"
 							]
 						}
 					},
@@ -1494,7 +1558,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:20001/microsys/user/liwei",
+							"raw": "http://127.0.0.1:20001/microsys/sys/user/liwei",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1505,8 +1569,52 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"user",
 								"liwei"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "修改用户密码",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    id: \"8888888888888888888\",\r\n    account: \"root\",    \r\n    enterpriseId:\"root\",\r\n    passwordMd5:\"1234\",\r\n    passwordMd5Old:\"1234\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:20001/microsys/sys/user/chpwd",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "20001",
+							"path": [
+								"microsys",
+								"sys",
+								"user",
+								"chpwd"
 							]
 						}
 					},
@@ -1527,7 +1635,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/user/root",
+							"raw": "http://{{host1}}:20001/microsys/sys/user/1416950954728886274",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -1535,8 +1643,9 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"user",
-								"root"
+								"1416950954728886274"
 							]
 						}
 					},
@@ -1557,7 +1666,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://127.0.0.1:20001/microsys/user/testuser",
+							"raw": "http://127.0.0.1:20001/microsys/sys/user/1435536543791190017",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1568,8 +1677,9 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"user",
-								"testuser"
+								"1435536543791190017"
 							]
 						}
 					},
@@ -1583,7 +1693,7 @@
 				{
 					"name": "获取企业list",
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
@@ -1591,21 +1701,34 @@
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "query",
+									"value": "{ \"pageNum\": 1,\"pageSize\": 200,queryData:[],orderby:[{key:\"name\",value:\"asc\"}]}",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
-							"raw": "http://{{host2}}:20001/microsys/enterprise?query=%7B%20%22pageNum%22%3A%201%2C%22pageSize%22%3A%20200%2CqueryData%3A%5B%5D%2Corderby%3A%5B%7Bkey%3A%22name%22%2Cvalue%3A%22asc%22%7D%5D%7D",
+							"raw": "http://{{host1}}:20001/microsys/sys/enterprise/list",
 							"protocol": "http",
 							"host": [
-								"{{host2}}"
+								"{{host1}}"
 							],
 							"port": "20001",
 							"path": [
 								"microsys",
-								"enterprise"
+								"sys",
+								"enterprise",
+								"list"
 							],
 							"query": [
 								{
 									"key": "query",
-									"value": "%7B%20%22pageNum%22%3A%201%2C%22pageSize%22%3A%20200%2CqueryData%3A%5B%5D%2Corderby%3A%5B%7Bkey%3A%22name%22%2Cvalue%3A%22asc%22%7D%5D%7D"
+									"value": "{ \"pageNum\": 1,\"pageSize\": 200,queryData:[],orderby:[{key:\"name\",value:\"asc\"}]}",
+									"disabled": true
 								}
 							]
 						}
@@ -1679,6 +1802,38 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "物理删除企业",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:20001/microsys/sys/enterprise/physically/3322",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "20001",
+							"path": [
+								"microsys",
+								"sys",
+								"enterprise",
+								"physically",
+								"3322"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1738,7 +1893,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://127.0.0.1:20001/microsys/org/tree?enterId=huadao",
+							"raw": "http://127.0.0.1:20001/microsys/sys/org/tree?enterId=root",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1749,13 +1904,14 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"org",
 								"tree"
 							],
 							"query": [
 								{
 									"key": "enterId",
-									"value": "huadao"
+									"value": "root"
 								}
 							]
 						}
@@ -1777,7 +1933,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://127.0.0.1:20001/microsys/org/my/treemen",
+							"raw": "http://127.0.0.1:20001/microsys/sys/org/my/treemen",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1788,6 +1944,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"org",
 								"my",
 								"treemen"
@@ -1811,7 +1968,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/org/my/men",
+							"raw": "http://{{host1}}:20001/microsys/sys/org/my/men",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -1819,6 +1976,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"org",
 								"my",
 								"men"
@@ -1993,7 +2151,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
@@ -2001,8 +2159,18 @@
 								"value": "Bearer {{token}}"
 							}
 						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "query",
+									"value": " {queryData:[{column:\"enterpriseId\",value:\"root\",type:\"eq\"},{column:\"name\",value:\"员\",type:\"like\"}],orderby:[{key:\"name\",value:\"asc\"}]}",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/role?enterId=root",
+							"raw": "http://{{host1}}:20001/microsys/sys/role/list",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -2010,18 +2178,9 @@
 							"port": "20001",
 							"path": [
 								"microsys",
-								"role"
-							],
-							"query": [
-								{
-									"key": "query",
-									"value": " {queryData:[{column:\"name\",value:\"员\",type:\"like\"}],orderby:[{key:\"name\",value:\"asc\"}]}",
-									"disabled": true
-								},
-								{
-									"key": "enterId",
-									"value": "root"
-								}
+								"sys",
+								"role",
+								"list"
 							]
 						}
 					},
@@ -2076,7 +2235,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
@@ -2084,8 +2243,18 @@
 								"value": "Bearer {{token}}"
 							}
 						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "query",
+									"value": " {\"pageNum\": 1,\"pageSize\": 200,queryData:[{column:\"enterpriseId\",value:\"root\",type:\"eq\"}],orderby:[{key:\"name\",value:\"asc\"}]}",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/dictionary?query= %7B%22pageNum%22%3A%201%2C%22pageSize%22%3A%20200%2CqueryData%3A%5B%7Bcolumn%3A%22sort%22%2Cvalue%3A%22%22%2Ctype%3A%22like%22%7D%5D%2Corderby%3A%5B%7Bkey%3A%22name%22%2Cvalue%3A%22asc%22%7D%5D%7D",
+							"raw": "http://{{host1}}:20001/microsys/sys/dictionary/list",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -2093,13 +2262,9 @@
 							"port": "20001",
 							"path": [
 								"microsys",
-								"dictionary"
-							],
-							"query": [
-								{
-									"key": "query",
-									"value": " %7B%22pageNum%22%3A%201%2C%22pageSize%22%3A%20200%2CqueryData%3A%5B%7Bcolumn%3A%22sort%22%2Cvalue%3A%22%22%2Ctype%3A%22like%22%7D%5D%2Corderby%3A%5B%7Bkey%3A%22name%22%2Cvalue%3A%22asc%22%7D%5D%7D"
-								}
+								"sys",
+								"dictionary",
+								"list"
 							]
 						}
 					},
@@ -2111,7 +2276,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
@@ -2119,8 +2284,18 @@
 								"value": "Bearer {{token}}"
 							}
 						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "query",
+									"value": " {\"pageNum\": 1,\"pageSize\": 200,queryData:[{column:\"dictId\",value:\"23\",type:\"eq\"}],orderby:[{key:\"name\",value:\"asc\"}]}",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/dictionary/1421023459328397313/item?query= %7B%22pageNum%22%3A%201%2C%22pageSize%22%3A%20200%2CqueryData%3A%5B%7Bcolumn%3A%22sort%22%2Cvalue%3A%22%22%2Ctype%3A%22like%22%7D%5D%2Corderby%3A%5B%7Bkey%3A%22name%22%2Cvalue%3A%22asc%22%7D%5D%7D",
+							"raw": "http://{{host1}}:20001/microsys/sys/dictionary/item/list",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -2128,15 +2303,10 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"dictionary",
-								"1421023459328397313",
-								"item"
-							],
-							"query": [
-								{
-									"key": "query",
-									"value": " %7B%22pageNum%22%3A%201%2C%22pageSize%22%3A%20200%2CqueryData%3A%5B%7Bcolumn%3A%22sort%22%2Cvalue%3A%22%22%2Ctype%3A%22like%22%7D%5D%2Corderby%3A%5B%7Bkey%3A%22name%22%2Cvalue%3A%22asc%22%7D%5D%7D"
-								}
+								"item",
+								"list"
 							]
 						}
 					},
@@ -2240,7 +2410,7 @@
 			"name": "文档操作",
 			"item": [
 				{
-					"name": "下载文档",
+					"name": "下载文档20s",
 					"protocolProfileBehavior": {
 						"disabledSystemHeaders": {}
 					},
@@ -2254,13 +2424,50 @@
 							},
 							{
 								"key": "range",
-								"value": "bytes=-90",
+								"value": "bytes=-63",
 								"type": "text",
 								"disabled": true
 							}
 						],
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/attach/1432617109019693057",
+							"raw": "http://{{host1}}:20001/microattach/sys/attach/1437260163626438658",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"microattach",
+								"sys",
+								"attach",
+								"1437260163626438658"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "下载文档2s",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "range",
+								"type": "text",
+								"value": "bytes=-639",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://{{host1}}:20001/microsys/sys/attach/1432617109019693057",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -2268,6 +2475,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"attach",
 								"1432617109019693057"
 							]
@@ -2336,7 +2544,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/D:/汉威/mysql检索.sql"
+									"src": "/D:/gitonline/cloudgateway/patrol.sql"
 								}
 							],
 							"options": {
@@ -2346,7 +2554,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/attach/upload?guid=2323&chunk=1",
+							"raw": "http://{{host1}}:20001/microsys/sys/attach/upload?guid=2323&chunk=0",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -2354,6 +2562,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"attach",
 								"upload"
 							],
@@ -2364,7 +2573,7 @@
 								},
 								{
 									"key": "chunk",
-									"value": "1"
+									"value": "0"
 								}
 							]
 						}
@@ -2391,7 +2600,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/attach/merge?guid=2323&chunks=2&fileSize=555&fileName=test.txt",
+							"raw": "http://{{host1}}:20001/microsys/sys/attach/merge?guid=2323&chunks=1&fileName=33333.txt",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -2399,6 +2608,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"attach",
 								"merge"
 							],
@@ -2409,15 +2619,206 @@
 								},
 								{
 									"key": "chunks",
-									"value": "2"
+									"value": "1"
 								},
 								{
 									"key": "fileSize",
-									"value": "555"
+									"value": "555",
+									"disabled": true
 								},
 								{
 									"key": "fileName",
-									"value": "test.txt"
+									"value": "33333.txt"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "上传文档 单个",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "range",
+								"type": "text",
+								"value": "bytes=0-"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/D:/gitonline/cloudgateway/patrol.sql"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:20001/microsys/sys/attach/uploadone",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"microsys",
+								"sys",
+								"attach",
+								"uploadone"
+							],
+							"query": [
+								{
+									"key": "fileSize",
+									"value": "555",
+									"disabled": true
+								},
+								{
+									"key": "fileName",
+									"value": "test.txt",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "服务监视",
+			"item": [
+				{
+					"name": "上传心跳",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host1}}:50001/monitor/heartbeat/microsys",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "50001",
+							"path": [
+								"monitor",
+								"heartbeat",
+								"microsys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取服务状态",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host1}}:20001/micromonitor/monitor/heartbeat",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"micromonitor",
+								"monitor",
+								"heartbeat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "最近请求cost",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host1}}:20001/micromonitor/monitor/lastreq?pageNum=1&pageSize=8000",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"micromonitor",
+								"monitor",
+								"lastreq"
+							],
+							"query": [
+								{
+									"key": "pageNum",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "8000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "最近请求平均耗时列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://{{host1}}:20001/micromonitor/monitor/lastreqavg?pageNum=1&pageSize=400",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"micromonitor",
+								"monitor",
+								"lastreqavg"
+							],
+							"query": [
+								{
+									"key": "pageNum",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "400"
 								}
 							]
 						}

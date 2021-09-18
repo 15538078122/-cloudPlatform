@@ -13,7 +13,7 @@
     </sql>
 
     <select id="selectUserPerm" resultMap = "BaseResultMap">
-        SELECT
+        SELECT distinct
             <include refid="Base_Column_List" />
             from sy_user_role usrRole
             JOIN sy_role_perm rolePerm on usrRole.role_id=rolePerm.role_id

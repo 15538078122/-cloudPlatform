@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Service
 @FeignClient(value = "microsys",fallback = MicroSysServiceImpl.class)
 public interface MicroSysService {
-    @PostMapping("/sys/authbridge")
+//    @PostMapping("/sys/authbridge")
+    @PostMapping("/sys/auth")
     RetResult authbridge(@RequestBody TokenInfo tokenInfo);
 }

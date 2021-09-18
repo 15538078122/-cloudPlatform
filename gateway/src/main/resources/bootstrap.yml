@@ -47,7 +47,7 @@ spring:
             - Path=/microsys/**
           metadata:
             connect-timeout: 2000
-            response-timeout: 2000 #针对具体服务的单次请求的默认超时时间
+            response-timeout: 20000 #针对具体服务的单次请求的默认超时时间
           filters:
             - StripPrefix=1
             - name: Deal
@@ -98,6 +98,52 @@ spring:
           uri: lb://basicconfig
           predicates:
             - Path=/basicconfig/**
+          metadata:
+            connect-timeout: 2000
+            response-timeout: 2000 #针对具体服务的单次请求的默认超时时间
+          filters:
+            - StripPrefix=1
+            - name: Deal
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/defaultfallback
+            - name: Retry
+              args:
+                retries: 1
+                series:
+                  - SERVER_ERROR
+                methods:
+                  - GET
+        -
+          id: execute
+          # 目标服务地址（uri：地址，请求转发后的地址）
+          uri: lb://execute
+          predicates:
+            - Path=/execute/**
+          metadata:
+            connect-timeout: 2000
+            response-timeout: 2000 #针对具体服务的单次请求的默认超时时间
+          filters:
+            - StripPrefix=1
+            - name: Deal
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/defaultfallback
+            - name: Retry
+              args:
+                retries: 1
+                series:
+                  - SERVER_ERROR
+                methods:
+                  - GET
+        -
+          id: reportnews
+          # 目标服务地址（uri：地址，请求转发后的地址）
+          uri: lb://reportnews
+          predicates:
+            - Path=/reportnews/**
           metadata:
             connect-timeout: 2000
             response-timeout: 2000 #针对具体服务的单次请求的默认超时时间

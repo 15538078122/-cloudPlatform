@@ -110,6 +110,8 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
 
             SyUserEntity syUserEntity = new SyUserEntity();
             VoConvertUtils.copyObjectProperties(syUserVo, syUserEntity);
+            syUserEntity.setCreateTime(new Date());
+
             save(syUserEntity);
             if (syUserVo.getSyRoleVos() != null) {
                 //syUserEntity = getOne(queryWrapper);
@@ -117,14 +119,14 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
             }
             //检查用户中心是否有该用户
             //两个请求最长20s
-            Long centerUserId=null;
-            if (!userExistInCenter(syUserVo)) {
+            Long centerUserId=userExistInCenter(syUserVo);
+            if (centerUserId==-1) {
                 centerUserId=createUserForCenter(syUserVo);
                 if (centerUserId==-1) {
                     throw new Exception("创建用户失败!");
                 }
             } else {
-                throw new Exception("认证中心用户已存在!");
+                //throw new Exception("认证中心用户已存在!");
             }
             //更新用户对应的认证中心用户id
             SyUserEntity syUserEntity2 = new SyUserEntity();
@@ -134,7 +136,7 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
                 updateById(syUserEntity2);
             }
             catch (Exception ex){
-                removeUserForCenter(syUserVo);
+                removeUserForCenter(centerUserId);
                 throw  new Exception("创建用户失败!");
             }
         } catch (Exception e) {
@@ -177,11 +179,11 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         //删除用户角色
         updateRoles(syUserEntity.getId(), new ArrayList<>());
 
-        SyUserVo syUserVo = new SyUserVo() {{
-            setAccount(syUserEntity.getAccount());
-            setEnterpriseId(syUserEntity.getEnterpriseId());
-        }};
-        if (!removeUserForCenter(syUserVo)) {
+//        SyUserVo syUserVo = new SyUserVo() {{
+//            setAccount(syUserEntity.getAccount());
+//            setEnterpriseId(syUserEntity.getEnterpriseId());
+//        }};
+        if (!removeUserForCenter(syUserEntity.getIdCenter())) {
             throw new Exception("删除用户失败.");
         }
         //redisTemplate.delete(String.format("%s::%s-%s", "account", syUserEntity.getEnterpriseId(), syUserEntity.getAccount()));
@@ -222,6 +224,7 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
 
         SyUserEntity syUserEntityNew = new SyUserEntity();
         VoConvertUtils.copyObjectProperties(syUserVo, syUserEntityNew);
+        syUserEntityNew.setModifiedTime(new Date());
         updateById(syUserEntityNew);
         //更新role
         if (syUserVo.getSyRoleVos() != null) {
@@ -290,24 +293,36 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         params.add("account", syUserVo.getAccount());
         params.add("password", syUserVo.getPasswordMd5());
         params.add("passwordOld", syUserVo.getPasswordMd5Old());
+        //params.add("account", syUserVo.getAccount());
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         byte[] cipherData = RSAEncrypt.encrypt(jwtUtils.rsaPublicKey, (USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
         String userOpIdentificationEncode = Base64.encode(cipherData);
         userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
-        RetResult retResult = HttpUtil.httpPutWithIdenHeader(userCenterUri + "/account/" + syUserVo.getAccount(), params, userOpIdentificationEncode);
+        RetResult retResult = HttpUtil.httpPutWithIdenHeader(userCenterUri + "/account", params, userOpIdentificationEncode);
         if(retResult.getCode() != HttpStatus.OK.value()){
             throw new Exception(retResult.getMsg());
         }
     }
 
-    private boolean removeUserForCenter(SyUserVo syUserVo) throws Exception {
+    private boolean removeUserForCenter(Long centerUserId) throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-        params.add("enterprise", syUserVo.getEnterpriseId());
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         byte[] cipherData = RSAEncrypt.encrypt(jwtUtils.rsaPublicKey, (USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
         String userOpIdentificationEncode = Base64.encode(cipherData);
         userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
-        RetResult retResult = HttpUtil.httpDelWithIdenHeader(userCenterUri + "/account/" + syUserVo.getAccount(), params, userOpIdentificationEncode);
+        RetResult retResult = HttpUtil.httpDelWithIdenHeader(userCenterUri + "/account/" + centerUserId.toString(), params, userOpIdentificationEncode);
+        return retResult.getCode() == HttpStatus.OK.value();
+    }
+
+    @Override
+    public boolean removeAllUserForCenter(String enterpriseId) throws Exception {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+        params.add("enterprise", enterpriseId);
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        byte[] cipherData = RSAEncrypt.encrypt(jwtUtils.rsaPublicKey, (USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
+        String userOpIdentificationEncode = Base64.encode(cipherData);
+        userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
+        RetResult retResult = HttpUtil.httpDelWithIdenHeader(userCenterUri + "/account/all", params, userOpIdentificationEncode);
         return retResult.getCode() == HttpStatus.OK.value();
     }
 
@@ -315,11 +330,12 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
         params.add("enterprise", syUserVo.getEnterpriseId());
         params.add("password", syUserVo.getPasswordMd5());
+        params.add("account", syUserVo.getAccount());
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         byte[] cipherData = RSAEncrypt.encrypt(jwtUtils.rsaPublicKey, (USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
         String userOpIdentificationEncode = Base64.encode(cipherData);
         userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
-        RetResult retResult = HttpUtil.httpPostWithIdenHeader(userCenterUri + "/account/" + syUserVo.getAccount(), params, userOpIdentificationEncode);
+        RetResult retResult = HttpUtil.httpPostWithIdenHeader(userCenterUri + "/account" , params, userOpIdentificationEncode);
         if(retResult.getCode() == HttpStatus.OK.value()){
             Long centerUserId=(Long)retResult.getData();
             return  centerUserId;
@@ -327,15 +343,21 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         return  -1L;
     }
 
-    private Boolean userExistInCenter(SyUserVo syUserVo) throws Exception {
+    private Long userExistInCenter(SyUserVo syUserVo) throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
         params.add("enterprise", syUserVo.getEnterpriseId());
+        params.add("account", syUserVo.getAccount());
+
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         byte[] cipherData = RSAEncrypt.encrypt(jwtUtils.rsaPublicKey, (USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
         String userOpIdentificationEncode = Base64.encode(cipherData);
         userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
 
-        RetResult retResult = HttpUtil.httpGetWithIdenHeader(userCenterUri + "/account/" + syUserVo.getAccount(), params, userOpIdentificationEncode);
-        return retResult.getCode() == HttpStatus.OK.value();
+        RetResult retResult = HttpUtil.httpGetWithIdenHeader(userCenterUri + "/account", params, userOpIdentificationEncode);
+        if(retResult.getCode() == HttpStatus.OK.value())
+        {
+            return (Long)retResult.getData();
+        }
+        return -1L;
     }
 }

@@ -17,6 +17,7 @@ import java.util.List;
  */
 public interface SyMenuBtnService extends IService<SyMenuBtnEntity> {
 
+    List<SyMenuBtnVo> getUserMenuBtns(Long userId, Long menuId);
     List<SyMenuBtnVo> getBtnsByMenuId(Long menuId,Boolean isAll);
     class SyMenuBtnVoConvertUtils  extends VoConvertUtils<SyMenuBtnEntity, SyMenuBtnVo> {
     }

@@ -29,7 +29,7 @@ class AuServerApplicationTests {
 
     @Test
     void accountOpTest(){
-        AccountEntity accountEntity=new AccountEntity(null,"enterprise","admin","", new Date());
+        AccountEntity accountEntity=new AccountEntity(null,"enterprise","admin","", new Date(),false);
         accountService.save(accountEntity);
         List<AccountEntity> accountEntities = accountService.list();
 

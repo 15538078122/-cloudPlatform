@@ -82,10 +82,17 @@ public class SyUserEntity extends Model<SyUserEntity> {
     private String jobName;
 
     /**
-     * 密码修改时间
+     * 修改时间
      */
     @TableField("modified_time")
     private Date modifiedTime;
+
+    /**
+     * 创建时间
+     */
+    @TableField("create_time")
+    private Date createTime;
+
 
     @TableField("id_center")
     private Long idCenter;

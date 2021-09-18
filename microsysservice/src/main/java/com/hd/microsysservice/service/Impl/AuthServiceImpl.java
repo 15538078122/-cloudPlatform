@@ -3,7 +3,6 @@ package com.hd.microsysservice.service.Impl;
 import com.hd.common.model.TokenInfo;
 import com.hd.microsysservice.service.AuthService;
 import com.hd.microsysservice.service.SyFuncOpUrlService;
-import com.hd.microsysservice.service.SyUrlMappingService;
 import com.hd.microsysservice.service.SyUserService;
 import com.hd.microsysservice.utils.UserCommonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +18,6 @@ import java.util.List;
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
-    @Autowired
-    SyUrlMappingService syUrlMappingService;
 
     @Autowired
     SyFuncOpUrlService syFuncOpUrlService;
@@ -80,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
 //        queryWrapper.or().eq("url", "all " + uri);
 //        SyUrlMappingEntity syUrlMappingEntity = syUrlMappingService.getOne(queryWrapper);
 //        syUrlMappingEntity==null?null:syUrlMappingEntity.getPermCode();
-        String permissionCode= syUrlMappingService.getPermissionCode(method.toLowerCase(),uri);
+        String permissionCode= syFuncOpUrlService.getPermissionCode(method.toLowerCase(),uri);
         String enterpriseId=tokenInfo.getEnterpriseId();
         String account=tokenInfo.getAccount();
         log.debug(String.format("check auth:\nenterpriseId:%s,user:%s,scope:%s,uri:%s,permCode:%s", enterpriseId, account, scopes

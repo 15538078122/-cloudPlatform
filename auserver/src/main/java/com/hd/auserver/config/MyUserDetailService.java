@@ -70,6 +70,9 @@ public class MyUserDetailService implements UserDetailsService {
                     ((UserInfo)userDetails).setEnterpriseId(enterpriseId);
                     ((UserInfo)userDetails).setId(accountEntityList.get(0).getId().toString());
                 }
+                else {
+                    userDetails = new UserInfo("xxxxxx2xxxx34xxxxxxx$%$xxxxxx","xxxxxxxxxxxxx3$$%^%xxxxxxxxx#$xxxxxxxxxxxxxxxxxxxxxxxxxx",authList);
+                }
             }
 
         }catch (Exception e) {

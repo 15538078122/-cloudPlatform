@@ -15,4 +15,6 @@ import java.util.List;
  */
 public interface SyFuncOpUrlService extends IService<SyFuncOpUrlEntity> {
     List<String> selectUserPerm(Long userId);
+    String getPermissionCode(String method, String uri);
+    List<SyFuncOpUrlEntity> getUrlTemplateList();
 }

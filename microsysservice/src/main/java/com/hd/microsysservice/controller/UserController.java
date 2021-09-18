@@ -92,7 +92,7 @@ public class UserController extends SuperQueryController {
     public RetResult createUser(@RequestBody @Validated SyUserVo syUserVo) throws Exception {
         VerifyUtil.verifyEnterId(syUserVo.getEnterpriseId());
         TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
-        syUserService.createUser(syUserVo.setEnterpriseId(tokenInfo.getEnterpriseId()));
+        syUserService.createUser(syUserVo);
         return RetResponse.makeRsp("创建用户成功.");
     }
     @ApiOperation(value = "编辑用户")

@@ -64,6 +64,7 @@ public  class HttpUtil {
         HttpHeaders headers = new HttpHeaders();
         headers.add("USER_OP_IDENTIFICATION",USER_OP_IDENTIFICATION);
         HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-        return restTemplate.exchange(url+"?enterprise="+params.getFirst("enterprise"), HttpMethod.GET,requestEntity,RetResult.class).getBody();
+        return restTemplate.exchange(url+"?enterprise="+params.getFirst("enterprise")+"&account="+params.getFirst("account"),
+                HttpMethod.GET,requestEntity,RetResult.class).getBody();
     }
 }

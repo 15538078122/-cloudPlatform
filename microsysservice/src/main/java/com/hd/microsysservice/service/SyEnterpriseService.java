@@ -13,5 +13,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface SyEnterpriseService extends IService<SyEnterpriseEntity> {
 
-    void createEnterprise(SyEnterpriseEntity syEnterpriseEntity);
+    void createEnterprise(SyEnterpriseEntity syEnterpriseEntity,Boolean createRoles) throws Exception;
+
+    void removeEnterpriseById(Long id) throws Exception;
+
+    void deleteEnterprisePhysically(Long id);
 }

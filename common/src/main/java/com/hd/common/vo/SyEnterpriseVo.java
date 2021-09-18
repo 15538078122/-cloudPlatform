@@ -42,4 +42,10 @@ public class SyEnterpriseVo implements Serializable {
      * 描述
      */
     private String note;
+
+    @ApiModelProperty(value = "是否删除标识")
+    boolean deleteFlag;
+
+    @ApiModelProperty(value = "是否复制角色")
+    private Short createRoles;
 }

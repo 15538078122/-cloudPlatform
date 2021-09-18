@@ -11,7 +11,7 @@ spring:
       uri: mongodb://localhost:27017/gatewaylogs
 logging:
   level:
-    root: debug
+    root: error
     com.hd: debug
     com.alibaba: error
     sun.net: error

@@ -87,9 +87,14 @@ public class SyUserVo implements Serializable {
     private String jobName;
 
     /**
-     * 密码修改时间
+     * 修改时间
      */
     private Date modifiedTime;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 
     @ApiModelProperty(value = "删除标志")
     private boolean deleteFlag;

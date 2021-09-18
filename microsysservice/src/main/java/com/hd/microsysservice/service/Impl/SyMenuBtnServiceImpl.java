@@ -23,6 +23,13 @@ import java.util.List;
 public class SyMenuBtnServiceImpl extends ServiceImpl<SyMenuBtnMapper, SyMenuBtnEntity> implements SyMenuBtnService {
 
     SyMenuBtnService.SyMenuBtnVoConvertUtils syMenuBtnVoConvertUtils=new SyMenuBtnService.SyMenuBtnVoConvertUtils();
+
+    @Override
+    public List<SyMenuBtnVo> getUserMenuBtns(Long userId, Long menuId) {
+        List<SyMenuBtnEntity> syMenuBtnEntities = baseMapper.getUserMenuBtns(userId, menuId);
+        return syMenuBtnVoConvertUtils.convertToListT2(syMenuBtnEntities);
+    }
+
     @Override
     public List<SyMenuBtnVo> getBtnsByMenuId(Long menuId,Boolean isAll) {
         QueryWrapper<SyMenuBtnEntity> queryWrapper=new QueryWrapper();

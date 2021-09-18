@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.microsysservice.mapper.SyMaintainMapper">
+    <delete id="deleteEnterprisePhysically" parameterType="java.lang.String" >
+        delete from account WHERE enterprise=#{enterpeiseId};
+
+        delete from sy_enterprise WHERE enterprise_id=#{enterpeiseId};
+        delete from sy_attach WHERE enterprise_id=#{enterpeiseId};
+
+        delete dictItem from sy_dict_item dictItem INNER join sy_dict dict on dictItem.dict_id=dict.id WHERE dict.enterprise_id=#{enterpeiseId};
+        delete from sy_dict WHERE enterprise_id=#{enterpeiseId};
+
+        delete menubtn from sy_menu_btn menubtn INNER JOIN sy_menu menu on menubtn.menu_id=menu.id WHERE menu.enterprise_id=#{enterpeiseId};
+        delete from sy_menu WHERE enterprise_id=#{enterpeiseId};
+
+        delete from sy_org WHERE enterprise_id=#{enterpeiseId};
+
+        delete userrole from sy_user_role userrole INNER join sy_role role on userrole.role_id=role.id WHERE role.enterprise_id=#{enterpeiseId};
+        delete roleperm from sy_role_perm roleperm INNER join sy_role role on roleperm.role_id=role.id WHERE role.enterprise_id=#{enterpeiseId};
+
+        delete from sy_role WHERE enterprise_id=#{enterpeiseId};
+        delete from sy_user WHERE enterprise_id=#{enterpeiseId};
+
+    </delete>
+</mapper>

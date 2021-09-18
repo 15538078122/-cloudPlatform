@@ -11,10 +11,14 @@ import com.hd.microsysservice.entity.SyRolePermEntity;
 import com.hd.microsysservice.mapper.SyRoleMapper;
 import com.hd.microsysservice.service.SyRolePermService;
 import com.hd.microsysservice.service.SyRoleService;
+import com.hd.microsysservice.service.SyUserRoleService;
 import com.hd.microsysservice.utils.VerifyUtil;
 import com.hd.microsysservice.utils.VoConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -69,8 +73,17 @@ public class SyRoleServiceImpl extends ServiceImpl<SyRoleMapper, SyRoleEntity> i
         }
     }
 
+    @Autowired
+    SyUserRoleService syUserRoleService;
+
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
     public void removeRoleId(Long roleId) {
+        //如果角色被引用，不能删除
+        QueryWrapper queryWrapper=new QueryWrapper(){{
+           eq("role_id",roleId);
+        }};
+        Assert.isTrue(syUserRoleService.list(queryWrapper).size()==0,"角色使用中!");
         removeById(roleId);
         updatePerms(roleId,new ArrayList<>());
     }

@@ -67,7 +67,7 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
         List<SyMenuVo> listVo = new ArrayList<>();
         for(SyMenuEntity syMenuEntity:list){
             SyMenuVo syMenuVo = syMenuVoConvertUtils.convertToT2(syMenuEntity);
-            List<SyMenuBtnVo> btns = syMenuBtnService.getBtnsByMenuId(syMenuVo.getId(),false);
+            List<SyMenuBtnVo> btns = syMenuBtnService.getUserMenuBtns(Long.parseLong(tokenInfo.getId()),syMenuEntity.getId());
             if(btns.size()>0){
                 syMenuVo.setBtns(btns);
             }
