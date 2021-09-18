@@ -45,6 +45,7 @@ postman 导入gateway&oauth2&microservice-testing.postman_collection.json
 
 # ui
 ![image](https://user-images.githubusercontent.com/83743182/131477976-33134c78-ef67-48bd-a546-f3ce88c252cf.png)
+![image](https://user-images.githubusercontent.com/83743182/133869716-38de0161-3de1-4846-9712-96aa72a3bfbd.png)
 
 
 # 系统若干技术问题介绍：
