@@ -118,7 +118,44 @@ public class FeignConfig {
     }
 }  
 27、关于modules下spring 的配置，这里配置只是为了在idea里面查看方便，并没有分配多个application context容器。
-![image](https://user-images.githubusercontent.com/83743182/133537034-d4f88332-3999-4b9a-8dea-107a19a8905f.png)
+![image](https://user-images.githubusercontent.com/83743182/133537034-d4f88332-3999-4b9a-8dea-107a19a8905f.png)  
+28、分布式事物seata AT模式 配置  
+pom，注意版本：        <!-- seata -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-seata</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.seata</groupId>
+                    <artifactId>seata-spring-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>2.2.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>druid</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>1.4.2</version>
+        </dependency>
+    </dependencies>  
+yml：  注意：tx-service-group: usercenter_tx_group   和nacos配置中心保持一致，另外seata不要出现registry等节点配置，会造成分布式事物失效 
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: usercenter_tx_group    #此处配置自定义的seata事务分组名称
+  config:
+    type: nacos
+    nacos:
+      serverAddr: 127.0.0.1:8848
+      group: SEATA_GROUP
+关于seata1.4.2和oauth2集成错误：ClientDetailsService java.lang.UnsupportedOperationException错误，是由于GlobalTransactionScanner检查ClientDetailsService是否需要代理增强时造成的@Lazy造成监察时还没初始化。解决方法1降低seata版本到1.4.0；解决方法2：暴力覆盖bean ClientDetailsService.
+![image](https://user-images.githubusercontent.com/83743182/134762974-db6764ae-becd-4bb3-b44d-48d323986a8b.png)
 
 
 待续
