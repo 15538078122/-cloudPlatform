@@ -1,5 +1,5 @@
 # 介绍 微服务架构 多企业 多应用 基础平台 微服务分布式事务  
-1、认证OATH2.0，4种模式.   AUTHORIZATION_CODE,GRANT_TYPE, REFRESH_TOKEN,GRANT_TYPE_PASSWORD,IMPLICIT
+1、认证OATH2.0，4种模式.   AUTHORIZATION_CODE,GRANT_TYPE, REFRESH_TOKEN,GRANT_TYPE_PASSWORD,IMPLICIT  
 2、jwt rsa   微服务分布式事物seata
 3、更简洁的jwt client方式   
 4、网关gateway，认证鉴权限流负载均衡、请求监视、retry   
