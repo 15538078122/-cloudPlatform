@@ -13,7 +13,8 @@
 12、文件分片上传和分片下载  
 13、服务监视&心跳
 # 软件架构  
-![1630475301(1)](https://user-images.githubusercontent.com/83743182/131618807-d32acab0-45ac-42db-b2a5-87a89b9fe959.jpg)
+ ![1632637500(1)](https://user-images.githubusercontent.com/83743182/134796199-62597398-1c1c-4192-a44b-c07e3e7c5ee9.jpg)
+
 # 基础数据模型  
 ![image](https://user-images.githubusercontent.com/83743182/125550679-ddde7fae-defb-429f-ab37-ed5f5bd1844a.png)
 # 基础url  
