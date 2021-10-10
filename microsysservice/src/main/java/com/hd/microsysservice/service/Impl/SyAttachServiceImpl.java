@@ -74,6 +74,10 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
             parentFileDir.mkdirs();
         }
         // 分片处理时，前台会多次调用上传接口，每次都会上传文件的一部分到后台
+        File destFile = new File(parentFileDir, guid + "_" + chunk + ".part");
+        if(destFile.exists()){
+            destFile.delete();
+        }
         File tempPartFile = new File(parentFileDir, guid + "_" + chunk + ".part");
         FileUtils.copyInputStreamToFile(file.getInputStream(), tempPartFile);
     }

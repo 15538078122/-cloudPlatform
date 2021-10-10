@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
  * @Author: liwei
  * @Description:
@@ -30,8 +28,8 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, AccountEntity
 
     @Override
     public MyPage<AccountEntity> selectAccounts(int pageNum, int pageSize, QueryWrapper queryWrapper) {
-        Page page1=new Page(2,2,true);
-        List<AccountEntity> accountEntities = customMapper.selectUser("li",page1);
+        //Page page1=new Page(2,2,true);
+        //List<AccountEntity> accountEntities = customMapper.selectUser("li",page1);
         Page<AccountEntity> page = new Page<>(pageNum, pageSize);
         Page<AccountEntity> accountEntityPage = this.baseMapper.selectPage(page, queryWrapper);
         return new MyPage<>(accountEntityPage.getCurrent(), accountEntityPage.getSize(), accountEntityPage.getTotal(), accountEntityPage.getRecords());
@@ -53,14 +51,37 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, AccountEntity
             throw  new Exception("旧密码不匹配!");
         }
         UpdateWrapper updateWrapper=new UpdateWrapper();
-        updateWrapper.eq("account",account);
-        updateWrapper.eq("enterprise",enterprise);
+        updateWrapper.eq("id",accountEntity.getId());
         String pwd1 = password;
         String pwd2 = null;
         try {
             //TODO: 此处将前端加密的pwd转化为明文，临时测试
             pwd1=((MyBCryptPasswordEncoder)bCryptPasswordEncoder).RsaEncodePwd(pwd1);
             pwd2 = ((MyBCryptPasswordEncoder)bCryptPasswordEncoder).RsaDecodePwd(pwd1);
+        } catch (Exception e) {
+            throw  new Exception("密码数据异常!");
+        }
+        updateWrapper.set("password",bCryptPasswordEncoder.encode(pwd2));
+        update(updateWrapper);
+    }
+
+    @Override
+    public void resetPwd(String account, String enterprise) throws Exception {
+        QueryWrapper qw = new QueryWrapper();
+        qw.eq("account",account);
+        qw.eq("enterprise",enterprise);
+        AccountEntity accountEntity =  getOne(qw);
+        if(accountEntity==null){
+            throw  new Exception("账号不存在!");
+        }
+        UpdateWrapper updateWrapper=new UpdateWrapper();
+        updateWrapper.eq("id",accountEntity.getId());
+        String pwd1 = "1234";
+        String pwd2 = null;
+        try {
+            //TODO: 此处将前端加密的pwd转化为明文，临时测试
+            pwd1=((MyBCryptPasswordEncoder)bCryptPasswordEncoder).RsaEncodePwd(pwd1);
+            pwd2 =((MyBCryptPasswordEncoder)bCryptPasswordEncoder).RsaDecodePwd(pwd1);
         } catch (Exception e) {
             throw  new Exception("密码数据异常!");
         }

@@ -14,4 +14,6 @@ public interface AccountService extends IService<AccountEntity> {
     MyPage<AccountEntity> selectAccounts(int pageNum, int pageSize, QueryWrapper queryWrapper);
 
     void changePwd(String account, String enterprise, String password, String passwordOld) throws Exception;
+
+    void resetPwd(String account, String enterprise) throws Exception;
 }

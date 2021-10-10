@@ -1,13 +1,21 @@
 package com.hd.microsysservice.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.base.CaseFormat;
+import com.hd.common.MyPage;
+import com.hd.common.PageQueryExpressionList;
 import com.hd.common.RetResult;
 import com.hd.common.model.DataPrivilege;
+import com.hd.common.model.KeyValuePair;
+import com.hd.common.model.QueryExpression;
+import com.hd.common.model.TokenInfo;
 import com.hd.common.utils.HttpUtil;
 import com.hd.common.utils.RSAEncrypt;
 import com.hd.common.vo.SyRoleVo;
 import com.hd.common.vo.SyUserVo;
+import com.hd.microsysservice.conf.SecurityContext;
 import com.hd.microsysservice.entity.SyRoleEntity;
 import com.hd.microsysservice.entity.SyUserEntity;
 import com.hd.microsysservice.entity.SyUserRoleEntity;
@@ -15,11 +23,13 @@ import com.hd.microsysservice.mapper.SyRoleMapper;
 import com.hd.microsysservice.mapper.SyUserMapper;
 import com.hd.microsysservice.service.SyUserRoleService;
 import com.hd.microsysservice.service.SyUserService;
-import com.hd.microsysservice.utils.VerifyUtil;
+import com.hd.microsysservice.service.UserCenterFeignService;
 import com.hd.microsysservice.utils.JwtUtils;
 import com.hd.microsysservice.utils.RedisLockUtil;
+import com.hd.microsysservice.utils.VerifyUtil;
 import com.hd.microsysservice.utils.VoConvertUtils;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -73,12 +83,20 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
     @Autowired
     SyUserService syUserService;
 
+    @GlobalTransactional(rollbackFor = Exception.class)
+//    @Override
+//    public void createUser(SyUserVo syUserVo) throws Exception {
+//      RetResult retResponse1 = userCenterFeignService.Add("test","root","2323ewwe");
+//        String xid = RootContext.getXID();
+//        RetResult retResponse2 = userCenterFeignService.Add("test","root","2323ewwe");
+//        if(true) throw new Exception("3");
+//    }
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
     /**
      * 尽量不要使用synchronized，防止大并发是阻塞线程
      */
-    //public synchronized  void createUser(SyUserVo syUserVo) throws Exception {
+    //    public synchronized  void createUser(SyUserVo syUserVo) throws Exception {
     public void createUser(SyUserVo syUserVo) throws Exception {
         //注意timeout的设置，大于执行块可能需要的最大时间，否则锁失效造成异常
         long timeout = 30;
@@ -128,15 +146,18 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
             } else {
                 //throw new Exception("认证中心用户已存在!");
             }
+
             //更新用户对应的认证中心用户id
             SyUserEntity syUserEntity2 = new SyUserEntity();
             syUserEntity2.setId(syUserEntity.getId());
             syUserEntity2.setIdCenter(centerUserId);
+            //if(true) throw new Exception("创建用户失败!");
             try {
                 updateById(syUserEntity2);
             }
             catch (Exception ex){
-                removeUserForCenter(centerUserId);
+                //removeUserForCenter(centerUserId);
+                //不用显示移除，使用seata at模式回滚
                 throw  new Exception("创建用户失败!");
             }
         } catch (Exception e) {
@@ -164,8 +185,10 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
             syUserRoleEntities.add(syUserRoleEntity);
         }
         syUserRoleService.saveBatch(syUserRoleEntities);
+        redisTemplate.delete(String.format("%s::%s", "userMenu", userId));
     }
 
+    @GlobalTransactional(rollbackFor = Exception.class)
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
     public void removeUser(Long userId) throws Exception {
@@ -183,10 +206,15 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
 //            setAccount(syUserEntity.getAccount());
 //            setEnterpriseId(syUserEntity.getEnterpriseId());
 //        }};
+        //seata at 模式事务管理
         if (!removeUserForCenter(syUserEntity.getIdCenter())) {
             throw new Exception("删除用户失败.");
         }
+        //if(true) throw new Exception("2222.");
         //redisTemplate.delete(String.format("%s::%s-%s", "account", syUserEntity.getEnterpriseId(), syUserEntity.getAccount()));
+        //缓存清除
+        //@Cacheable(value = "account", key = "'centerUserId:'+#centerUserId", unless = "#result == null")
+        redisTemplate.delete(String.format("%s::%s", "centerId2userId", syUserEntity.getIdCenter()));
     }
 
     @Override
@@ -221,7 +249,7 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         }
         VerifyUtil.verifyEnterId(syUserEntity.getEnterpriseId());
         Assert.isTrue(syUserVo.getEnterpriseId().compareTo(syUserEntity.getEnterpriseId()) == 0, "企业编码异常!");
-
+        Assert.isTrue(syUserVo.getAccount()==null || syUserVo.getAccount().compareTo(syUserEntity.getAccount()) == 0, "账号不能修改!");
         SyUserEntity syUserEntityNew = new SyUserEntity();
         VoConvertUtils.copyObjectProperties(syUserVo, syUserEntityNew);
         syUserEntityNew.setModifiedTime(new Date());
@@ -279,6 +307,7 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
     }
 
     @Override
+    @GlobalTransactional(rollbackFor = Exception.class)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
     public void changepwd(SyUserVo syUserVo) throws Exception {
         SyUserEntity syUserEntity = getById(syUserVo.getId());
@@ -286,31 +315,49 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
             throw new Exception("用户不存在!");
         }
         VerifyUtil.verifyEnterId(syUserEntity.getEnterpriseId());
-        Assert.isTrue(syUserVo.getEnterpriseId().compareTo(syUserEntity.getEnterpriseId()) == 0, "企业编码异常!");
+        //Assert.isTrue(syUserVo.getEnterpriseId().compareTo(syUserEntity.getEnterpriseId()) == 0, "企业编码异常!");
         //修改用户中心
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-        params.add("enterprise", syUserVo.getEnterpriseId());
-        params.add("account", syUserVo.getAccount());
-        params.add("password", syUserVo.getPasswordMd5());
-        params.add("passwordOld", syUserVo.getPasswordMd5Old());
-        //params.add("account", syUserVo.getAccount());
-        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        byte[] cipherData = RSAEncrypt.encrypt(jwtUtils.rsaPublicKey, (USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
-        String userOpIdentificationEncode = Base64.encode(cipherData);
-        userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
-        RetResult retResult = HttpUtil.httpPutWithIdenHeader(userCenterUri + "/account", params, userOpIdentificationEncode);
+//        MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+//        params.add("enterprise", syUserVo.getEnterpriseId());
+//        params.add("account", syUserVo.getAccount());
+//        params.add("password", syUserVo.getPasswordMd5());
+//        params.add("passwordOld", syUserVo.getPasswordMd5Old());
+//        //params.add("account", syUserVo.getAccount());
+//        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        byte[] cipherData = RSAEncrypt.encrypt(jwtUtils.rsaPublicKey, (USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
+//        String userOpIdentificationEncode = Base64.encode(cipherData);
+//        userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
+//        RetResult retResult = HttpUtil.httpPutWithIdenHeader(userCenterUri + "/account", params, userOpIdentificationEncode);
+        RetResult retResult =userCenterFeignService.changepwd(syUserEntity.getAccount(),syUserEntity.getEnterpriseId(),syUserVo.getPasswordMd5(),syUserVo.getPasswordMd5Old());
+        //retResult =userCenterFeignService.changepwd(syUserVo.getAccount(),syUserVo.getEnterpriseId(),syUserVo.getPasswordMd5(),syUserVo.getPasswordMd5Old());
         if(retResult.getCode() != HttpStatus.OK.value()){
             throw new Exception(retResult.getMsg());
         }
     }
 
+    @Override
+    @GlobalTransactional(rollbackFor = Exception.class)
+    public void resetpwd(Long userId) throws Exception {
+        SyUserEntity syUserEntity = getById(userId);
+        if (syUserEntity == null) {
+            throw new Exception("用户不存在!");
+        }
+        VerifyUtil.verifyEnterId(syUserEntity.getEnterpriseId());
+        //Assert.isTrue(syUserVo.getEnterpriseId().compareTo(syUserEntity.getEnterpriseId()) == 0, "企业编码异常!");
+        RetResult retResult = userCenterFeignService.resetpwd(syUserEntity.getAccount(), syUserEntity.getEnterpriseId());
+        if (retResult.getCode() != HttpStatus.OK.value()) {
+            throw new Exception(retResult.getMsg());
+        }
+    }
+
     private boolean removeUserForCenter(Long centerUserId) throws Exception {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        byte[] cipherData = RSAEncrypt.encrypt(jwtUtils.rsaPublicKey, (USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
-        String userOpIdentificationEncode = Base64.encode(cipherData);
-        userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
-        RetResult retResult = HttpUtil.httpDelWithIdenHeader(userCenterUri + "/account/" + centerUserId.toString(), params, userOpIdentificationEncode);
+//        MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+//        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        byte[] cipherData = RSAEncrypt.encrypt(jwtUtils.rsaPublicKey, (USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
+//        String userOpIdentificationEncode = Base64.encode(cipherData);
+//        userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
+//        RetResult retResult = HttpUtil.httpDelWithIdenHeader(userCenterUri + "/account/" + centerUserId.toString(), params, userOpIdentificationEncode);
+        RetResult retResult =userCenterFeignService.remove(centerUserId);
         return retResult.getCode() == HttpStatus.OK.value();
     }
 
@@ -326,16 +373,85 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         return retResult.getCode() == HttpStatus.OK.value();
     }
 
+    @Override
+    public MyPage<SyUserVo> userbyrole(PageQueryExpressionList pageQueryExpressionList) {
+        //提取role
+        List<String>  roles=new ArrayList<>();
+        Long orgId=null;
+        for(QueryExpression condition : pageQueryExpressionList.getQueryData()){
+            if(condition.getColumn().compareTo("role")==0){
+                roles.add(condition.getValue());
+            }
+            if(condition.getColumn().compareTo("orgId")==0){
+                orgId = Long.parseLong(condition.getValue());
+            }
+        }
+        String ordrby="";
+        //提取order
+        for(KeyValuePair keyValuePair : pageQueryExpressionList.getOrderby()){
+            if(ordrby.compareTo("")!=0){
+                ordrby+=",";
+            }
+            ordrby+=String.format("%s %s", CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, keyValuePair.getKey()),keyValuePair.getValue());
+        }
+        if(ordrby.compareTo("")!=0){
+            ordrby="order by "+ordrby;
+        }
+        //自定义分页查询
+        Page page=new Page(pageQueryExpressionList.getPageNum(),pageQueryExpressionList.getPageSize(),true);
+        List<SyUserVo> syUserVos = baseMapper.userbyrole(SecurityContext.GetCurTokenInfo().getEnterpriseId(),roles
+                ,orgId
+                //,Long.parseLong(SecurityContext.GetCurTokenInfo().getOrgId())
+                ,ordrby,page);
+
+        return new MyPage<>(page.getCurrent(),page.getSize(),page.getTotal(),syUserVos);
+    }
+
+    @Override
+    public SyUserVo getCurrentUser() throws Exception {
+        TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
+        if (tokenInfo == null) {
+            throw new Exception("没有当前用户!");
+        }
+        QueryWrapper queryWrapper = new QueryWrapper() {{
+            eq("account", tokenInfo.getAccount());
+            eq("enterprise_id", tokenInfo.getEnterpriseId());
+            eq("delete_flag", 0);
+        }};
+        //SyUserEntity syUserEntity = syUserService.getOne(queryWrapper);
+        SyUserEntity syUserEntity = syUserService.getUserByAccount(tokenInfo.getAccount(), tokenInfo.getEnterpriseId());
+        SyUserVo syUserVo = new SyUserVo();
+        VoConvertUtils.copyObjectProperties(syUserEntity, syUserVo);
+        //检索角色
+        List<SyRoleEntity> syRoleEntities = syRoleMapper.getUserRole(syUserVo.getId());
+        List<SyRoleVo> syRoleVos = new ArrayList<>();
+        for (SyRoleEntity syRoleEntity : syRoleEntities) {
+            SyRoleVo syRoleVo = new SyRoleVo() {{
+                setId(syRoleEntity.getId());
+                setName(syRoleEntity.getName());
+            }};
+            syRoleVos.add(syRoleVo);
+        }
+        syUserVo.setSyRoleVos(syRoleVos);
+        return syUserVo;
+    }
+
+    @Autowired
+    UserCenterFeignService userCenterFeignService;
+
     private Long createUserForCenter(SyUserVo syUserVo) throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
         params.add("enterprise", syUserVo.getEnterpriseId());
         params.add("password", syUserVo.getPasswordMd5());
         params.add("account", syUserVo.getAccount());
-        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        byte[] cipherData = RSAEncrypt.encrypt(jwtUtils.rsaPublicKey, (USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
-        String userOpIdentificationEncode = Base64.encode(cipherData);
-        userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
-        RetResult retResult = HttpUtil.httpPostWithIdenHeader(userCenterUri + "/account" , params, userOpIdentificationEncode);
+
+        RetResult retResult =userCenterFeignService.add(syUserVo.getAccount(),syUserVo.getEnterpriseId(),syUserVo.getPasswordMd5());
+
+//        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        byte[] cipherData = RSAEncrypt.encrypt(jwtUtils.rsaPublicKey, (USER_OP_IDENTIFICATION + f.format(new Date())).getBytes());
+//        String userOpIdentificationEncode = Base64.encode(cipherData);
+//        userOpIdentificationEncode = java.net.URLEncoder.encode(userOpIdentificationEncode, "UTF-8");
+//        RetResult retResult = HttpUtil.httpPostWithIdenHeader(userCenterUri + "/account" , params, userOpIdentificationEncode);
         if(retResult.getCode() == HttpStatus.OK.value()){
             Long centerUserId=(Long)retResult.getData();
             return  centerUserId;

@@ -47,28 +47,38 @@ public class AuthServiceImpl implements AuthService {
     }
     @Override
     /**
-     * 返回：失败-1；成功：userId，如果是client id登录，返回0；
+     * 返回：失败-1；成功：userId:orgId，如果是client id登录，返回0:0；
      */
-    public Long auth(TokenInfo tokenInfo) {
+    public String auth(TokenInfo tokenInfo) {
         //Thread.sleep(60);Thread.currentThread().getId()
         //scopes=scopes.toUpperCase();
         String scopes=tokenInfo.getScopes();
         List scopeList = Arrays.asList(scopes.split(","));
-        Long userId=-1L;
+        String returnValue="-1";
         if (scopeList.contains("user")) {
-            Long UserIdByCenterUserId = userCommonUtil.getUserIdByCenterUserIdFromCach(Long.parseLong(tokenInfo.getId()));
+            String UserIdByCenterUserId = userCommonUtil.getUserIdByCenterUserIdFromCach(Long.parseLong(tokenInfo.getId()));
             //SyUserEntity syUserEntity = syUserService.getUserByAccount(account,enterpriseId);
 
             if(UserIdByCenterUserId==null){
-                return userId;
+                return returnValue;
             }
-            userId=UserIdByCenterUserId;
-            if(false){
-                return userId;
+            //判断类型
+            String typeFlag=UserIdByCenterUserId.substring(UserIdByCenterUserId.lastIndexOf(':')+1);
+            if(typeFlag.compareTo("0")==0 && tokenInfo.getDeviceType().compareTo("web")!=0){
+                return returnValue;
+            }
+            else if(typeFlag.compareTo("1")==0 && tokenInfo.getDeviceType().compareTo("app")!=0){
+                return returnValue;
+            }
+            UserIdByCenterUserId=UserIdByCenterUserId.substring(0,UserIdByCenterUserId.lastIndexOf(':'));
+
+            returnValue=UserIdByCenterUserId;
+            if(true){
+                return returnValue;
             }
         }
         else {
-            userId = 0L;
+            returnValue = "0:0";
         }
         String method=tokenInfo.getMethod();
         String uri=tokenInfo.getUri();
@@ -84,26 +94,26 @@ public class AuthServiceImpl implements AuthService {
                                 ,uri,permissionCode));
         if (permissionCode == null) {
             //不限制
-            return userId;
+            return returnValue;
         }
         //TODO: 具体的权限判断
         //sas模式 需要加入条件enterpriseId
         //首先判断scope
         if (scopeList.contains("user")) {
-            List userPermissionList = syFuncOpUrlService.selectUserPerm(userId);
+            List userPermissionList = syFuncOpUrlService.selectUserPerm(Long.parseLong(returnValue.split(":")[0]));
             //如果scope是user，使用用户的permission判断
             if (userPermissionList.contains(permissionCode)) {
-                return userId;
+                return returnValue;
             }
         } else {
             //根据scope 判断,不管user是谁
             for (Object scope : scopeList) {
                 if ((scopePermissionList.get(scope) != null) && scopePermissionList.get(scope).contains(permissionCode)) {
-                    return userId;
+                    return returnValue;
                 }
             }
         }
-        userId=-1L;
-        return userId;
+        returnValue="-1";
+        return returnValue;
     }
 }

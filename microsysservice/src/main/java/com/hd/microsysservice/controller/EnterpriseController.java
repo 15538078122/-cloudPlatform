@@ -97,6 +97,15 @@ public class EnterpriseController extends SuperQueryController {
         syEnterpriseService.removeEnterpriseById(id);
         return RetResponse.makeRsp("删除企业成功.");
     }
+
+    @ApiOperation(value = "恢复企业")
+    @RequiresPermissions("enterprise:recover")
+    @PutMapping("/enterprise/recover/{id}")
+    public RetResult recoverEnterprise(@PathVariable("id") Long id) throws Exception {
+        syEnterpriseService.recoverEnterprise(id);
+        return RetResponse.makeRsp("恢复企业成功.");
+    }
+
     @ApiOperation(value = "物理删除企业")
     @RequiresPermissions("enterprise:deletePhysically")
     @DeleteMapping("/enterprise/physically/{id}")

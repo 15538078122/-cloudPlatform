@@ -39,6 +39,7 @@ public class MyUserDetailService implements UserDetailsService {
         try {
             List<GrantedAuthority> authList = getAuthorities();
             String enterpriseId="";
+            String deviceType="web";
             //TODO: 获取用户密码 ，模拟试验，所有用户密码都是1234；
 
             //注意此处使用动态代理获取request对象，然后获取当初的请求参数；这里主要获取企业id，进行sas模式的用户管理
@@ -46,6 +47,9 @@ public class MyUserDetailService implements UserDetailsService {
             if(objGrantType!=null && ((String)(objGrantType[0])).compareTo("password")==0){
                 //密码模式，从request url获取enterpriseId
                 enterpriseId=(String)(request.getParameterMap().get("enterId")[0]);
+                if(request.getParameterMap().get("deviceType")!=null){
+                    deviceType=(String)(request.getParameterMap().get("deviceType")[0]);
+                }
             }else {
                 //授权码显式或隐式模式，从defaultSavedRequest，之前存储的
                 HttpSession session = request.getSession(true);
@@ -53,6 +57,9 @@ public class MyUserDetailService implements UserDetailsService {
                 if(objSavedReq!=null){
                     DefaultSavedRequest defaultSavedRequest=  (DefaultSavedRequest)objSavedReq;
                     enterpriseId = defaultSavedRequest.getParameterValues("enterId")[0];
+                    if(defaultSavedRequest.getParameterValues("deviceType")!=null){
+                        deviceType=(String)(defaultSavedRequest.getParameterValues("deviceType")[0]);
+                    }
                 }
             }
             if(!enterpriseId.isEmpty()){
@@ -68,6 +75,7 @@ public class MyUserDetailService implements UserDetailsService {
                     //userDetails = new UserInfo(userName, passwordEncoder.encode("1234"),authList);
                     userDetails = new UserInfo(userName, accountEntityList.get(0).getPassword(),authList);
                     ((UserInfo)userDetails).setEnterpriseId(enterpriseId);
+                    ((UserInfo)userDetails).setDeviceType(deviceType);
                     ((UserInfo)userDetails).setId(accountEntityList.get(0).getId().toString());
                 }
                 else {

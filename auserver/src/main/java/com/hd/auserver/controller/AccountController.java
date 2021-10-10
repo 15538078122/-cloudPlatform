@@ -80,4 +80,10 @@ public class AccountController {
         accountService.changePwd(account, enterprise, password, passwordOld);
         return RetResponse.makeRsp("修改密码成功.");
     }
+    @PutMapping("/account/resetpwd")
+    public RetResult resetPwd(@RequestParam ("account")  String account,@RequestParam("enterprise") String enterprise) throws Exception {
+        //TODO: reset户密码，pwd需要加密
+        accountService.resetPwd(account, enterprise);
+        return RetResponse.makeRsp("重置密码成功.");
+    }
 }

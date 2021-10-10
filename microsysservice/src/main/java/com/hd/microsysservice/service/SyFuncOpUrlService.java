@@ -1,6 +1,7 @@
 package com.hd.microsysservice.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hd.common.vo.SyFuncOpUrlVo;
 import com.hd.microsysservice.entity.SyFuncOpUrlEntity;
 
 import java.util.List;
@@ -17,4 +18,5 @@ public interface SyFuncOpUrlService extends IService<SyFuncOpUrlEntity> {
     List<String> selectUserPerm(Long userId);
     String getPermissionCode(String method, String uri);
     List<SyFuncOpUrlEntity> getUrlTemplateList();
+    List<SyFuncOpUrlVo> getfunOpUrl(Long funcOprId);
 }

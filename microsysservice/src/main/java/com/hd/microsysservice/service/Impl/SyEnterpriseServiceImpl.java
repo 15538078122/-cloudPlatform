@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hd.common.vo.SyMenuBtnVo;
 import com.hd.common.vo.SyMenuVo;
+import com.hd.common.vo.SyOrgVo;
 import com.hd.common.vo.SyUserVo;
 import com.hd.microsysservice.entity.*;
 import com.hd.microsysservice.mapper.SyEnterpriseMapper;
 import com.hd.microsysservice.mapper.SyMaintainMapper;
 import com.hd.microsysservice.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -46,6 +48,14 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
     public void createEnterprise(SyEnterpriseEntity syEnterpriseEntity, Boolean createRoles) throws Exception {
+        //企业code是否已经存在
+        SyEnterpriseEntity syEnterpriseEntity1 = getOne(new QueryWrapper() {{
+            eq("enterprise_id", syEnterpriseEntity.getEnterpriseId());
+        }});
+        if(syEnterpriseEntity1!=null){
+            throw new Exception(String.format("企业ID(%s)已经存在!",syEnterpriseEntity.getEnterpriseId()));
+        }
+
         //TODO: 创建企业，并复制root企业的菜单到当前企业
         save(syEnterpriseEntity);
         //复制菜单
@@ -70,20 +80,20 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
             });
         }
         //初始化部门
-        SyOrgEntity syOrgEntity = new SyOrgEntity() {{
+        SyOrgVo syOrgVo = new SyOrgVo() {{
             setName(syEnterpriseEntity.getName());
             setEnterpriseId(syEnterpriseEntity.getEnterpriseId());
             setLevelCode("100");
             setType((short) 0);
         }};
-        syOrgService.save(syOrgEntity);
+        Long newOrgId = syOrgService.createOrg(syOrgVo);
         //初始化管理员
         SyUserVo syUserVo = new SyUserVo() {{
             setName("管理员");
             setAccount("admin");
             setEnterpriseId(syEnterpriseEntity.getEnterpriseId());
             setPasswordMd5("1234");
-            setOrgId(syOrgEntity.getId());
+            setOrgId(newOrgId);
         }};
         syUserService.createUser(syUserVo);
         //初始化管理员角色
@@ -113,6 +123,9 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
     @Autowired
     SyMaintainMapper syMaintainMapper;
 
+    @Autowired
+    RedisTemplate redisTemplate;
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
     @Override
     public void removeEnterpriseById(Long id) throws Exception {
@@ -121,11 +134,29 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
         Assert.isTrue(syEnterpriseEntity.getEnterpriseId().compareTo("root") != 0, String.format("不能删除特殊企业%s!", "root"));
         syEnterpriseService.removeById(id);
         //移除本地用户
+//        QueryWrapper qw = new QueryWrapper();
+//        qw.eq("enterprise_id", syEnterpriseEntity.getEnterpriseId());
+//        syUserService.remove(qw);
+        //移除用户中心的用户
+//        syUserService.removeAllUserForCenter(syEnterpriseEntity.getEnterpriseId());
+
+        //清除缓存的token user
         QueryWrapper qw = new QueryWrapper();
         qw.eq("enterprise_id", syEnterpriseEntity.getEnterpriseId());
-        syUserService.remove(qw);
-        //移除用户中心的用户
-        syUserService.removeAllUserForCenter(syEnterpriseEntity.getEnterpriseId());
+        List<SyUserEntity> syUserEntities = syUserService.list(qw);
+        syUserEntities.forEach(x->{
+            redisTemplate.delete(String.format("%s::%s", "centerId2userId", x.getIdCenter()));
+        });
+        //通配符删除所有的
+//        Set<String> keys = redisTemplate.keys(String.format("%s::%s:%s", "account","centerUserId", "*"));
+//        redisTemplate.delete(keys);
+    }
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
+    @Override
+    public void recoverEnterprise(Long id) throws Exception {
+        SyEnterpriseEntity syEnterpriseEntity = syEnterpriseService.getById(id);
+        Assert.isTrue(syEnterpriseEntity != null, String.format("企业Id:%s不存在!", id));
+        syMaintainMapper.recoverEnterprise(syEnterpriseEntity.getEnterpriseId());
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
@@ -140,6 +171,7 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
         Long oldRoleId = r.getId();
         r.setEnterpriseId(enterpriseId);
         r.setId(null);
+        r.setSortNum(1);
         syRoleService.save(r);
         //保存权限
         QueryWrapper queryWrapper = new QueryWrapper() {{

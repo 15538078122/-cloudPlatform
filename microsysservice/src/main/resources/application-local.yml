@@ -14,12 +14,18 @@ spring:
     url: "jdbc:mysql://127.0.0.1:3333/patrol?useUnicode=true&useSSL=false&characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai"
     username: root
     password: 123456
-#    url: "jdbc:mysql://192.168.3.78:3306/platsys?useUnicode=true&useSSL=false&characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true"
+#    url: "jdbc:mysql://1.192.212.229:3306/platsys?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true"
+#    username: root
+#    password: Huadao_@123
+#    url: "jdbc:mysql://192.168.3.78:3306/platsys?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true"
 #    username: root
 #    password: Huadao_@123
 
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
+#      url: "jdbc:mysql://127.0.0.1:3333/patrol?useUnicode=true&useSSL=false&characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai"
+#      username: root
+#      password: 123456
       #初始化连接池的连接数量 大小，最小，最大
       initial-size: 5
       min-idle: 5
@@ -28,14 +34,38 @@ spring:
   redis:
     port: 6379
     host: localhost
-    password: lyjwd24133
+    password:
     jedis:
       pool:
         max-active: 8
     database: 0
     timeout: 5000
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    publisher-confirm-type:  correlated
+    publisher-returns: true
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+        max-concurrency: 5
+        concurrency: 1
+        retry:
+          enabled: true
+          # 最大重试次数
+          max-attempts: 5
+          # 重试间隔时间(毫秒)
+          initial-interval: 3000
+        prefetch: 1     #每次检索到缓存队列消息数目，手动反馈的建议1；否则，越大速度越快
   main:
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
 mybatis-plus:
   mapper-locations: classpath*:mybatis/*.xml
   type-aliases-package: com.hd.microsysservice.entity
@@ -50,7 +80,7 @@ logging:
   level:
     root: error
     com.hd: debug
-    com.alibaba: debug
+    com.alibaba: error
     org.apache.tomcat: error
     org.apache.catalina: error
 config:

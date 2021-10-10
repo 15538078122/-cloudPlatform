@@ -29,6 +29,11 @@ public class SyMenuBtnServiceImpl extends ServiceImpl<SyMenuBtnMapper, SyMenuBtn
         List<SyMenuBtnEntity> syMenuBtnEntities = baseMapper.getUserMenuBtns(userId, menuId);
         return syMenuBtnVoConvertUtils.convertToListT2(syMenuBtnEntities);
     }
+    @Override
+    public List<SyMenuBtnVo> getUserAllMenuBtns(Long userId, List<Long> menuIds) {
+        List<SyMenuBtnEntity> syMenuBtnEntities = baseMapper.getUserAllMenuBtns(userId, menuIds);
+        return syMenuBtnVoConvertUtils.convertToListT2(syMenuBtnEntities);
+    }
 
     @Override
     public List<SyMenuBtnVo> getBtnsByMenuId(Long menuId,Boolean isAll) {

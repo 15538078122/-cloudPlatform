@@ -2,6 +2,7 @@ package com.hd.microsysservice.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hd.common.vo.SyFuncOpUrlVo;
 import com.hd.microsysservice.entity.SyFuncOpUrlEntity;
 import com.hd.microsysservice.mapper.SyFuncOpUrlMapper;
 import com.hd.microsysservice.service.SyFuncOpUrlService;
@@ -76,5 +77,10 @@ public class SyFuncOpUrlServiceImpl extends ServiceImpl<SyFuncOpUrlMapper, SyFun
             syFuncOpUrlEntity.setUrl(syFuncOpUrlEntity.getUrl().replaceAll("\\{[^}]*\\}","*"));
         }
         return list;
+    }
+
+    @Override
+    public List<SyFuncOpUrlVo> getfunOpUrl(Long funcOprId) {
+        return baseMapper.getfunOpUrl(funcOprId);
     }
 }

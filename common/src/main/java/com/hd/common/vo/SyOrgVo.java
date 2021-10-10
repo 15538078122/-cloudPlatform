@@ -1,6 +1,7 @@
 package com.hd.common.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hd.common.utils.LongToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -37,11 +38,15 @@ public class SyOrgVo implements Serializable {
     /**
      * 本级编号
      */
+    @NotNull(message = "编码不能为空！")
+    @NotBlank(message = "编码不能为空！")
+    @JSONField(serialzeFeatures={SerializerFeature.WriteNullStringAsEmpty})
     private String levelCode;
 
     /**
      * 树形编号
      */
+    @JSONField(serialzeFeatures={SerializerFeature.WriteNullStringAsEmpty})
     private String pathCode;
 
     /**
@@ -79,6 +84,7 @@ public class SyOrgVo implements Serializable {
     @ApiModelProperty(value = "图标样式")
     private String iconClass;
 
+    @JSONField(serialzeFeatures={SerializerFeature.WriteNullListAsEmpty})
     @ApiModelProperty(value = "子部门")
     private List<SyOrgVo> childs;
 

@@ -2,7 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hd.microsysservice.mapper.SyUserMapper">
 
-
+    <resultMap id="SyUserVoResultMap" type="com.hd.common.vo.SyUserVo">
+<!--        <id column="id" property="id" />-->
+<!--        <result column="account" property="account" />-->
+    </resultMap>
 
     <select id="getUserDataPrivilege" resultType = "java.lang.Integer">
         SELECT  DISTINCT data_privilege from sy_role role
@@ -10,6 +13,20 @@
 	        order by data_privilege asc LIMIT 0,1 ;
     </select>
 
-
+    <select id="userbyrole" resultMap="SyUserVoResultMap">
+        SELECT distinct usr.* FROM sy_user usr JOIN sy_user_role usrR on usr.id=usrR.user_id
+															JOIN sy_role rl on usrR.role_id=rl.id
+				WHERE
+				 rl.enterprise_id=#{enterId} and usr.delete_flag=0
+                 <if test="orgId != null">
+                    and usr.org_id=#{orgId}
+                 </if>
+				 and
+				 rl.name in
+				    <foreach collection="roles" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+				${orderby}
+    </select>
 
 </mapper>

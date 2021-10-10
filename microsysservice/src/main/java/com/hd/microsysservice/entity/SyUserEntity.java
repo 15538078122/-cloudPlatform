@@ -102,4 +102,7 @@ public class SyUserEntity extends Model<SyUserEntity> {
 
     @TableField("head_pic")
     Long headPic;
+
+    @TableField("type_Flag")
+    Long typeFlag;
 }

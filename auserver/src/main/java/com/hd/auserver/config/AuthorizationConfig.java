@@ -9,6 +9,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.builders.InMemoryClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -20,7 +21,6 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import java.util.Arrays;
 
@@ -29,6 +29,7 @@ import java.util.Arrays;
  * @Date 2021-01-08
  */
 @Configuration
+//@AutoConfigureBefore(ClientDetailsService.class)
 @EnableAuthorizationServer
 @Slf4j
 @DependsOn({"jwtAccessTokenConverter"})
@@ -74,6 +75,30 @@ public class AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
         return new MyBCryptPasswordEncoder();
     }
 
+    @Bean
+    /**
+     * 强制增加个clientDetailsService，和下面ClientDetailsServiceConfigurer配置保存一致，解决seata datasourcescan 代理扫描时
+     * clientservice未注册异常问题
+     */
+    ClientDetailsService clientDetailsService() throws Exception {
+        ClientDetailsServiceConfigurer clients=new ClientDetailsServiceConfigurer(new InMemoryClientDetailsServiceBuilder());
+        clients.inMemory()
+                .withClient(CLIENT_ID)
+                .secret(passwordEncoder().encode(CLIENT_SECRET))
+                .authorizedGrantTypes(AUTHORIZATION_CODE, GRANT_TYPE, REFRESH_TOKEN, GRANT_TYPE_PASSWORD, IMPLICIT)
+                //.autoApprove(true) // 为true 则不会被重定向到授权的页面，也不需要手动给请求授权,直接自动授权成功返回code
+                .scopes("read", "write","user")//user 代表gateway中使用当前用户的权限进行permission拦截；其它使用scope对应权限拦截
+                //TODO: 根据实际需要修改认证反馈uri
+                .redirectUris("http://localhost:30001/public/code", "http://localhost:30001/public/token")
+                //token 时间秒
+                .accessTokenValiditySeconds(ACCESS_TOKEN_VALIDITY_SECONDS)
+                .refreshTokenValiditySeconds(REFRESH_TOKEN_VALIDITY_SECONDS)
+        //.and().withClient(CLIENT_ID2)
+        ;
+        return    clients.and().build();
+
+    }
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
@@ -114,7 +139,7 @@ public class AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
                 .tokenServices(authorizationServerTokenServices())
                 // 是否能重复使用 refresh_token
                 //.reuseRefreshTokens(false)
-                .requestFactory(new MyDefaultOAuth2RequestFactory(clientDetailsService));
+                .requestFactory(new MyDefaultOAuth2RequestFactory(clientDetailsService))
         ;
         // 设置令牌增强 JWT 转换
         TokenEnhancerChain enhancer = new TokenEnhancerChain();

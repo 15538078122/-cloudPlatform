@@ -40,4 +40,6 @@ public class SyFuncOpUrlVo implements Serializable {
     @JSONField(serializeUsing = LongToStringSerializer.class)
     private Long funcOpId;
 
+    private String notes;
+
 }

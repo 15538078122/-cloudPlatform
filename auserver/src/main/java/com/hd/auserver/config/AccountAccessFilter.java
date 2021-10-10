@@ -37,20 +37,20 @@ public class AccountAccessFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
         //TODO: 临时屏蔽账号访问检查
-        //        if(true){
-        //            chain.doFilter(request, response);
-        //            return;
-        //        }
+//                if(true){
+//                    chain.doFilter(request, response);
+//                    return;
+//                }
         String userOpIdentificationEncode = ((HttpServletRequest) request).getHeader("USER_OP_IDENTIFICATION");
         if(userOpIdentificationEncode==null){
-            throw new ServletException("无权限！");
+            throw new RuntimeException("无权限！");
         }
         userOpIdentificationEncode = java.net.URLDecoder.decode(userOpIdentificationEncode, "UTF-8");
         byte[] res = new byte[0];
         try {
             res = RSAEncrypt.decrypt((RSAPrivateKey) tokenConfig.rsaPrivateKey, Base64.decode(userOpIdentificationEncode));
         } catch (Exception e) {
-            throw new ServletException("无权限！");
+            throw new RuntimeException("无权限！");
         }
         String userOpIdentification=new String(res);
         String requestTimeStr=userOpIdentification.substring(USER_OP_IDENTIFICATION.length());

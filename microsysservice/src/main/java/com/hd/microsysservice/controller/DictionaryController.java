@@ -1,5 +1,6 @@
 package com.hd.microsysservice.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hd.common.MyPage;
 import com.hd.common.PageQueryExpressionList;
@@ -40,7 +41,7 @@ public class DictionaryController extends SuperQueryController {
     SyDictItemService syDictItemService;
     public DictionaryController(){
         mapQueryCols.put("sort","sort_");
-        mapQueryCols.put("enterpriseId","enterprise_id");
+        //mapQueryCols.put("enterpriseId","enterprise_id");
     }
     @ApiOperation(value = "分页获取字典项列表")
     @RequiresPermissions("dictionary:list")
@@ -66,6 +67,39 @@ public class DictionaryController extends SuperQueryController {
         adaptiveQueryColumn(pageQuery);
         Long dictId=Long.parseLong(pageQuery.getQueryExpressionByColumn("dictId").getValue());
         VerifyUtil.verifyEnterId(syDictService.getById(dictId).getEnterpriseId());
+
+        Page<SyDictItemEntity> syDictItemEntityPage = selectPage(pageQuery,syDictItemService);
+        List<SyDictItemVo> listVo=new ArrayList<>();
+        for(SyDictItemEntity syDictItemEntity : syDictItemEntityPage.getRecords()){
+            SyDictItemVo syDictItemVo=new SyDictItemVo();
+            VoConvertUtils.copyObjectProperties(syDictItemEntity,syDictItemVo);
+            listVo.add(syDictItemVo);
+        }
+        return RetResponse.makeRsp(new MyPage<>(syDictItemEntityPage.getCurrent(), syDictItemEntityPage.getSize(), syDictItemEntityPage.getTotal(),listVo));
+    }
+
+    @ApiOperation(value = "使用code分页获取字典项的值列表")
+    @RequiresPermissions("dictItem:getbycode")
+    @PostMapping("/dictionary/itembycode/list")
+    public RetResult getDictionaryItemBycode(@RequestParam("query") String query) throws Exception {
+        PageQueryExpressionList pageQuery=VerifyUtil.verifyQueryParam(query,"code","code不能为空!");
+        adaptiveQueryColumn(pageQuery);
+        VerifyUtil.verifyEnterId(pageQuery.getQueryExpressionByColumn("enterpriseId").getValue());
+        QueryWrapper queryWrapper=new QueryWrapper(){{
+            eq("code",pageQuery.getQueryExpressionByColumn("code").getValue());
+            eq("enterprise_id",pageQuery.getQueryExpressionByColumn("enterpriseId").getValue());
+        }};
+        List<SyDictEntity> list = syDictService.list(queryWrapper);
+        Long dictId;
+        if(list!=null && list.size()>0){
+            dictId=list.get(0).getId();
+        }
+        else {
+            throw  new Exception("找不到字典项!");
+        }
+        pageQuery.getQueryExpressionByColumn("code").setColumn("dictId");
+        pageQuery.getQueryExpressionByColumn("dictId").setValue(dictId.toString());
+        pageQuery.getQueryData().remove(pageQuery.getQueryExpressionByColumn("enterpriseId"));
 
         Page<SyDictItemEntity> syDictItemEntityPage = selectPage(pageQuery,syDictItemService);
         List<SyDictItemVo> listVo=new ArrayList<>();

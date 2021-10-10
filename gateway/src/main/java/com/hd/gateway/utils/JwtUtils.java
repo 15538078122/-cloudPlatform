@@ -54,6 +54,7 @@ public class JwtUtils {
         String loginTime = jsonObj.getString("login_time");
         String enterpriseId = jsonObj.getString("enterprise_id");
         String id = jsonObj.getString("id");
+        String deviceType = jsonObj.getString("deviceType");
 
         String clientId = jsonObj.getString("client_id");
         JSONArray scopeArray = jsonObj.getJSONArray("scope");
@@ -68,7 +69,7 @@ public class JwtUtils {
                 scope+=",";
             }
         }
-        TokenInfo tokenInfo=new TokenInfo(id,userAccount,enterpriseId,scope,null,null,loginTime);
+        TokenInfo tokenInfo=new TokenInfo(id,null,userAccount,enterpriseId,scope,null,null,loginTime,deviceType);
         return  tokenInfo;
 
     }

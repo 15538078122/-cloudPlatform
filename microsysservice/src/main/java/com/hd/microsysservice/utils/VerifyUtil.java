@@ -1,12 +1,10 @@
 package com.hd.microsysservice.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hd.common.PageQueryExpressionList;
 import com.hd.common.model.QueryExpression;
 import com.hd.microsysservice.conf.GeneralConfig;
 import com.hd.microsysservice.conf.SecurityContext;
-import com.hd.microsysservice.service.SyEnterpriseService;
 import org.springframework.util.Assert;
 
 /**
@@ -24,11 +22,11 @@ public class VerifyUtil {
             Assert.isTrue(enterId.compareTo(enterpriseId)==0,"企业编码异常!");
         }else {
             //企业id验证是否存在
-            SyEnterpriseService syEnterpriseService = (SyEnterpriseService)SpringContextUtil.getBean("syEnterpriseServiceImpl");
+           // SyEnterpriseService syEnterpriseService = (SyEnterpriseService)SpringContextUtil.getBean("syEnterpriseServiceImpl");
             //SpringContextUtil.getApplicationContext().getBeanDefinitionNames()
-            QueryWrapper queryWrapper=new QueryWrapper();
-            queryWrapper.eq("enterprise_id",enterId);
-            Assert.isTrue(syEnterpriseService.getOne(queryWrapper)!=null,"企业编码异常!");
+//            QueryWrapper queryWrapper=new QueryWrapper();
+//            queryWrapper.eq("enterprise_id",enterId);
+//            Assert.isTrue(syEnterpriseService.getOne(queryWrapper)!=null,"企业编码异常!");
         }
     }
     /**

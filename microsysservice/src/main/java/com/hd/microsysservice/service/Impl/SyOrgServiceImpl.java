@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,26 +143,47 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
     }
 
     @Override
-    public void createOrg(SyOrgVo syOrgVo) throws Exception {
+    public Long createOrg(SyOrgVo syOrgVo) throws Exception {
         VerifyUtil.verifyEnterId(syOrgVo.getEnterpriseId());
         //TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
+        String pathCode=syOrgVo.getLevelCode();
         if(syOrgVo.getParentId()==null){
             //每个企业只能创建一个顶级
             if(haveTopOrg(syOrgVo.getEnterpriseId())){
                 throw new Exception("顶级部门已存在!");
             }
+            syOrgVo.setPathCode(syOrgVo.getLevelCode());
+        }
+        else {
+            //获取父编码
+            String parentPathCode = getById(syOrgVo.getParentId()).getPathCode();
+            pathCode=String.format("%s.%s",parentPathCode,pathCode);
         }
 
+        String finalPathCode = pathCode;
+        QueryWrapper queryWrapper=new QueryWrapper(){{
+            eq("path_code", finalPathCode);
+            eq("enterprise_id",syOrgVo.getEnterpriseId());
+        }};
+        Assert.isTrue(null==getOne(queryWrapper),"路径编码不能重复!");
+
         SyOrgEntity syOrgEntity=new SyOrgEntity();
+        syOrgVo.setPathCode(pathCode);
         VoConvertUtils.copyObjectProperties(syOrgVo,syOrgEntity);
         save(syOrgEntity);
+        return syOrgEntity.getId();
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
-    public void delOrg(Long orgId) {
+    public void delOrg(Long orgId) throws Exception {
         SyOrgEntity syOrgEntity=getById(orgId);
         VerifyUtil.verifyEnterId(syOrgEntity.getEnterpriseId());
+        String pathCode=syOrgEntity.getLevelCode();
+        if(syOrgEntity.getParentId()==null){
+            //顶级不能删除
+                throw new Exception("顶级部门不能删除!");
+        }
         deleteOrgRecursion(syOrgEntity);
     }
 
@@ -223,6 +245,10 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
                     }
                     childs.add(syOrgVo);
                 }
+                else{
+                    //如果父不存在，id不为null，也认为是顶级部门
+                    topOrg.add(syOrgVo);
+                }
             }
             //顶层节点
             //(syOrgVo.getParentId()==null)
@@ -232,4 +258,42 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
         }
         return  topOrg;
     }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
+    public void updateOrg(SyOrgVo syOrgVo) {
+        VerifyUtil.verifyEnterId(syOrgVo.getEnterpriseId());
+        //syOrgVo.setEnterpriseId(SecurityContext.GetCurTokenInfo().getenterpriseId());
+        SyOrgEntity syOrgEntityOld = getById(syOrgVo.getId());
+        Assert.notNull(syOrgEntityOld,String.format("部门(id=%s)不存在!",syOrgEntityOld.getId()));
+
+        QueryWrapper queryWrapper=new QueryWrapper(){{
+            eq("path_code", syOrgVo.getPathCode());
+            eq("enterprise_id",syOrgVo.getEnterpriseId());
+        }};
+        Assert.isTrue(null==getOne(queryWrapper),"路径编码不能重复!");
+
+        SyOrgEntity syOrgEntityNew=new SyOrgEntity();
+        VoConvertUtils.copyObjectProperties(syOrgVo,syOrgEntityNew);
+        updateById(syOrgEntityNew);
+
+        //更新关联编码
+        if(syOrgEntityOld.getPathCode()==null || (syOrgEntityOld.getPathCode().compareTo(syOrgEntityNew.getPathCode())!=0) ){
+            recurUpdatePathCode(syOrgEntityNew);
+        }
+    }
+
+    private void recurUpdatePathCode(SyOrgEntity syOrgEntity) {
+            //如果是目录，更新子级pathcode
+            QueryWrapper queryWrapper=new QueryWrapper();
+            queryWrapper.eq("parent_id",syOrgEntity.getId());
+            List<SyOrgEntity> syOrgEntities = list(queryWrapper);
+            for(SyOrgEntity item : syOrgEntities){
+                SyOrgEntity syOrgEntityNew=new SyOrgEntity(){{
+                    setId(item.getId());
+                }};
+                syOrgEntityNew.setPathCode(String.format("%s.%s",syOrgEntity.getPathCode(),item.getLevelCode()));
+                updateById(syOrgEntityNew);
+                recurUpdatePathCode(syOrgEntityNew);
+            }
+        }
 }

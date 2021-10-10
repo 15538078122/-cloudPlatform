@@ -15,6 +15,7 @@ import com.hd.microsysservice.service.SyUserRoleService;
 import com.hd.microsysservice.utils.VerifyUtil;
 import com.hd.microsysservice.utils.VoConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -23,6 +24,7 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -40,6 +42,9 @@ public class SyRoleServiceImpl extends ServiceImpl<SyRoleMapper, SyRoleEntity> i
 
     @Autowired
     SyRoleService syRoleService;
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @Override
     public void createRole(SyRoleVo syRoleVo) throws Exception {
@@ -71,6 +76,8 @@ public class SyRoleServiceImpl extends ServiceImpl<SyRoleMapper, SyRoleEntity> i
         if (syRoleVo.getSyMenuBtnVos() != null) {
             updatePerms(syRoleEntity.getId(),syRoleVo.getSyMenuBtnVos());
         }
+        Set<String> keys = redisTemplate.keys(String.format("%s::%s", "userMenu", "*"));
+        redisTemplate.delete(keys);
     }
 
     @Autowired

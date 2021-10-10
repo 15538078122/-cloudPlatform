@@ -8,13 +8,24 @@ spring:
       discovery:
         server-addr: 127.0.0.1:8848
         service: microsys      #authentication service
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: usercenter_tx_group    #此处配置自定义的seata事务分组名称,为了映射到不同的seata server； service.vgroupMapping.usercenter_tx_group=default   service.default.grouplist=127.0.0.1:8091
+  config:
+    type: nacos
+    nacos:
+      serverAddr: 127.0.0.1:8848
+      group: SEATA_GROUP
+
+
 ribbon:
   eager-load:
     enabled: true
 feign:
   hystrix:
     enabled: true
-microsys:
+auserver:
   ribbon:
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule #配置规则 随机
     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule #配置规则 轮询
@@ -29,7 +40,7 @@ microsys:
     MaxAutoRetries: 1 #对当前实例的重试次数
 hystrix:
   command:
-    "FallbackFeignServiceDemo#test2(String)":  #default全局有效，service id指定应用有效
+    "default":  #default全局有效，service id指定应用有效
       execution:
         timeout:
           #是否开启超时熔断
@@ -37,7 +48,16 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 5000 #断路器超时时间，默认1000ms
+          strategy: SEMAPHORE
     "AuthFeignService#auth(String,String,String,String,String)":  #default全局有效，service id指定应用有效
+      execution:
+        timeout:
+          #是否开启超时熔断
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000 #断路器超时时间，默认1000ms
+    "UserCenterFeignService#Add(String,String,String)":  #default全局有效，service id指定应用有效
       execution:
         timeout:
           #是否开启超时熔断

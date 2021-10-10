@@ -14,4 +14,6 @@ import com.hd.microsysservice.entity.SyUserEntity;
 public interface SyMaintainMapper extends BaseMapper<SyUserEntity> {
 
     void deleteEnterprisePhysically(String enterpeiseId);
+    void recoverEnterprise(String enterpeiseId);
+
 }

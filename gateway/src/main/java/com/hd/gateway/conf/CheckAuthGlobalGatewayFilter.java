@@ -36,8 +36,8 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
     @Autowired
     MicroSysService microSysService;
 
-    @Value("${config.auth-uri}")
-    String authUri;
+//    @Value("${config.auth-uri}")
+//    String authUri;
 
     //TODO: 通过网关访问swagger时，关闭权限检查，开发阶段使用
     @Value("${config.check-permission}")
@@ -45,7 +45,9 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        if(!checkPermission){
+        String uri=exchange.getRequest().getPath().value();
+        String microName=uri.substring(1,uri.indexOf("/",1));
+        if(!checkPermission||microName.compareTo("auserver")==0){
             return chain.filter(exchange);
         }
         //TODO: PERMISSION 判断
@@ -74,9 +76,14 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
 
         boolean permitted=false;
         Long userId=-1L;
+        Long orgId=-1L;
         if(retResult.getData()!=null){
-            userId=Long.parseLong(retResult.getData().toString());
-            permitted = (userId!=-1L);
+            String returnValue= (String) retResult.getData();
+            if(returnValue.compareTo("-1")!=0){
+                userId=Long.parseLong(returnValue.split(":")[0]);
+                orgId=Long.parseLong(returnValue.split(":")[1]);
+                permitted=true;
+            }
         }
 
         if (!permitted)  {
@@ -87,6 +94,7 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
         else {
             //把tokeninfo中center user id改成业务系统的user id
             tokenInfo.setId(userId.toString());
+            tokenInfo.setOrgId(orgId.toString());
         }
         //TODO: 记录访问日志
         ServerHttpRequest request = exchange.getRequest().mutate().header("token-info", JSON.toJSONString(tokenInfo)).build();

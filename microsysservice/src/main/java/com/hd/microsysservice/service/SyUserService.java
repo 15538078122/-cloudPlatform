@@ -1,6 +1,8 @@
 package com.hd.microsysservice.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hd.common.MyPage;
+import com.hd.common.PageQueryExpressionList;
 import com.hd.common.model.DataPrivilege;
 import com.hd.common.vo.SyUserVo;
 import com.hd.microsysservice.entity.SyUserEntity;
@@ -29,5 +31,10 @@ public interface SyUserService extends IService<SyUserEntity> {
     List<SyUserVo> getOrgUser(Long orgId);
 
     void changepwd(SyUserVo syUserVo) throws Exception;
+    void resetpwd(Long userId) throws Exception;
     boolean removeAllUserForCenter(String enterpriseId) throws Exception;
+
+    MyPage<SyUserVo> userbyrole(PageQueryExpressionList query);
+
+    SyUserVo getCurrentUser() throws Exception;
 }

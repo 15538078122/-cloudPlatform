@@ -23,6 +23,23 @@ spring:
               - DELETE
       routes:
         -
+          id: auserver
+          uri: lb://auserver
+          predicates:
+            - Path=/auserver/**
+          metadata:
+            connect-timeout: 2000
+            response-timeout: 2000
+          filters:
+            - StripPrefix=1
+            - name: Retry
+              args:
+                retries: 1
+                series:
+                  - SERVER_ERROR
+                methods:
+                  - GET
+        -
           id: micromonitor
           uri: lb://micromonitor
           predicates:
@@ -100,7 +117,7 @@ spring:
             - Path=/basicconfig/**
           metadata:
             connect-timeout: 2000
-            response-timeout: 2000 #针对具体服务的单次请求的默认超时时间
+            response-timeout: 20000 #针对具体服务的单次请求的默认超时时间
           filters:
             - StripPrefix=1
             - name: Deal
@@ -123,7 +140,7 @@ spring:
             - Path=/execute/**
           metadata:
             connect-timeout: 2000
-            response-timeout: 2000 #针对具体服务的单次请求的默认超时时间
+            response-timeout: 20000 #针对具体服务的单次请求的默认超时时间
           filters:
             - StripPrefix=1
             - name: Deal
@@ -146,7 +163,7 @@ spring:
             - Path=/reportnews/**
           metadata:
             connect-timeout: 2000
-            response-timeout: 2000 #针对具体服务的单次请求的默认超时时间
+            response-timeout: 20000 #针对具体服务的单次请求的默认超时时间
           filters:
             - StripPrefix=1
             - name: Deal

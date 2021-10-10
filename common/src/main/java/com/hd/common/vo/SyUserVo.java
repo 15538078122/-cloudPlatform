@@ -99,6 +99,9 @@ public class SyUserVo implements Serializable {
     @ApiModelProperty(value = "删除标志")
     private boolean deleteFlag;
 
+    @ApiModelProperty(value = "类型标识")
+    private Long typeFlag;
+
     @ApiModelProperty(value = "用户头像")
     private Long headPic;
 

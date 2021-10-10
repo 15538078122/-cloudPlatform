@@ -10,9 +10,6 @@ import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public  class HttpUtil {
     static RestTemplate restTemplate;
     static {
@@ -27,14 +24,18 @@ public  class HttpUtil {
     }
 
 
-    public static RetResult httpGet(String url, Map<String, String> params){
+    public static RetResult httpGet(String url, MultiValueMap<String, String> params){
         return restTemplate.getForObject(url, RetResult.class,params);
     }
 
 
-    public static RetResult httpPost(String url, Map<String, String> params){
-        Map<String, Object> hashMap = new HashMap<String, Object>();
-        return restTemplate.postForObject(url,hashMap,RetResult.class,params);
+    public static RetResult httpPost(String url, MultiValueMap<String, String> params){
+        //Map<String, Object> hashMap = new HashMap<String, Object>();
+        //return restTemplate.postForObject(url,params,RetResult.class,params);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        HttpEntity<Object> requestEntity = new HttpEntity<Object>(params, headers);
+        return restTemplate.exchange(url, HttpMethod.POST,requestEntity,RetResult.class).getBody();
     }
     public static RetResult httpPostWithIdenHeader(String url, MultiValueMap<String, String> params, String USER_OP_IDENTIFICATION){
         HttpHeaders headers = new HttpHeaders();

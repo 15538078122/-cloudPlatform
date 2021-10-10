@@ -16,5 +16,5 @@ import java.util.List;
  */
 public interface SyMenuBtnMapper extends BaseMapper<SyMenuBtnEntity> {
     List<SyMenuBtnEntity> getUserMenuBtns(@Param("userId") Long userId,@Param("menuId") Long menuId);
-
+    List<SyMenuBtnEntity> getUserAllMenuBtns(@Param("userId") Long userId,@Param("menuIds") List<Long> menuIds);
 }

@@ -13,6 +13,7 @@ import com.hd.microsysservice.service.SyMenuBtnService;
 import com.hd.microsysservice.service.SyMenuService;
 import com.hd.microsysservice.utils.VerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -34,6 +35,8 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
 
     @Autowired
     SyMenuBtnService syMenuBtnService;
+    @Autowired
+    SyMenuService syMenuService;
 
     SyMenuService.SyMenuVoConvertUtils syMenuVoConvertUtils=new SyMenuService.SyMenuVoConvertUtils();
 
@@ -61,21 +64,43 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
 
     @Override
     public List<SyMenuVo> getCurrentUserMenu() {
-        //TODO: 根据权限获取菜单列表
         TokenInfo tokenInfo = SecurityContext.GetCurTokenInfo();
-        List<SyMenuEntity> list =baseMapper.selectUserMenu(tokenInfo.getId(),tokenInfo.getEnterpriseId());
+        List<SyMenuVo> listTree =syMenuService.getCurrentUserMenu(tokenInfo.getId(),tokenInfo.getEnterpriseId());
+        return  listTree;
+    }
+
+    @Override
+    @Cacheable(value = "userMenu", key = "#userId", unless = "#result == null")
+    public List<SyMenuVo> getCurrentUserMenu(String userId, String enterpriseId) {
+        //TODO: 根据权限获取菜单列表
+        List<SyMenuEntity> list =baseMapper.selectUserMenu(userId,enterpriseId);
         List<SyMenuVo> listVo = new ArrayList<>();
-        for(SyMenuEntity syMenuEntity:list){
+//        for(SyMenuEntity syMenuEntity:list){
+//            SyMenuVo syMenuVo = syMenuVoConvertUtils.convertToT2(syMenuEntity);
+//            List<SyMenuBtnVo> btns = syMenuBtnService.getUserMenuBtns(Long.parseLong(userId),syMenuEntity.getId());
+//            if(btns.size()>0){
+//                syMenuVo.setBtns(btns);
+//            }
+//            listVo.add(syMenuVo);
+//        }
+        List<Long> menuIds=new ArrayList<>();
+        for(SyMenuEntity syMenuEntity:list) {
+            menuIds.add(syMenuEntity.getId());
+        }
+        List<SyMenuBtnVo> btnsAll = syMenuBtnService.getUserAllMenuBtns(Long.parseLong(userId),menuIds);
+        for(SyMenuEntity syMenuEntity:list) {
             SyMenuVo syMenuVo = syMenuVoConvertUtils.convertToT2(syMenuEntity);
-            List<SyMenuBtnVo> btns = syMenuBtnService.getUserMenuBtns(Long.parseLong(tokenInfo.getId()),syMenuEntity.getId());
-            if(btns.size()>0){
-                syMenuVo.setBtns(btns);
-            }
+            List<SyMenuBtnVo> btns=new ArrayList<>();
+             for(SyMenuBtnVo syMenuBtnVo:btnsAll){
+                 if(syMenuBtnVo.getMenuId().equals(syMenuEntity.getId())){
+                     btns.add(syMenuBtnVo);
+                 }
+             }
+            syMenuVo.setBtns(btns);
             listVo.add(syMenuVo);
         }
 
         List<SyMenuVo> listTree=rearrange(listVo);
-
         return  listTree;
     }
 

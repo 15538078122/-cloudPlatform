@@ -10,4 +10,18 @@
         JOIN sy_menu menu on menuBtn.menu_id=menu.id
         where usrRole.user_id=#{userId} and menuBtn.`name`!='list' and menu.id=#{menuId} and menuBtn.is_visible=1
     </select>
+
+    <select id="getUserAllMenuBtns"  resultMap="BaseResultMap">
+        SELECT distinct menuBtn.* from sy_user_role usrRole
+        JOIN sy_role_perm rolePerm on usrRole.role_id=rolePerm.role_id
+        JOIN sy_menu_btn menuBtn on rolePerm.menu_btn_id=menuBtn.id
+        JOIN sy_menu menu on menuBtn.menu_id=menu.id
+        where usrRole.user_id=#{userId} and menuBtn.`name`!='list'
+        and   menu.id in
+        <foreach collection="menuIds" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        and menuBtn.is_visible=1
+    </select>
+
 </mapper>

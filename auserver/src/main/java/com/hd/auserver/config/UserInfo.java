@@ -20,4 +20,5 @@ public class UserInfo extends User {
     String loginTime;
     String enterpriseId;
     String id;
+    String deviceType;
 }

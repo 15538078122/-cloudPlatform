@@ -50,7 +50,7 @@ public class UriCostServiceImpl implements UriCostService {
         ));
         query.skip((pageNum - 1) * pageSize);
         query.limit((int) pageSize);
-        query.getSortObject().append("cost", -1);
+        //query.getSortObject().append("cost", -1);
         //List<Map> mm = template.findAll(Map.class,"cost");
         List<UriCost> uriCosts = template.find(query, UriCost.class);
         List<UriCostVo> uriCostVos=new UriCostVoConvertUtils().convertToListT2(uriCosts);

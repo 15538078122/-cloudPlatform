@@ -22,4 +22,7 @@
         delete from sy_user WHERE enterprise_id=#{enterpeiseId};
 
     </delete>
+    <update id="recoverEnterprise">
+        update sy_enterprise  set delete_flag=0 WHERE enterprise_id=#{enterpeiseId};
+    </update>
 </mapper>

@@ -15,6 +15,7 @@ import java.util.List;
  * @since 2021-09-01
  */
 public interface SyMonitorService extends IService<SyMonitorEntity> {
-        void  heartbeat(String serviceName);
+        void  heartbeat(String serviceName,String clientId);
         List<SyMonitorVo> listServiceHeartbeat();
+        void  removeOnStart();
 }

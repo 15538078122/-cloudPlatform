@@ -8,9 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * @Author: liwei
@@ -23,16 +22,21 @@ public class HeartBeatTask  {
 
     @Autowired
     ConfigData configData;
+    @Autowired
+    ServerConfig serverConfig;
 
     @Scheduled(cron = "0/15 * * * * ?")
     private void beatTasks(){
         //System.err.println("执行heartbeat." + LocalDateTime.now());
         log.debug("执行heartbeat.");
-        Map<String, String> params = new HashMap<String, String>();
-        //params.put("account", tokenInfo.getAccount());
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+        //MultiValueMap<String, String> params = new HashMap<String, String>();
+        params.add("serviceName", configData.getAppname());
+        String clientId=serverConfig.getUrl();
+        params.add("clientId", clientId);
         try {
             ConfigData configData44= (ConfigData) SpringContextUtil.getBean("configData");
-            RetResult retResult = HttpUtil.httpGet(configData.getHeartbeaturi()+"/"+configData.getAppname(),params);
+            RetResult retResult = HttpUtil.httpPost(configData.getHeartbeaturi(),params);
         }
         catch (Exception e) {
             //e.printStackTrace();

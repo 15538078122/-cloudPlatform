@@ -42,12 +42,14 @@ public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
             }
             String enterpriseId=authentication.getOAuth2Request().getRequestParameters().get("enterId");
             user.setEnterpriseId(enterpriseId);
+            user.setDeviceType("web");
             user.setId("0000000000000000000");
         }
         //Set<String> tokenScope = token.getScope();
         //将额外的参数信息存入，用于生成token
         data.put("login_time", user.getLoginTime());
         data.put("enterprise_id", user.getEnterpriseId());
+        data.put("deviceType",user.getDeviceType());
         data.put("id",user.getId());
         data.putAll(token.getAdditionalInformation());
         //自定义TOKEN包含的信息
@@ -70,6 +72,8 @@ public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
         String userName = (String) decode.get("user_name");
         String loginTime = (String) decode.get("login_time");
         String enterpriseId = (String) decode.get("enterprise_id");
+        String id=(String) decode.get("id");
+        String deviceType=(String) decode.get("deviceType");
 
         String clientId = (String) decode.get("client_id");
         List<String> scopes = new ArrayList<>();
@@ -97,6 +101,8 @@ public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
         UserInfo userInfo = new UserInfo(userName, "", grantedAuthorityList);
         userInfo.setLoginTime(loginTime);
         userInfo.setEnterpriseId(enterpriseId);
+        userInfo.setId(id);
+        userInfo.setDeviceType(deviceType);
         //需要将解析出来的用户存入全局当中，不然无法转换成自定义的user类
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userInfo, null, grantedAuthorityList);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);

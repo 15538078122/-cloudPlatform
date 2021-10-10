@@ -41,6 +41,14 @@ public class FirstFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         log.debug(((HttpServletRequest)request).getServletPath());
         String servletPath = ((HttpServletRequest) request).getServletPath();
+        String contentType = ((HttpServletRequest) request).getHeader("content-type");
+        RepeatedlyReadRequestWrapper  wrapper=null;
+        if(contentType!=null&&contentType.compareTo("application/json")==0)
+        {
+            wrapper=new RepeatedlyReadRequestWrapper((HttpServletRequest) request);
+            System.out.println("bodyStr = " + new String(wrapper.getBody()) );
+        }
+
         //servletPath = servletPath.replaceFirst(servletContextPath,"");
 //        if(servletPath.indexOf("/auth")!=0 &&servletPath.indexOf("/swagger-ui.html")!=0
 //                &&servletPath.indexOf("/webjars")!=0 &&servletPath.indexOf("/static")!=0
@@ -59,6 +67,12 @@ public class FirstFilter implements Filter {
                 SecurityContext.SetCurTokenInfo(tokenInfo);
             }
          }
-        chain.doFilter(request, response);
+        if(contentType!=null&&contentType.compareTo("application/json")==0){
+            chain.doFilter(wrapper, response);
+        }
+        else {
+            chain.doFilter(request, response);
+        }
+
     }
 }

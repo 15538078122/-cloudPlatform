@@ -37,4 +37,7 @@ public class SyMonitorVo implements Serializable {
     @ApiModelProperty(value = "服务是否在线")
     private Boolean onLine;
 
+    @ApiModelProperty(value = "client地址")
+    private String clientId;
+
 }

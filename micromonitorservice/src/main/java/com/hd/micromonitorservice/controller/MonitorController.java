@@ -13,7 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,9 +34,10 @@ public class MonitorController extends SuperQueryController {
 
     @ApiOperation(value = "心跳")
     @RequiresPermissions(value = "heartbeat:up", note = "心跳")
-    @GetMapping("/heartbeat/{serviceName}")
-    public RetResult heartbeatUp(@PathVariable("serviceName") String serviceName) {
-         syMonitorService.heartbeat(serviceName);
+    @PostMapping("/heartbeat")
+    public RetResult heartbeatUp(String serviceName,String clientId) {
+        //String clientId="123";
+        syMonitorService.heartbeat(serviceName,clientId);
         return RetResponse.makeRsp("心跳成功");
     }
     @ApiOperation(value = "心跳列表")

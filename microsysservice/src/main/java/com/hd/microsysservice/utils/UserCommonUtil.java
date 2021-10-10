@@ -15,9 +15,10 @@ public class UserCommonUtil {
     @Autowired
     SyUserMapperCommon syUserMapperCommon;
 
-    @Cacheable(value = "account", key = "'centerUserId:'+#centerUserId", unless = "#result == null")
-    public Long getUserIdByCenterUserIdFromCach(Long centerUserId) {
-        Long userId = syUserMapperCommon.getUserIdByCenterUserId(centerUserId);
+    //    @Cacheable(value = "centerId2userId", key = "'centerUserId:'+#centerUserId", unless = "#result == null")
+    @Cacheable(value = "centerId2userId", key = "#centerUserId", unless = "#result == null")
+    public String getUserIdByCenterUserIdFromCach(Long centerUserId) {
+        String userId = syUserMapperCommon.getUserIdByCenterUserId(centerUserId);
         return userId;
     }
 

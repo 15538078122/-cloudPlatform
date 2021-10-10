@@ -1,5 +1,6 @@
 package com.hd.micromonitorservice.conf;
 
+import com.hd.micromonitorservice.service.SyMonitorService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class ApplicationStartup implements ApplicationListener<ContextRefreshedEvent> {
 
+    @Autowired
+    SyMonitorService syMonitorService;
+
     private volatile AtomicBoolean isInit=new AtomicBoolean(false);
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
@@ -30,6 +34,7 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         // 初始化完成后.清空redis缓存
         //delAllRedisKey();
 
+        syMonitorService.removeOnStart();
     }
 
     @Autowired

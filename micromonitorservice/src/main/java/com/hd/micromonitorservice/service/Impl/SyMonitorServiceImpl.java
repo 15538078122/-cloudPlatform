@@ -1,5 +1,6 @@
 package com.hd.micromonitorservice.service.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hd.common.vo.SyMonitorVo;
@@ -25,16 +26,40 @@ import java.util.List;
 public class SyMonitorServiceImpl extends ServiceImpl<SyMonitorMapper, SyMonitorEntity> implements SyMonitorService {
 
     @Override
-    public void heartbeat(String serviceName) {
-        UpdateWrapper updateWrapper=new UpdateWrapper();
-        updateWrapper.eq("service_name",serviceName);
-        updateWrapper.set("heartbeat_tm",new Date());
-        update(updateWrapper);
+    public void heartbeat(String serviceName,String clientId) {
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.eq("service_name",serviceName);
+        queryWrapper.eq("client_id",clientId);
+        SyMonitorEntity syMonitorEntity = getOne(queryWrapper);
+        if(syMonitorEntity==null){
+            queryWrapper=new QueryWrapper();
+            queryWrapper.eq("service_name",serviceName);
+            queryWrapper.isNull("client_id");
+            String showName = getOne(queryWrapper).getShowName();
+            syMonitorEntity=new SyMonitorEntity(){{
+                setServiceName(serviceName);
+                setClientId(clientId);
+                setShowName(showName);
+                setHeartbeatTm(new Date());
+            }};
+            save(syMonitorEntity);
+        }
+        else {
+            UpdateWrapper updateWrapper = new UpdateWrapper();
+            updateWrapper.eq("id", syMonitorEntity.getId());
+            updateWrapper.set("heartbeat_tm", new Date());
+            update(updateWrapper);
+        }
+
+
     }
 
     @Override
     public List<SyMonitorVo> listServiceHeartbeat() {
-        List<SyMonitorEntity> syMonitorEntities=list();
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.isNotNull("client_id");
+        queryWrapper.orderByAsc("show_name");
+        List<SyMonitorEntity> syMonitorEntities=list(queryWrapper);
         List<SyMonitorVo> syMonitorVos=new ArrayList<>();
         for(SyMonitorEntity syMonitorEntity:syMonitorEntities){
             SyMonitorVo syMonitorVo=new SyMonitorVo();
@@ -49,5 +74,12 @@ public class SyMonitorServiceImpl extends ServiceImpl<SyMonitorMapper, SyMonitor
             syMonitorVos.add(syMonitorVo);
         }
         return syMonitorVos;
+    }
+
+    @Override
+    public void removeOnStart() {
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.isNotNull("client_id");
+        remove(queryWrapper);
     }
 }

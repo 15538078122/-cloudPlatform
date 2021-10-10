@@ -25,9 +25,10 @@ public interface SyOrgService extends IService<SyOrgEntity> {
 
     boolean haveTopOrg(String enterpriseId);
 
-    void createOrg(SyOrgVo syOrgVo) throws Exception;
+    Long createOrg(SyOrgVo syOrgVo) throws Exception;
 
-    void delOrg(Long orgId);
+    void delOrg(Long orgId) throws Exception;
 
     List<SyUserVo> getMyOrgMen();
+    void updateOrg(SyOrgVo syOrgVo);
 }

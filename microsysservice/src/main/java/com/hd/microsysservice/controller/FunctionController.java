@@ -38,19 +38,21 @@ import java.util.List;
 //@RefreshScope
 @RestController
 @Slf4j
-public class FunctionController  extends SuperQueryController {
+public class FunctionController extends SuperQueryController {
 
     @Autowired
-    SyFunctionService  syFunctionService;
+    SyFunctionService syFunctionService;
     @Autowired
     SyFuncOperatorService syFuncOperatorService;
     @Autowired
     SyUrlMappingService syUrlMappingService;
     @Autowired
     SyFuncOpUrlService syFuncOpUrlService;
-    public FunctionController(){
+
+    public FunctionController() {
         //mapQueryCols.put("name","name");
     }
+
     @ApiOperation(value = "获取所有功能")
     @RequiresPermissions("func:get")
     @GetMapping("/function")
@@ -64,27 +66,30 @@ public class FunctionController  extends SuperQueryController {
     @RequiresPermissions("func:create")
     @PostMapping("/function")
     public RetResult createFunc(@RequestBody SyFunctionVo syFuncVo) throws Exception {
-        SyFunctionEntity syFunctionEntity =new SyFunctionEntity();
-        VoConvertUtils.copyObjectProperties(syFuncVo,syFunctionEntity);
+        SyFunctionEntity syFunctionEntity = new SyFunctionEntity();
+        VoConvertUtils.copyObjectProperties(syFuncVo, syFunctionEntity);
         syFunctionService.save(syFunctionEntity);
         return RetResponse.makeRsp("创建功能成功");
     }
+
     @ApiOperation(value = "编辑功能")
     @RequiresPermissions("func:edit")
     @PutMapping("/function/{funcId}")
-    public RetResult editFunc(@PathVariable("funcId") Long funcId,@RequestBody SyFunctionVo syFuncVo) throws Exception {
-        syFunctionService.updateFunc(funcId,syFuncVo);
+    public RetResult editFunc(@PathVariable("funcId") Long funcId, @RequestBody SyFunctionVo syFuncVo) throws Exception {
+        syFunctionService.updateFunc(funcId, syFuncVo);
         return RetResponse.makeRsp("修改功能成功");
     }
+
     @ApiOperation(value = "获取单个功能")
     @RequiresPermissions("func:get")
     @GetMapping("/function/{funcId}")
     public RetResult getFunc(@PathVariable("funcId") Long funcId) throws Exception {
         SyFunctionEntity syFunctionEntity = syFunctionService.getById(funcId);
-        SyFunctionVo syFunctionVo =new SyFunctionVo();
-        VoConvertUtils.copyObjectProperties(syFunctionEntity,syFunctionVo);
+        SyFunctionVo syFunctionVo = new SyFunctionVo();
+        VoConvertUtils.copyObjectProperties(syFunctionEntity, syFunctionVo);
         return RetResponse.makeRsp(syFunctionVo);
     }
+
     @ApiOperation(value = "删除功能")
     @RequiresPermissions("func:del")
     @DeleteMapping("/function/{funcId}")
@@ -97,20 +102,22 @@ public class FunctionController  extends SuperQueryController {
     @RequiresPermissions("funcOpr:create")
     @PostMapping("/function/opr")
     public RetResult createFuncOpr(@RequestBody SyFuncOperatorVo syFuncOprVo) throws Exception {
-        SyFuncOperatorEntity syFuncOperatorEntity =new SyFuncOperatorEntity();
-        VoConvertUtils.copyObjectProperties(syFuncOprVo,syFuncOperatorEntity);
+        SyFuncOperatorEntity syFuncOperatorEntity = new SyFuncOperatorEntity();
+        VoConvertUtils.copyObjectProperties(syFuncOprVo, syFuncOperatorEntity);
         syFuncOperatorService.save(syFuncOperatorEntity);
         return RetResponse.makeRsp("创建操作成功");
     }
+
     @ApiOperation(value = "编辑操作")
     @RequiresPermissions("funcOpr:edit")
     @PutMapping("/function/opr/{funcOprId}")
-    public RetResult editFuncOpr(@PathVariable("funcOprId") Long funcOprId,@RequestBody SyFuncOperatorVo syFuncOprVo) throws Exception {
-        SyFuncOperatorEntity syFuncOperatorEntity =new SyFuncOperatorEntity();
-        VoConvertUtils.copyObjectProperties(syFuncOprVo,syFuncOperatorEntity);
+    public RetResult editFuncOpr(@PathVariable("funcOprId") Long funcOprId, @RequestBody SyFuncOperatorVo syFuncOprVo) throws Exception {
+        SyFuncOperatorEntity syFuncOperatorEntity = new SyFuncOperatorEntity();
+        VoConvertUtils.copyObjectProperties(syFuncOprVo, syFuncOperatorEntity);
         syFuncOperatorService.updateById(syFuncOperatorEntity);
         return RetResponse.makeRsp("修改操作成功");
     }
+
     @ApiOperation(value = "删除操作")
     @RequiresPermissions("funcOpr:del")
     @DeleteMapping("/function/opr/{funcOprId}")
@@ -118,58 +125,66 @@ public class FunctionController  extends SuperQueryController {
         syFuncOperatorService.removeById(funcOprId);
         return RetResponse.makeRsp("删除操作成功");
     }
-    SyUrlMappingService.SyUrlMappingVoConvertUtils syUrlMappingVoConvertUtils=new SyUrlMappingService.SyUrlMappingVoConvertUtils();
+
+    SyUrlMappingService.SyUrlMappingVoConvertUtils syUrlMappingVoConvertUtils = new SyUrlMappingService.SyUrlMappingVoConvertUtils();
+
     @ApiOperation(value = "urlmapping 添加")
     @RequiresPermissions("urlMaping:add")
     @PostMapping("/url-mapping")
-    public RetResult addUrlMapping(@RequestBody SyUrlMappingVo syUrlMappingVo){
+    public RetResult addUrlMapping(@RequestBody SyUrlMappingVo syUrlMappingVo) {
         syUrlMappingService.save(syUrlMappingVoConvertUtils.convertToT1(syUrlMappingVo));
         return RetResponse.makeRsp("添加成功");
     }
+
     @ApiOperation(value = "分页获取所有urlmapping")
     @RequiresPermissions("urlMaping:get")
     @GetMapping("/url-mapping")
     public RetResult getUrlMapping(@RequestParam("query") String query) {
-        PageQueryExpressionList pageQuery= JSON.parseObject(query,PageQueryExpressionList.class);
+        PageQueryExpressionList pageQuery = JSON.parseObject(query, PageQueryExpressionList.class);
         adaptiveQueryColumn(pageQuery);
-        Page<SyUrlMappingEntity> syUrlMappingEntityPage= selectPage(pageQuery,syUrlMappingService);
-        List<SyUrlMappingVo> listVo=new ArrayList<>();
-        for(SyUrlMappingEntity syUrlMappingEntity : syUrlMappingEntityPage.getRecords()){
-            SyUrlMappingVo syUrlMappingVo=new SyUrlMappingVo();
-            VoConvertUtils.copyObjectProperties(syUrlMappingEntity,syUrlMappingVo);
+        Page<SyUrlMappingEntity> syUrlMappingEntityPage = selectPage(pageQuery, syUrlMappingService);
+        List<SyUrlMappingVo> listVo = new ArrayList<>();
+        for (SyUrlMappingEntity syUrlMappingEntity : syUrlMappingEntityPage.getRecords()) {
+            SyUrlMappingVo syUrlMappingVo = new SyUrlMappingVo();
+            VoConvertUtils.copyObjectProperties(syUrlMappingEntity, syUrlMappingVo);
             listVo.add(syUrlMappingVo);
         }
-        return RetResponse.makeRsp(new MyPage<>(syUrlMappingEntityPage.getCurrent(), syUrlMappingEntityPage.getSize(), syUrlMappingEntityPage.getTotal(),listVo));
+        return RetResponse.makeRsp(new MyPage<>(syUrlMappingEntityPage.getCurrent(), syUrlMappingEntityPage.getSize(), syUrlMappingEntityPage.getTotal(), listVo));
     }
+
     @ApiOperation(value = "获取某个操作对应的Uri")
-    @RequiresPermissions(value = "funcOpUrl:get",note = "获取某个操作对应的Uri")
+    @RequiresPermissions(value = "funcOpUrl:get", note = "获取某个操作对应的Uri")
     @GetMapping("/function/opr/{funcOprId}/url")
     public RetResult getfunOpUrl(@PathVariable("funcOprId") Long funcOprId) {
-        QueryWrapper queryWrapper=new QueryWrapper(){{
-            eq("func_op_id",funcOprId);
-        }};
-        List<SyFuncOpUrlEntity> syFuncOpUrlEntityList = syFuncOpUrlService.list(queryWrapper);
-        List<SyFuncOpUrlVo> syFuncOpUrlVoList=new ArrayList<>() ;
-        for (SyFuncOpUrlEntity syFuncOpUrlEntity : syFuncOpUrlEntityList){
-            SyFuncOpUrlVo syFuncOpUrlVo=new SyFuncOpUrlVo();
-            VoConvertUtils.copyObjectProperties(syFuncOpUrlEntity,syFuncOpUrlVo);
-            syFuncOpUrlVoList.add(syFuncOpUrlVo);
-        }
+//        QueryWrapper queryWrapper = new QueryWrapper() {{
+//            eq("func_op_id", funcOprId);
+//        }};
+//        List<SyFuncOpUrlEntity> syFuncOpUrlEntityList = syFuncOpUrlService.list(queryWrapper);
+//        List<SyFuncOpUrlVo> syFuncOpUrlVoList = new ArrayList<>();
+//        for (SyFuncOpUrlEntity syFuncOpUrlEntity : syFuncOpUrlEntityList) {
+//            SyFuncOpUrlVo syFuncOpUrlVo = new SyFuncOpUrlVo();
+//            VoConvertUtils.copyObjectProperties(syFuncOpUrlEntity, syFuncOpUrlVo);
+//            syFuncOpUrlVoList.add(syFuncOpUrlVo);
+//        }
+
+        List<SyFuncOpUrlVo> syFuncOpUrlVoList = syFuncOpUrlService.getfunOpUrl(funcOprId);
+
         return RetResponse.makeRsp(syFuncOpUrlVoList);
     }
+
     @ApiOperation(value = "更新某个操作对应的Uri")
-    @RequiresPermissions(value = "funcOpUrl:update",note = "更新某个操作对应的Uri")
+    @RequiresPermissions(value = "funcOpUrl:update", note = "更新某个操作对应的Uri")
     @PutMapping("/function/opr/{funcOprId}/url")
-    public RetResult updatefunOpUrl(@PathVariable("funcOprId") Long funcOprId,@RequestBody List<SyFuncOpUrlVo> syFuncOpUrlVos) {
-        QueryWrapper queryWrapper=new QueryWrapper(){{
-            eq("func_op_id",funcOprId);
+    public RetResult updatefunOpUrl(@PathVariable("funcOprId") Long funcOprId, @RequestBody List<SyFuncOpUrlVo> syFuncOpUrlVos) {
+        QueryWrapper queryWrapper = new QueryWrapper() {{
+            eq("func_op_id", funcOprId);
         }};
         syFuncOpUrlService.remove(queryWrapper);
 
-        List<SyFuncOpUrlEntity> syFuncOpUrlEntityList=new ArrayList<>() ;
-        for (SyFuncOpUrlVo syFuncOpUrlVo : syFuncOpUrlVos){
-            SyFuncOpUrlEntity syFuncOpUrlEntity=new SyFuncOpUrlEntity();
-            VoConvertUtils.copyObjectProperties(syFuncOpUrlVo,syFuncOpUrlEntity);
+        List<SyFuncOpUrlEntity> syFuncOpUrlEntityList = new ArrayList<>();
+        for (SyFuncOpUrlVo syFuncOpUrlVo : syFuncOpUrlVos) {
+            SyFuncOpUrlEntity syFuncOpUrlEntity = new SyFuncOpUrlEntity();
+            VoConvertUtils.copyObjectProperties(syFuncOpUrlVo, syFuncOpUrlEntity);
             syFuncOpUrlEntity.setId(null);
             syFuncOpUrlEntity.setFuncOpId(funcOprId);
             syFuncOpUrlEntityList.add(syFuncOpUrlEntity);

@@ -43,7 +43,9 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        if(!checkPermission){
+        String uri=exchange.getRequest().getPath().value();
+        String microName=uri.substring(1,uri.indexOf("/",1));
+        if(!checkPermission||microName.compareTo("auserver")==0){
             return chain.filter(exchange);
         }
         List<String> authorization = exchange.getRequest().getHeaders().get("Authorization");
@@ -56,7 +58,6 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
         TokenInfo tokenInfo;
         try {
             tokenInfo = jwtUtils.decodeToken(bearerTk.replace("Bearer ", ""));
-            String uri=exchange.getRequest().getPath().value();
             //url第一个分段一遍用作服务名识别，此处去掉
             tokenInfo.setUri(uri.substring(uri.indexOf("/",1)));
             tokenInfo.setMethod(exchange.getRequest().getMethodValue().toLowerCase());
@@ -81,7 +82,7 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
                     new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", false));
         }
 
-        ServerHttpRequest request = exchange.getRequest().mutate().header("token-info", JSON.toJSONString(tokenInfo)).build();
+        ServerHttpRequest request = exchange.getRequest().mutate().header("token-info", JSON.toJSONString(tokenInfo)).header("Authorization","").build();
         ServerWebExchange buildExchange = exchange.mutate().request(request).build();
 
         //TODO: 记录访问日志

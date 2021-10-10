@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,4 +37,6 @@ public class SyMonitorEntity extends Model<SyMonitorEntity> {
     @TableField("heartbeat_tm")
     private Date heartbeatTm;
 
+    @TableField("client_id")
+    private String clientId;
 }

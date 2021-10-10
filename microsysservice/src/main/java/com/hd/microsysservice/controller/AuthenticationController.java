@@ -30,7 +30,7 @@ public class AuthenticationController {
     @PostMapping(value = "/auth")
     public RetResult auth(@RequestBody TokenInfo tokenInfo) throws InterruptedException {
 
-        return RetResponse.makeRsp("登录成功",authService.auth(tokenInfo).toString());
+        return RetResponse.makeRsp("登录成功",authService.auth(tokenInfo));
     }
 
     /**

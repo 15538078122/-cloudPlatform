@@ -13,10 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TokenInfo {
     String id;
+    String orgId;
     String account;
     String enterpriseId;
     String scopes;
     String uri;
     String method;
     String loginTime;
+    String deviceType;
 }

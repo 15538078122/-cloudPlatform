@@ -1,0 +1,20 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yaml
+        group:  DEFAULT_GROUP
+      discovery:
+        server-addr: 127.0.0.1:8848
+        service: auserver      #authentication service
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: usercenter_tx_group  #此处配置自定义的seata事务分组名称,为了映射到不同的seata server； service.vgroupMapping.usercenter_tx_group=default   service.default.grouplist=127.0.0.1:8091
+  enable-auto-data-source-proxy: true    #开启数据库代理
+  config:
+    type: nacos
+    nacos:
+      serverAddr: 127.0.0.1:8848
+      group: SEATA_GROUP

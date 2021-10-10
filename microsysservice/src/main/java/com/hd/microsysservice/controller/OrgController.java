@@ -5,10 +5,8 @@ import com.hd.common.RetResult;
 import com.hd.common.model.RequiresPermissions;
 import com.hd.common.vo.SyOrgVo;
 import com.hd.common.vo.SyUserVo;
-import com.hd.microsysservice.entity.SyOrgEntity;
 import com.hd.microsysservice.service.SyOrgService;
 import com.hd.microsysservice.utils.VerifyUtil;
-import com.hd.microsysservice.utils.VoConvertUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -71,17 +69,14 @@ public class OrgController  {
     @RequiresPermissions("org:edit")
     @PutMapping("/org/{id}")
     public RetResult editOrg(@PathVariable("id") Long orgId,@RequestBody @Validated SyOrgVo syOrgVo) throws Exception {
-        VerifyUtil.verifyEnterId(syOrgVo.getEnterpriseId());
-        //syOrgVo.setEnterpriseId(SecurityContext.GetCurTokenInfo().getenterpriseId());
-        SyOrgEntity syOrgEntity=new SyOrgEntity();
-        VoConvertUtils.copyObjectProperties(syOrgVo,syOrgEntity);
-        syOrgService.updateById(syOrgEntity);
+        syOrgVo.setId(orgId);
+        syOrgService.updateOrg(syOrgVo);
         return RetResponse.makeRsp("修改部门成功");
     }
     @ApiOperation(value = "删除部门")
     @RequiresPermissions("org:delete")
     @DeleteMapping("/org/{id}")
-    public RetResult delOrg(@PathVariable("id") Long orgId) {
+    public RetResult delOrg(@PathVariable("id") Long orgId) throws Exception {
         syOrgService.delOrg(orgId);
         return RetResponse.makeRsp("删除部门成功");
     }

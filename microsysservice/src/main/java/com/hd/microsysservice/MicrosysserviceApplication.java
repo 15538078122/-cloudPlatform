@@ -1,5 +1,6 @@
 package com.hd.microsysservice;
 
+import io.seata.spring.annotation.datasource.EnableAutoDataSourceProxy;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,6 +22,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @EnableTransactionManagement
 @EnableCaching
+@EnableAutoDataSourceProxy
 public class MicrosysserviceApplication {
 
 	public static void main(String[] args) {
