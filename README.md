@@ -1,6 +1,6 @@
-# 介绍 微服务架构 多企业 多应用 基础平台
-1、认证OATH2.0，4种模式.   AUTHORIZATION_CODE,GRANT_TYPE, REFRESH_TOKEN,GRANT_TYPE_PASSWORD,IMPLICIT
-2、jwt rsa   
+# 介绍 微服务架构 多企业 多应用 基础平台 微服务分布式事务  
+1、认证OATH2.0，4种模式.   AUTHORIZATION_CODE,GRANT_TYPE, REFRESH_TOKEN,GRANT_TYPE_PASSWORD,IMPLICIT  
+2、jwt rsa   微服务分布式事物seata  
 3、更简洁的jwt client方式   
 4、网关gateway，认证鉴权限流负载均衡、请求监视、retry   
 5、独立的url鉴权服务   
@@ -13,7 +13,8 @@
 12、文件分片上传和分片下载  
 13、服务监视&心跳
 # 软件架构  
-![1630475301(1)](https://user-images.githubusercontent.com/83743182/131618807-d32acab0-45ac-42db-b2a5-87a89b9fe959.jpg)
+ ![1632637500(1)](https://user-images.githubusercontent.com/83743182/134796199-62597398-1c1c-4192-a44b-c07e3e7c5ee9.jpg)
+
 # 基础数据模型  
 ![image](https://user-images.githubusercontent.com/83743182/125550679-ddde7fae-defb-429f-ab37-ed5f5bd1844a.png)
 # 基础url  
@@ -45,6 +46,7 @@ postman 导入gateway&oauth2&microservice-testing.postman_collection.json
 
 # ui
 ![image](https://user-images.githubusercontent.com/83743182/131477976-33134c78-ef67-48bd-a546-f3ce88c252cf.png)
+![image](https://user-images.githubusercontent.com/83743182/133869716-38de0161-3de1-4846-9712-96aa72a3bfbd.png)
 
 
 # 系统若干技术问题介绍：
@@ -115,10 +117,47 @@ public class FeignConfig {
     public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
         return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
     }
-}
+}  
 27、关于modules下spring 的配置，这里配置只是为了在idea里面查看方便，并没有分配多个application context容器。
-![image](https://user-images.githubusercontent.com/83743182/133537034-d4f88332-3999-4b9a-8dea-107a19a8905f.png)
-
+![image](https://user-images.githubusercontent.com/83743182/133537034-d4f88332-3999-4b9a-8dea-107a19a8905f.png)  
+28、分布式事物seata AT模式 配置  
+pom，注意版本：        <!-- seata -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-seata</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.seata</groupId>
+                    <artifactId>seata-spring-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>2.2.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>druid</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>1.4.2</version>
+        </dependency>
+    </dependencies>  
+yml：  注意：tx-service-group: usercenter_tx_group   和nacos配置中心保持一致，另外seata不要出现registry等节点配置，会造成分布式事物失效 
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: usercenter_tx_group    #此处配置自定义的seata事务分组名称
+  config:
+    type: nacos
+    nacos:
+      serverAddr: 127.0.0.1:8848
+      group: SEATA_GROUP
+关于seata1.4.2和oauth2集成错误：ClientDetailsService java.lang.UnsupportedOperationException错误，是由于GlobalTransactionScanner检查ClientDetailsService是否需要代理增强时造成的@Lazy造成监察时还没初始化。解决方法1降低seata版本到1.4.0；解决方法2：暴力覆盖bean ClientDetailsService.
+![image](https://user-images.githubusercontent.com/83743182/134762974-db6764ae-becd-4bb3-b44d-48d323986a8b.png)
+seata： 对应几乎没有并发量的接口使用seata比较合适，省力。对有并发需求的接口，不要启用全局事务；因为启用事务后，seata的事务管理模式造成效率低下，实测200ms的请求，启动事务后，变成5-10倍的耗时。所以对于并发接口还是根据业务情形自行进行数据一致性管理。
 
 待续
 
