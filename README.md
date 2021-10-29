@@ -156,7 +156,8 @@ seata:
 关于seata1.4.2和oauth2集成错误：ClientDetailsService java.lang.UnsupportedOperationException错误，是由于GlobalTransactionScanner检查ClientDetailsService是否需要代理增强时造成的@Lazy造成监察时还没初始化。解决方法1降低seata版本到1.4.0；解决方法2：暴力覆盖bean ClientDetailsService.
 ![image](https://user-images.githubusercontent.com/83743182/134762974-db6764ae-becd-4bb3-b44d-48d323986a8b.png)
 seata： 对应几乎没有并发量的接口使用seata比较合适，省力。对有并发需求的接口，不要启用全局事务；因为启用事务后，seata的事务管理模式造成效率低下，实测200ms的请求，启动事务后，变成5-10倍的耗时。所以对于并发接口还是根据业务情形自行进行数据一致性管理。
+29、gateway 动态路由配置类Redisroutedefinitionwriter  ，注意retry的配置  
+ ![1635503631(1)](https://user-images.githubusercontent.com/83743182/139420565-5f41a0bf-8c2d-48a8-b357-04629aa4231d.jpg)
 
-待续
 
 
