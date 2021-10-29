@@ -2,19 +2,12 @@ package com.hd.gateway.conf;
 
 import com.alibaba.fastjson.JSON;
 import com.hd.common.model.TokenInfo;
-import com.hd.gateway.GatewayApplication;
-import com.hd.gateway.utils.HttpUtil;
-import com.hd.gateway.utils.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.Ordered;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @Author: liwei
@@ -37,4 +30,6 @@ public class DealGatewayFilter implements GatewayFilter, Ordered
     {
         return Ordered.LOWEST_PRECEDENCE - 1000;
     }
+
+
 }

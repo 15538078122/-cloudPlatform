@@ -46,6 +46,11 @@ public class SysUpgradeServiceImpl extends ServiceImpl<SysUpgradeMapper, SysUpgr
 
     @Override
     public SyUpgradeVo getAppVersion() {
+//        try {
+//            Thread.sleep(21000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         SysUpgradeEntity sysUpgradeEntity =   getOne(new QueryWrapper(){{
              last("limit 0,1");
              orderByDesc("version");

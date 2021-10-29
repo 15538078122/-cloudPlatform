@@ -32,6 +32,14 @@ config:
   check-token: true       #是否检查令牌
   check-permission: true       #是否检查权限
   heart-beat-uri: http://127.0.0.1:20003/monitor/heartbeat
+  microServices:
+    auserver: lb://auserver,/auserver/**,2000,fallbackcmd
+    micromonitor: lb://micromonitor,/micromonitor/**,2000,fallbackcmd
+    microsys: lb://microsys,/microsys/**,5000,fallbackcmd
+    microattach: lb://microsys,/microattach/**,30000,fallbackcmd60s
+    basicconfig: lb://basicconfig,/basicconfig/**,20000,fallbackcmd60s
+    execute: lb://execute,/execute/**,20000,fallbackcmd60s
+    reportnews: lb://reportnews,/reportnews/**,20000,fallbackcmd60s
 #management:
 #  endpoint:
 #    shutdown:

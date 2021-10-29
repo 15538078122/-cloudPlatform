@@ -23,162 +23,31 @@ spring:
               - PUT
               - DELETE
       routes:
-        -
-          id: auserver
-          uri: lb://auserver
-          predicates:
-            - Path=/auserver/**
-          metadata:
-            connect-timeout: 2000
-            response-timeout: 2000
-          filters:
-            - StripPrefix=1
-            - name: Retry
-              args:
-                retries: 1
-                series:
-                  - SERVER_ERROR
-                methods:
-                  - GET
-        -
-          id: micromonitor
-          uri: lb://micromonitor
-          predicates:
-            - Path=/micromonitor/**
-          metadata:
-              connect-timeout: 2000
-              response-timeout: 2000
-          filters:
-            - StripPrefix=1
-            - name: Retry
-              args:
-                retries: 1
-                series:
-                  - SERVER_ERROR
-                methods:
-                  - GET
-        -
-          id: microsys
-          # 目标服务地址（uri：地址，请求转发后的地址）
-          uri: lb://microsys
-          predicates:
-            - Path=/microsys/**
-          metadata:
-            connect-timeout: 2000
-            response-timeout: 20000 #针对具体服务的单次请求的默认超时时间
-          filters:
-            - StripPrefix=1
-            - name: Deal
-#            - name: MyHystrix
+        #microattach
+#        -
+#          id: microattach
+#          # 目标服务地址（uri：地址，请求转发后的地址）
+#          uri: lb://microsys
+#          predicates:
+#            - Path=/microattach/**
+#          metadata:
+#            connect-timeout: 2000
+#            response-timeout: 30000 #针对具体服务的单次请求的默认超时时间
+#          filters:
+#            - StripPrefix=1
+#            - name: Deal
+#            - name: Hystrix
 #              args:
+#                name: fallbackcmd60s
 #                fallbackUri: forward:/defaultfallback
-#                timeout:
-#                  sys-attach-merge: 30000
-#                  sys-attach-upload: 30000
-#                  sys-attach-.1attachid.2: 30000
-            - name: Hystrix
-              args:
-                name: fallbackcmd
-                fallbackUri: forward:/defaultfallback
-            - name: Retry
-              args:
-                retries: 1
-                series:
-                  - SERVER_ERROR
-                methods:
-                  - GET
-        -
-          id: microattach
-          # 目标服务地址（uri：地址，请求转发后的地址）
-          uri: lb://microsys
-          predicates:
-            - Path=/microattach/**
-          metadata:
-            connect-timeout: 2000
-            response-timeout: 20000 #针对具体服务的单次请求的默认超时时间
-          filters:
-            - StripPrefix=1
-            - name: Deal
-            - name: Hystrix
-              args:
-                name: fallbackcmd
-                fallbackUri: forward:/defaultfallback
-            - name: Retry
-              args:
-                retries: 1
-                series:
-                  - SERVER_ERROR
-                methods:
-                  - GET
-        -
-          id: basicconfig
-          # 目标服务地址（uri：地址，请求转发后的地址）
-          uri: lb://basicconfig
-          predicates:
-            - Path=/basicconfig/**
-          metadata:
-            connect-timeout: 2000
-            response-timeout: 20000 #针对具体服务的单次请求的默认超时时间
-          filters:
-            - StripPrefix=1
-            - name: Deal
-            - name: Hystrix
-              args:
-                name: fallbackcmd
-                fallbackUri: forward:/defaultfallback
-            - name: Retry
-              args:
-                retries: 1
-                series:
-                  - SERVER_ERROR
-                methods:
-                  - GET
-        -
-          id: execute
-          # 目标服务地址（uri：地址，请求转发后的地址）
-          uri: lb://execute
-          predicates:
-            - Path=/execute/**
-          metadata:
-            connect-timeout: 2000
-            response-timeout: 20000 #针对具体服务的单次请求的默认超时时间
-          filters:
-            - StripPrefix=1
-            - name: Deal
-            - name: Hystrix
-              args:
-                name: fallbackcmd
-                fallbackUri: forward:/defaultfallback
-            - name: Retry
-              args:
-                retries: 1
-                series:
-                  - SERVER_ERROR
-                methods:
-                  - GET
-        -
-          id: reportnews
-          # 目标服务地址（uri：地址，请求转发后的地址）
-          uri: lb://reportnews
-          predicates:
-            - Path=/reportnews/**
-          metadata:
-            connect-timeout: 2000
-            response-timeout: 20000 #针对具体服务的单次请求的默认超时时间
-          filters:
-            - StripPrefix=1
-            - name: Deal
-            - name: Hystrix
-              args:
-                name: fallbackcmd
-                fallbackUri: forward:/defaultfallback
-            - name: Retry
-              args:
-                retries: 1
-                series:
-                  - SERVER_ERROR
-                methods:
-                  - GET
+#            - name: Retry
+#              args:
+#                retries: 1
+#                series:
+#                  - SERVER_ERROR
+#                methods:
+#                  - GET
+
 ribbon:
   eager-load:
     enabled: true
@@ -205,4 +74,10 @@ hystrix:
         isolation:
           thread:
             # 全局熔断器5s超时
-            timeoutInMilliseconds: 30000 #全局请求的默认超时时间（包含重试的时间）
+            timeoutInMilliseconds: 21000 #全局请求的默认超时时间（包含重试的时间）
+    fallbackcmd60s:  #fallbackcmd 针对单个设置default
+      execution:
+        isolation:
+          thread:
+            # 全局熔断器5s超时
+            timeoutInMilliseconds: 61000 #全局请求的默认超时时间（包含重试的时间）
