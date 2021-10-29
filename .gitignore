@@ -31,3 +31,4 @@ tomcatlog/
 **/.mvn/
 !.gitignore
 note.txt
+*online.yml
