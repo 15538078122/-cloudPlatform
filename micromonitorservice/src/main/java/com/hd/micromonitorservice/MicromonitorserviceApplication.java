@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication(scanBasePackages={"com.hd.micromonitorservice","com.hd.common.conf"})
+@SpringBootApplication(scanBasePackages={"com.hd.micromonitorservice","com.hd.common.conf","com.hd.common.utils"})
 @EnableFeignClients(basePackages = "com.hd.micromonitorservice")
 @EnableHystrix
 @EnableDiscoveryClient

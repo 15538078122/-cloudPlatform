@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ import reactor.core.publisher.Mono;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 //全局过滤器，实现GlobalFilter接口，和Ordered接口即可。
@@ -32,6 +34,9 @@ import java.util.List;
 public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
 
     @Value("${config.session-timeout}")
@@ -51,7 +56,7 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
         List<String> authorization = exchange.getRequest().getHeaders().get("Authorization");
         if(authorization==null || authorization.size()==0){
             return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "没有登录令牌!", false));
+                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "没有登录令牌!", null));
         }
         String bearerTk = authorization.get(0);
         //TODO:  判断token 登录
@@ -64,22 +69,36 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", false));
+                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", null));
         }
         //TODO: 根据应用，判断token超时
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Long mSec = System.currentTimeMillis() - sdf.parse(tokenInfo.getLoginTime()).getTime();
-            //20分钟
-            if (mSec > (60000 * sessionTimeout)) {
-                return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-                        new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", false));
+            //先判断本地缓存是否存在此token
+             Object redisObj = redisTemplate.opsForValue().get(String.format("token:%s",bearerTk.replace("Bearer ", "")));
+
+            Boolean tokenExist=(redisObj!=null);
+
+            if(tokenExist){
+                //更新token tll
+                redisTemplate.expire(String.format("token:%s",bearerTk.replace("Bearer ", "")),sessionTimeout*60, TimeUnit.SECONDS);
             }
+            else {
+                Long mSec = System.currentTimeMillis() - sdf.parse(tokenInfo.getLoginTime()).getTime();
+                //20分钟
+                if (mSec > (60000 * sessionTimeout)) {
+                    return ResponseUtil.makeJsonResponse(exchange.getResponse(),
+                            new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", null));
+                }
+                //保存token
+                redisTemplate.opsForValue().set(String.format("token:%s",bearerTk.replace("Bearer ", "")),tokenInfo, sessionTimeout*60,TimeUnit.SECONDS);
+            }
+
 
         } catch (ParseException e) {
             e.printStackTrace();
             return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", false));
+                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", null));
         }
 
         ServerHttpRequest request = exchange.getRequest().mutate().header("token-info", JSON.toJSONString(tokenInfo)).header("Authorization","").build();

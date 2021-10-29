@@ -43,8 +43,7 @@ public class RepeatedlyReadRequestWrapper extends HttpServletRequestWrapper {
             }
         }
 
-        sb.toString();
-        body = sb.toString();
+        body = sb.toString();//.replace("\\r\\n","\r\n");
     }
 
     @Override

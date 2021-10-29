@@ -59,4 +59,10 @@ public class SysUpgradeEntity extends Model<SysUpgradeEntity> {
      */
     @TableField("create_date")
     private Date createDate;
+    /**
+     * 企业id
+     */
+    @TableField("enterprise_id")
+    private String enterpriseId;
+
 }

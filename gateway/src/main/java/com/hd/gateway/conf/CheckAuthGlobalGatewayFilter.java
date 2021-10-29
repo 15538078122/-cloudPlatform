@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,7 +89,7 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
 
         if (!permitted)  {
             //TODO: 记录拒绝访问日志
-            retResult = new RetResult(HttpStatus.UNAUTHORIZED.value(), "授权异常!", false);
+            retResult = new RetResult(HttpStatus.FORBIDDEN.value(), "授权异常!", "");
             return ResponseUtil.makeJsonResponse(exchange.getResponse(), retResult);
         }
         else {
@@ -97,6 +98,13 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
             tokenInfo.setOrgId(orgId.toString());
         }
         //TODO: 记录访问日志
+        //处理中文账号
+        try {
+            tokenInfo.setAccount(URLEncoder.encode(tokenInfo.getAccount(),"UTF-8") );
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
         ServerHttpRequest request = exchange.getRequest().mutate().header("token-info", JSON.toJSONString(tokenInfo)).build();
         ServerWebExchange buildExchange = exchange.mutate().request(request).build();
         return chain.filter(buildExchange);

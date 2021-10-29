@@ -40,9 +40,11 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, AccountEntity
 
     @Override
     public void changePwd(String account, String enterprise, String password, String passwordOld) throws Exception {
+        //Thread.sleep(30000);
         QueryWrapper qw = new QueryWrapper();
         qw.eq("account",account);
         qw.eq("enterprise",enterprise);
+        qw.eq("delete_flag",0);
         AccountEntity accountEntity =  getOne(qw);
         if(accountEntity==null){
             throw  new Exception("账号不存在!");
@@ -66,16 +68,15 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, AccountEntity
     }
 
     @Override
-    public void resetPwd(String account, String enterprise) throws Exception {
+    public void resetPwd(Long id) throws Exception {
         QueryWrapper qw = new QueryWrapper();
-        qw.eq("account",account);
-        qw.eq("enterprise",enterprise);
+        qw.eq("id",id);
         AccountEntity accountEntity =  getOne(qw);
         if(accountEntity==null){
             throw  new Exception("账号不存在!");
         }
         UpdateWrapper updateWrapper=new UpdateWrapper();
-        updateWrapper.eq("id",accountEntity.getId());
+        updateWrapper.eq("id",id);
         String pwd1 = "1234";
         String pwd2 = null;
         try {

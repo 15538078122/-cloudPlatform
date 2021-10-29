@@ -4,6 +4,7 @@ import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import com.hd.common.controller.SuperQueryController;
 import com.hd.common.model.RequiresPermissions;
+import com.hd.common.vo.OperatorVo;
 import com.hd.common.vo.SyMonitorVo;
 import com.hd.common.vo.UriCostVo;
 import com.hd.micromonitorservice.service.SyMonitorService;
@@ -61,9 +62,16 @@ public class MonitorController extends SuperQueryController {
     public RetResult lastReqAvg(int pageNum,int pageSize) {
         return RetResponse.makeRsp(uriCostService.getAverageCost2Sec(pageNum,pageSize));
     }
+    @ApiOperation(value = "最近操作列表")
+    @RequiresPermissions(value = "lastoperator:list", note = "最近操作列表")
+    @GetMapping("/lastoperator")
+    public RetResult lastOperator(int pageNum,int pageSize) {
+        return RetResponse.makeRsp(uriCostService.getOperators(pageNum,pageSize));
+    }
     @ApiOperation(value = "swagger 展示model使用")
     @GetMapping("/nouse/showmodels")
-    public RetResult nouseshowmodels(@RequestBody  SyMonitorVo syMonitorVo, @RequestBody UriCostVo uriCostVo) {
+    public RetResult nouseshowmodels(@RequestBody  SyMonitorVo syMonitorVo, @RequestBody UriCostVo uriCostVo
+            , @RequestBody OperatorVo operatorVo) {
         return RetResponse.makeRsp("");
     }
 

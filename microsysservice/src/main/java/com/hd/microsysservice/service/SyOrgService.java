@@ -18,7 +18,7 @@ import java.util.List;
 public interface SyOrgService extends IService<SyOrgEntity> {
     List<SyOrgVo> getOrgTree(String enterpriseId);
 
-    List<SyOrgVo> getMyOrgTree();
+    List<SyOrgVo> getMyOrgTree(Boolean includeDel);
     List<SyOrgVo> getMyOrgTreeWithMen();
 
     List<SyOrgEntity> getMyOrgList();
@@ -31,4 +31,5 @@ public interface SyOrgService extends IService<SyOrgEntity> {
 
     List<SyUserVo> getMyOrgMen();
     void updateOrg(SyOrgVo syOrgVo);
+    void moveUserToChild(List<SyOrgVo> syOrgVos);
 }

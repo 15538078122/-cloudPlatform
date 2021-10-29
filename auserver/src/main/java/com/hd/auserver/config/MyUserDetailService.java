@@ -68,6 +68,7 @@ public class MyUserDetailService implements UserDetailsService {
                     {
                         put("account", userName);
                         put("enterprise", finalEnterpriseId);
+                        put("delete_flag", 0);
                     }
                 });
                 if(accountEntityList.size()>0){

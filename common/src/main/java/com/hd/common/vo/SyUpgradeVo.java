@@ -59,5 +59,11 @@ public class SyUpgradeVo implements Serializable {
     /**
      * 创建时间
      */
+    //@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date createDate;
+
+    @NotNull(message = "企业id不能为空！")
+    @NotBlank(message = "企业id不能为空！")
+    private String enterpriseId;
 }

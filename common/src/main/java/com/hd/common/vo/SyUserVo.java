@@ -89,11 +89,13 @@ public class SyUserVo implements Serializable {
     /**
      * 修改时间
      */
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date modifiedTime;
 
     /**
      * 创建时间
      */
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     @ApiModelProperty(value = "删除标志")
@@ -105,7 +107,10 @@ public class SyUserVo implements Serializable {
     @ApiModelProperty(value = "用户头像")
     private Long headPic;
 
+    @JSONField(serialzeFeatures={SerializerFeature.WriteNullListAsEmpty})
     @ApiModelProperty(value = "用户角色,不更新时，此字段为null")
     private List<SyRoleVo> syRoleVos;
 
+    @ApiModelProperty(value = "用户角色标志:0:管理员;1:普通用户")
+    private Short userFlag=1;
 }

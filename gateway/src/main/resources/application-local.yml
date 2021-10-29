@@ -5,10 +5,18 @@ spring:
     name: gateway
   data:
     mongodb:
-#      host: localhost
-#      port: 27017
-#      database: test
-      uri: mongodb://localhost:27017/gatewaylogs
+      #      uri: mongodb://root:123456@192.168.3.78:27017/gatewaylogs?authSource=admin&authMechanism=SCRAM-SHA-1
+      uri: mongodb://127.0.0.1:27017/gatewaylogs
+  redis:
+    port: 6379
+    host: localhost
+    password:
+    jedis:
+      pool:
+        max-active: 8
+    database: 0
+    timeout: 5000
+
 logging:
   level:
     root: error
@@ -16,7 +24,10 @@ logging:
     com.alibaba: error
     sun.net: error
 config:
-#  auth-uri: 127.0.0.1:20002  #访问授权检查的uri
+  ip-token-capacity: 1000
+  ip-token-refill:  20
+  service-token-capacity: 2000
+  service-token-refill:  50
   session-timeout: 200   #minutes
   check-token: true       #是否检查令牌
   check-permission: true       #是否检查权限

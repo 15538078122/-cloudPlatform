@@ -1,11 +1,9 @@
 package com.hd.gateway.conf;
 
+import com.hd.common.utils.NetUtil;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * @Author: liwei
@@ -20,23 +18,14 @@ public class ServerConfig implements ApplicationListener<WebServerInitializedEve
     private int serverPort;
 
     public String getUrl() {
-        InetAddress address = null;
-        try {
-            address = InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        return "http://"+address.getHostAddress()+":"+this.serverPort;
-    }
-
-    public String getHost() {
-        InetAddress address = null;
-        try {
-            address = InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        return address.getHostAddress();
+//        InetAddress address = null;
+//        try {
+//            address = InetAddress.getLocalHost();
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//        }
+//        return "http://"+address.getHostAddress()+":"+this.serverPort;
+        return "http://"+ NetUtil.getNoDefaultIpAddr()+":"+this.serverPort;
     }
 
     @Override

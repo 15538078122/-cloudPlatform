@@ -15,5 +15,5 @@ public interface AccountService extends IService<AccountEntity> {
 
     void changePwd(String account, String enterprise, String password, String passwordOld) throws Exception;
 
-    void resetPwd(String account, String enterprise) throws Exception;
+    void resetPwd(Long id) throws Exception;
 }

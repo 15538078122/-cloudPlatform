@@ -1,4 +1,4 @@
-package com.hd.gateway.utils;
+package com.hd.common.utils;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

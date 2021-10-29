@@ -17,6 +17,7 @@ public class VerifyUtil {
      * @param enterId
      */
     public  static  void  verifyEnterId(String enterId){
+        Assert.isTrue(enterId!=null && !enterId.isEmpty(),"企业不能为空!");
         String enterpriseId= SecurityContext.GetCurTokenInfo().getEnterpriseId();
         if(enterpriseId.compareTo(GeneralConfig.ROOT_ENTERPRISE_ID)!=0){
             Assert.isTrue(enterId.compareTo(enterpriseId)==0,"企业编码异常!");
@@ -31,7 +32,7 @@ public class VerifyUtil {
     }
     /**
      * 校验pagequery 参数
-     * @param enterId
+     * @param
      */
     public  static PageQueryExpressionList verifyQueryParam(String query,String column,String errMsg){
         Assert.isTrue(query!=null,"缺少查询参数query!");

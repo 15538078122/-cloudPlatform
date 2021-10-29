@@ -106,6 +106,8 @@ public class SyAttachServiceImpl extends ServiceImpl<SyAttachMapper, SyAttachEnt
 
         File parentFileDir = new File(attachPath + guid);
         if (parentFileDir.isDirectory()) {
+            //分片目录存在
+            //目标文件如果存在，先删除
             File destFile = new File(attachPath + timeStamp, fileNewName);
             if (destFile.exists()) {
                 destFile.delete();

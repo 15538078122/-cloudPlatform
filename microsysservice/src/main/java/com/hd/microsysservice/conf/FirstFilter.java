@@ -14,6 +14,7 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 /**
  * @Author: liwei
@@ -64,6 +65,8 @@ public class FirstFilter implements Filter {
                 TokenInfo tokenInfo= JSON.parseObject(tokenInfoJson,TokenInfo.class);
                 //修改user id未业务系统的user id
                 //tokenInfo.setId(userCommonUtil.getUserIdFromCach(Long.parseLong(tokenInfo.getId())).toString());
+                //处理中文account
+                tokenInfo.setAccount(URLDecoder.decode(tokenInfo.getAccount(), "UTF-8"));
                 SecurityContext.SetCurTokenInfo(tokenInfo);
             }
          }

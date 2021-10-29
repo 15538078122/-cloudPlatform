@@ -58,7 +58,7 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
     }
 
     @Override
-    public List<SyOrgVo> getMyOrgTree() {
+    public List<SyOrgVo> getMyOrgTree(Boolean includeDel) {
         SyUserEntity syUserEntity = syUserService.getUserByAccount(SecurityContext.GetCurTokenInfo().getAccount(), SecurityContext.GetCurTokenInfo().getEnterpriseId());
         SyOrgEntity syOrgEntityCurUser = baseMapper.selectById(syUserEntity.getOrgId());
         DataPrivilege userDataPrivilege = syUserService.getUserDataPrivilege(syUserEntity.getId());
@@ -72,7 +72,9 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
         else if(userDataPrivilege.getValue()==DataPrivilege.LEVEL_AND_BELOW.getValue()){
             queryWrapper.likeRight("path_code",syOrgEntityCurUser.getPathCode());
         }
-        queryWrapper.eq("delete_flag", 0);
+        if(!includeDel){
+            queryWrapper.eq("delete_flag", 0);
+        }
         List<SyOrgEntity> list = super.list(queryWrapper);
 
         List<SyOrgVo> listVo = new ArrayList<>();
@@ -82,17 +84,49 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
             listVo.add(syOrgVo);
         }
 
-        List<SyOrgVo> listTree=rearrange(listVo);
-
+        List<SyOrgVo> listTree=null;
+        if(includeDel){
+            listTree=listVo;
+        }
+        else {
+            listTree = rearrange(listVo);
+        }
         return  listTree;
     }
 
     @Override
     public List<SyOrgVo> getMyOrgTreeWithMen() {
-        List<SyOrgVo> syOrgVos=getMyOrgTree();
+        List<SyOrgVo> syOrgVos=getMyOrgTree(false);
         //获取部门人员
         getOrgMen(syOrgVos);
         return syOrgVos;
+    }
+    //user都填充到child
+    @Override
+    public void moveUserToChild(List<SyOrgVo> syOrgVos){
+        if (syOrgVos==null){
+            return;
+        }
+        for(SyOrgVo syOrgVo:syOrgVos){
+            List<SyUserVo> users = syOrgVo.getUsers();
+            if(users!=null){
+                List<SyOrgVo> userForOrg=new ArrayList<>();
+                for(SyUserVo syUserVo:users){
+                    SyOrgVo syOrgVo1=new SyOrgVo(){{
+                        setName(syUserVo.getName());
+                        setId(syUserVo.getId());
+                    }};
+                    userForOrg.add(syOrgVo1);
+                }
+                List<SyOrgVo> childs = syOrgVo.getChilds();
+                if(childs!=null){
+                    userForOrg.addAll(childs);
+                }
+                syOrgVo.setChilds(userForOrg);
+                syOrgVo.setUsers(null);
+            }
+            moveUserToChild(syOrgVo.getChilds());
+        }
     }
 
     private void getOrgMen(List<SyOrgVo> syOrgVos) {
@@ -155,15 +189,26 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
             syOrgVo.setPathCode(syOrgVo.getLevelCode());
         }
         else {
+            //判断部门名称重复
+            QueryWrapper queryWrapper=new QueryWrapper(){{
+                eq("name", syOrgVo.getName());
+                eq("enterprise_id",syOrgVo.getEnterpriseId());
+                eq("delete_flag",0);
+            }};
+            Assert.isTrue(null==getOne(queryWrapper),"部门名称不能重复!");
+            DataPrivilege userDataPrivilege = syUserService.getUserDataPrivilege(Long.parseLong(SecurityContext.GetCurTokenInfo().getId()));
+            Assert.isTrue(userDataPrivilege.getValue() < DataPrivilege.LEVEL_ONLY.getValue(),"数据权限不足!");
             //获取父编码
             String parentPathCode = getById(syOrgVo.getParentId()).getPathCode();
             pathCode=String.format("%s.%s",parentPathCode,pathCode);
         }
 
         String finalPathCode = pathCode;
+
         QueryWrapper queryWrapper=new QueryWrapper(){{
             eq("path_code", finalPathCode);
             eq("enterprise_id",syOrgVo.getEnterpriseId());
+            ne("id",syOrgVo.getId());
         }};
         Assert.isTrue(null==getOne(queryWrapper),"路径编码不能重复!");
 
@@ -184,6 +229,18 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
             //顶级不能删除
                 throw new Exception("顶级部门不能删除!");
         }
+        //部门下是否有人
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.eq("org_id",syOrgEntity.getId());
+        queryWrapper.eq("delete_flag", 0);
+        Assert.isTrue(syUserService.list(queryWrapper).size()==0,"部门下有人员，不能删除!");
+
+        //是否有子部门
+        queryWrapper=new QueryWrapper();
+        queryWrapper.eq("parent_id",syOrgEntity.getId());
+        queryWrapper.eq("delete_flag", 0);
+        Assert.isTrue(list(queryWrapper).size()==0,"部门下有子部门，不能删除!");
+
         deleteOrgRecursion(syOrgEntity);
     }
 
@@ -269,6 +326,8 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
         QueryWrapper queryWrapper=new QueryWrapper(){{
             eq("path_code", syOrgVo.getPathCode());
             eq("enterprise_id",syOrgVo.getEnterpriseId());
+            ne("id",syOrgVo.getId());
+
         }};
         Assert.isTrue(null==getOne(queryWrapper),"路径编码不能重复!");
 

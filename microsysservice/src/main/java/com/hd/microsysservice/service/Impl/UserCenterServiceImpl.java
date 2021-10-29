@@ -24,7 +24,12 @@ class UserCenterServiceImpl implements UserCenterFeignService {
     }
 
     @Override
-    public RetResult resetpwd(String account, String enterprise) {
+    public RetResult resetpwd(Long id) {
+        return RetResponse.makeTimeOutRsp("sorry! 网络异常，服务暂时无法访问!");
+    }
+
+    @Override
+    public RetResult userExist(String account, String enterprise) {
         return RetResponse.makeTimeOutRsp("sorry! 网络异常，服务暂时无法访问!");
     }
 }

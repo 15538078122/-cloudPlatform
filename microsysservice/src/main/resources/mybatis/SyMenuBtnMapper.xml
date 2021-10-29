@@ -17,10 +17,12 @@
         JOIN sy_menu_btn menuBtn on rolePerm.menu_btn_id=menuBtn.id
         JOIN sy_menu menu on menuBtn.menu_id=menu.id
         where usrRole.user_id=#{userId} and menuBtn.`name`!='list'
-        and   menu.id in
-        <foreach collection="menuIds" item="item" index="index" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        <if test="menuIds != null  and menuIds.size > 0">
+            and   menu.id in
+            <foreach collection="menuIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
         and menuBtn.is_visible=1
     </select>
 

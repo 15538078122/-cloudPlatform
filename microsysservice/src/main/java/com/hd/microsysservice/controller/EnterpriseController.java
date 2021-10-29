@@ -22,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -108,10 +109,15 @@ public class EnterpriseController extends SuperQueryController {
 
     @ApiOperation(value = "物理删除企业")
     @RequiresPermissions("enterprise:deletePhysically")
-    @DeleteMapping("/enterprise/physically/{id}")
-    public RetResult deleteEnterprisePhysically(@PathVariable("id") Long id) throws Exception {
+    @DeleteMapping("/enterprise/physically")
+    public RetResult deleteEnterprisePhysically(String enterpriseId) throws Exception {
+        Assert.notNull(enterpriseId,String.format("参数%s不存在!","enterpriseId"));
         VerifyUtil.verifyEnterId("root");
-        syEnterpriseService.deleteEnterprisePhysically(id);
+        List<SyEnterpriseEntity> syEnterpriseEntities = syEnterpriseService.listByMap(new HashMap<String, Object>() {{
+            put("enterprise_id", enterpriseId);
+        }});
+        Assert.isTrue(syEnterpriseEntities.size()>0,String.format("企业%s不存在!",enterpriseId));
+        syEnterpriseService.deleteEnterprisePhysically(syEnterpriseEntities.get(0).getId());
         return RetResponse.makeRsp("删除企业成功.");
     }
 }

@@ -21,6 +21,8 @@
         delete from sy_role WHERE enterprise_id=#{enterpeiseId};
         delete from sy_user WHERE enterprise_id=#{enterpeiseId};
 
+        delete from sy_monitor WHERE client_id is not null;
+
     </delete>
     <update id="recoverEnterprise">
         update sy_enterprise  set delete_flag=0 WHERE enterprise_id=#{enterpeiseId};

@@ -8,7 +8,6 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,7 +16,7 @@ import java.util.Map;
  * @Author: liwei
  * @Description:
  */
-@Component
+//@Component
 @Slf4j
 public class RabbitComsumer {
     @RabbitListener(queues = "queue-test" )

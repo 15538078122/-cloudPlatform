@@ -2,6 +2,7 @@ package com.hd.micromonitorservice.conf;
 
 import com.alibaba.fastjson.JSON;
 import com.hd.common.model.TokenInfo;
+import com.hd.micromonitorservice.RepeatedlyReadRequestWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
@@ -11,6 +12,7 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 /**
  * @Author: liwei
@@ -19,6 +21,7 @@ import java.io.IOException;
 @Slf4j
 @WebFilter(filterName = "firstFilter",urlPatterns = "/*")
 @Order(Ordered.HIGHEST_PRECEDENCE+100)
+
 public class FirstFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -31,6 +34,14 @@ public class FirstFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         log.debug(((HttpServletRequest)request).getServletPath());
         String servletPath = ((HttpServletRequest) request).getServletPath();
+        String contentType = ((HttpServletRequest) request).getHeader("content-type");
+        RepeatedlyReadRequestWrapper wrapper=null;
+        if(contentType!=null&&contentType.compareTo("application/json")==0)
+        {
+            wrapper=new RepeatedlyReadRequestWrapper((HttpServletRequest) request);
+            System.out.println("bodyStr = " + new String(wrapper.getBody()) );
+        }
+
         //servletPath = servletPath.replaceFirst(servletContextPath,"");
 //        if(servletPath.indexOf("/auth")!=0 &&servletPath.indexOf("/swagger-ui.html")!=0
 //                &&servletPath.indexOf("/webjars")!=0 &&servletPath.indexOf("/static")!=0
@@ -46,10 +57,17 @@ public class FirstFilter implements Filter {
                 TokenInfo tokenInfo= JSON.parseObject(tokenInfoJson,TokenInfo.class);
                 //修改user id未业务系统的user id
                 //tokenInfo.setId(userCommonUtil.getUserIdFromCach(Long.parseLong(tokenInfo.getId())).toString());
+                //处理中文account
+                tokenInfo.setAccount(URLDecoder.decode(tokenInfo.getAccount(), "UTF-8"));
                 SecurityContext.SetCurTokenInfo(tokenInfo);
             }
          }
-        chain.doFilter(request, response);
-    }
+        if(contentType!=null&&contentType.compareTo("application/json")==0){
+            chain.doFilter(wrapper, response);
+        }
+        else {
+            chain.doFilter(request, response);
+        }
 
+    }
 }

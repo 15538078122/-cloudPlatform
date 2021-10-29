@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.common.exceptions.InvalidTokenExcepti
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
@@ -71,6 +72,10 @@ public class MyJwtAccessTokenConverter extends JwtAccessTokenConverter {
 
         String userName = (String) decode.get("user_name");
         String loginTime = (String) decode.get("login_time");
+        //refresh token时，需要更新当前登录时间
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        loginTime= f.format(new Date());
+
         String enterpriseId = (String) decode.get("enterprise_id");
         String id=(String) decode.get("id");
         String deviceType=(String) decode.get("deviceType");

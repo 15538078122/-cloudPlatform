@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80011
 File Encoding         : 65001
 
-Date: 2021-10-09 19:45:18
+Date: 2021-10-15 14:44:43
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -27,14 +27,13 @@ CREATE TABLE `account` (
   `create_time` datetime NOT NULL,
   `delete_flag` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id_UNIQUE` (`id`),
-  UNIQUE KEY `ENTER_AC_UNIQUE` (`enterprise`,`account`)
+  UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of account
 -- ----------------------------
-INSERT INTO `account` VALUES ('8888888888888888888', 'root', 'root', '$2a$10$sNTZM0Nlt87fzGxk7vTp.emLXEw9YludzZKKbJm.a3zg.zwY7GFeO', '2021-07-19 15:01:56', '0');
+INSERT INTO `account` VALUES ('8888888888888888888', 'root', 'root', '$2a$10$rzRIFc9twR/hZVbTHl4fm.zxIGb.9jC6VQ1IVSLufpj0DZMq5pQBm', '2021-07-19 15:01:56', '0');
 
 -- ----------------------------
 -- Table structure for sys_upgrade
@@ -95,6 +94,8 @@ CREATE TABLE `sy_dict` (
 -- ----------------------------
 -- Records of sy_dict
 -- ----------------------------
+INSERT INTO `sy_dict` VALUES ('1448101688753131521', 'root', 'admin_role', '0', '1', null, '管理员角色列表', null);
+INSERT INTO `sy_dict` VALUES ('1448101885646344193', 'root', 'shy_role', '0', '1', null, '审核员角色列表', null);
 
 -- ----------------------------
 -- Table structure for sy_dict_item
@@ -114,6 +115,8 @@ CREATE TABLE `sy_dict_item` (
 -- ----------------------------
 -- Records of sy_dict_item
 -- ----------------------------
+INSERT INTO `sy_dict_item` VALUES ('1448101748224167938', '1448101688753131521', '1', '1', '管理员', '管理员');
+INSERT INTO `sy_dict_item` VALUES ('1448102005674741761', '1448101885646344193', '1', '1', '计划员', '计划员');
 
 -- ----------------------------
 -- Table structure for sy_enterprise
@@ -379,10 +382,11 @@ INSERT INTO `sy_monitor` VALUES ('4', 'micromonitor', '2021-10-09 09:46:30', '�
 INSERT INTO `sy_monitor` VALUES ('5', 'basicconfig', '2021-10-09 11:06:04', '业务基础微服务', null);
 INSERT INTO `sy_monitor` VALUES ('6', 'execute', '2021-10-09 11:06:37', '业务执行微服务', null);
 INSERT INTO `sy_monitor` VALUES ('7', 'reportnews', '2021-10-09 11:07:05', '业务报告微服务', null);
-INSERT INTO `sy_monitor` VALUES ('1446801306722504707', 'auserver', '2021-10-09 19:45:15', '认证服务', 'http://192.168.3.50:10001');
-INSERT INTO `sy_monitor` VALUES ('1446801306722504706', 'microsys', '2021-10-09 19:45:15', '系统基础微服务', 'http://192.168.3.50:20002');
-INSERT INTO `sy_monitor` VALUES ('1446801306722504705', 'gateway', '2021-10-09 19:45:15', '网关服务', 'http://192.168.3.50:20001');
-INSERT INTO `sy_monitor` VALUES ('1446801365597949953', 'micromonitor', '2021-10-09 19:45:15', '监视服务', 'http://192.168.3.50:20003');
+INSERT INTO `sy_monitor` VALUES ('8', 'task', '2021-09-08 17:50:47', '定时任务微服务', null);
+INSERT INTO `sy_monitor` VALUES ('1448830614307606530', 'gateway', '2021-10-15 10:33:30', '网关服务', 'http://192.168.3.50:20001');
+INSERT INTO `sy_monitor` VALUES ('1448830614307606531', 'auserver', '2021-10-15 10:33:30', '认证服务', 'http://192.168.3.50:10001');
+INSERT INTO `sy_monitor` VALUES ('1448830614307606532', 'microsys', '2021-10-15 10:33:30', '系统基础微服务', 'http://192.168.3.50:20002');
+INSERT INTO `sy_monitor` VALUES ('1448830616480256002', 'micromonitor', '2021-10-15 10:33:30', '监视服务', 'http://192.168.3.50:20003');
 
 -- ----------------------------
 -- Table structure for sy_org
@@ -408,7 +412,7 @@ CREATE TABLE `sy_org` (
 -- ----------------------------
 -- Records of sy_org
 -- ----------------------------
-INSERT INTO `sy_org` VALUES ('8888888888888888888', null, 'root', null, null, '0', '1', '超级公司', '超级', null, null, '0');
+INSERT INTO `sy_org` VALUES ('8888888888888888888', null, 'root', '100', '100', '0', '1', '超级公司', '超级', null, null, '0');
 
 -- ----------------------------
 -- Table structure for sy_role
@@ -598,7 +602,7 @@ CREATE TABLE `undo_log` (
   `ext` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_undo_log` (`xid`,`branch_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=254 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=261 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of undo_log

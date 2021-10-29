@@ -1,17 +1,13 @@
 package com.hd.gateway.conf;
 
-import com.hd.gateway.utils.JwtUtils;
-import com.hd.gateway.utils.LogUtil;
+import com.hd.common.utils.MongoLogUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
-import java.util.Date;
 
 //全局过滤器，使用配置类形式，直接构造bean，使用注解完成Ordered接口功能,统计接口调用时间
 //@Configuration
@@ -45,7 +41,7 @@ public class TimeCostGlobalGatewayFilter implements GlobalFilter, Ordered {
             Long endTime = System.currentTimeMillis();
             log.debug(
                     exchange.getRequest().getURI().getRawPath() + ", cost time : " + (endTime - startTime) + "ms");
-            LogUtil.logCostTime(exchange.getRequest().getURI().getRawPath(),(endTime - startTime));
+            MongoLogUtil.logCostTime(exchange.getRequest().getURI().getRawPath(),(endTime - startTime));
         }));
     }
     @Override

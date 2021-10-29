@@ -65,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
             //判断类型
             String typeFlag=UserIdByCenterUserId.substring(UserIdByCenterUserId.lastIndexOf(':')+1);
             if(typeFlag.compareTo("0")==0 && tokenInfo.getDeviceType().compareTo("web")!=0){
-                return returnValue;
+                //return returnValue;
             }
             else if(typeFlag.compareTo("1")==0 && tokenInfo.getDeviceType().compareTo("app")!=0){
                 return returnValue;
@@ -74,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
 
             returnValue=UserIdByCenterUserId;
             if(true){
-                return returnValue;
+               // return returnValue;
             }
         }
         else {

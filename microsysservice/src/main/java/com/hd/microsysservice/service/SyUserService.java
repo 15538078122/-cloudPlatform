@@ -34,7 +34,11 @@ public interface SyUserService extends IService<SyUserEntity> {
     void resetpwd(Long userId) throws Exception;
     boolean removeAllUserForCenter(String enterpriseId) throws Exception;
 
-    MyPage<SyUserVo> userbyrole(PageQueryExpressionList query);
+    MyPage<SyUserVo> userbyrole(PageQueryExpressionList pageQueryExpressionList);
 
     SyUserVo getCurrentUser() throws Exception;
+
+    void  enableUser(String userId,Boolean enabled);
+
+    MyPage getOrgUserList(PageQueryExpressionList pageQuery,Boolean withAccess ) throws Exception;
 }

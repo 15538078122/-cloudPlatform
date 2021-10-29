@@ -1,10 +1,13 @@
 package com.hd.micromonitorservice.service.Impl;
 
 import com.hd.common.MyPage;
+import com.hd.common.vo.OperatorVo;
 import com.hd.common.vo.UriCostVo;
+import com.hd.micromonitorservice.entity.Operator;
 import com.hd.micromonitorservice.entity.UriCost;
 import com.hd.micromonitorservice.service.UriCostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -25,6 +28,10 @@ import java.util.List;
 public class UriCostServiceImpl implements UriCostService {
     @Autowired
     private MongoTemplate template;
+
+    @Autowired
+    @Qualifier("secondaryMongoTemplate")
+    private MongoTemplate template2;
 
     @Override
     public MyPage<UriCostVo> getMaxCost2Sec(long pageNum, long pageSize) {
@@ -98,6 +105,42 @@ public class UriCostServiceImpl implements UriCostService {
         List<UriCostVo> uriCostVos= new UriCostVoConvertUtils().convertToListT2(uriCosts);
 
         return new MyPage<>(pageNum,pageSize,total,uriCostVos);
+    }
+
+    @Override
+    public MyPage<OperatorVo> getOperators(long pageNum, long pageSize) {
+        Query query = new Query();
+        //最近10分钟的
+        query.addCriteria(Criteria.where("tm").gt(
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date((new Date()).getTime() - 10 * 60 * 1000))
+                )
+        );
+        long total=template2.count(query, Operator.class);
+        if(total<=pageSize){
+            pageNum=1;
+            pageSize= total;
+        }
+        else{
+            long actualPage= total/pageSize+(total%pageSize==0?0:1);
+            if(pageNum>actualPage){
+                pageNum=actualPage;
+            }
+        }
+        query.with(Sort.by(
+                Sort.Order.desc("tm")
+        ));
+        query.skip((pageNum - 1) * pageSize);
+        query.limit((int) pageSize);
+        //query.getSortObject().append("cost", -1);
+        //List<Map> mm = template.findAll(Map.class,"cost");
+        List<Operator> operators = template2.find(query, Operator.class);
+        List<OperatorVo> operatorVos=new UriOperatorVoConvertUtils().convertToListT2(operators);
+//        for(UriCost uriCost:uriCosts){
+//            UriCostVo uriCostVo=new UriCostVo();
+//            VoConvertUtils.convertObject(uriCost,uriCostVo);
+//            uriCostVos.add(uriCostVo);
+//        }
+        return new MyPage<>(pageNum,pageSize,total,operatorVos);
     }
 
     @Override

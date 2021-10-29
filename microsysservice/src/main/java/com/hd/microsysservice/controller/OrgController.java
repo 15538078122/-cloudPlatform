@@ -46,7 +46,14 @@ public class OrgController  {
     @RequiresPermissions(value = "org:tree",note ="获取自己有权限的部门tree" )
     @GetMapping("/org/my/tree")
     public RetResult getOrgMyTree() {
-        List<SyOrgVo> listVo = syOrgService.getMyOrgTree();
+        List<SyOrgVo> listVo = syOrgService.getMyOrgTree(false);
+        return RetResponse.makeRsp(listVo);
+    }
+    @ApiOperation(value = "获取自己有权限的部门tree(含删除)")
+    @RequiresPermissions(value = "org:treeall",note ="获取自己有权限的部门tree(含删除)" )
+    @GetMapping("/org/my/treeall")
+    public RetResult getOrgMyTreeall() {
+        List<SyOrgVo> listVo = syOrgService.getMyOrgTree(true);
         return RetResponse.makeRsp(listVo);
     }
     @ApiOperation(value = "获取自己有权限的部门tree带人员")
@@ -54,6 +61,7 @@ public class OrgController  {
     @GetMapping("/org/my/treemen")
     public RetResult getOrgMyTreemen() {
         List<SyOrgVo> listVo = syOrgService.getMyOrgTreeWithMen();
+        syOrgService.moveUserToChild(listVo);
         return RetResponse.makeRsp(listVo);
     }
 

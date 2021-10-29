@@ -2,10 +2,9 @@ package com.hd.gateway.conf;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
-import com.hd.gateway.utils.SpringUtil;
+import com.hd.common.utils.SpringUtil;
 import com.mongodb.BasicDBObject;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -18,7 +18,7 @@ public interface SyUserMapperCommon extends BaseMapper<SyUserEntity> {
     //@Select("SELECT id FROM platsys.sy_user WHERE delete_flag=0 AND account = #{account} AND enterprise_id = #{enterId}")
     //Long getUserId(String account,String enterId);
 
-    @Select("SELECT CONCAT(id,':',org_id,':',type_flag) FROM sy_user usr WHERE usr.delete_flag=0 AND usr.id_center = #{centerUserId} " +
+    @Select("SELECT CONCAT(id,':',org_id,':',type_flag) FROM sy_user usr WHERE usr.delete_flag=0 AND usr.enabled=1 AND usr.id_center = #{centerUserId} " +
             "and EXISTS(select 1 from sy_enterprise enter where enter.enterprise_id=usr.enterprise_id and enter.delete_flag=0)")
     //@Select("SELECT id FROM platsys.sy_user WHERE delete_flag=0 AND id_center = #{centerUserId}")
     String getUserIdByCenterUserId(Long centerUserId);

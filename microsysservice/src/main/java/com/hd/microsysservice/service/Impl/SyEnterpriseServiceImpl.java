@@ -2,10 +2,7 @@ package com.hd.microsysservice.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hd.common.vo.SyMenuBtnVo;
-import com.hd.common.vo.SyMenuVo;
-import com.hd.common.vo.SyOrgVo;
-import com.hd.common.vo.SyUserVo;
+import com.hd.common.vo.*;
 import com.hd.microsysservice.entity.*;
 import com.hd.microsysservice.mapper.SyEnterpriseMapper;
 import com.hd.microsysservice.mapper.SyMaintainMapper;
@@ -44,6 +41,10 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
     SyOrgService syOrgService;
     @Autowired
     SyUserRoleService syUserRoleService;
+    @Autowired
+    SyDictService syDictService;
+    @Autowired
+    SyDictItemService syDictItemService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
@@ -52,8 +53,8 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
         SyEnterpriseEntity syEnterpriseEntity1 = getOne(new QueryWrapper() {{
             eq("enterprise_id", syEnterpriseEntity.getEnterpriseId());
         }});
-        if(syEnterpriseEntity1!=null){
-            throw new Exception(String.format("企业ID(%s)已经存在!",syEnterpriseEntity.getEnterpriseId()));
+        if (syEnterpriseEntity1 != null) {
+            throw new Exception(String.format("企业ID(%s)已经存在!", syEnterpriseEntity.getEnterpriseId()));
         }
 
         //TODO: 创建企业，并复制root企业的菜单到当前企业
@@ -79,6 +80,29 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
                 }
             });
         }
+        //复制数据字典
+        if (true) {
+            QueryWrapper queryWrapper = new QueryWrapper() {{
+                eq("enterprise_id", "root");
+            }};
+            List<SyDictEntity> syDictEntityList = syDictService.list(queryWrapper);
+            syDictEntityList.forEach(dict->{
+                Long dictOldId=dict.getId();
+                dict.setId(null);dict.setEnterpriseId(syEnterpriseEntity.getEnterpriseId());
+                syDictService.save(dict);
+                //复制字典项
+                QueryWrapper queryWrapperDictItem = new QueryWrapper() {{
+                    eq("dict_id", dictOldId);
+                }};
+                List<SyDictItemEntity> syDictItemEntityList = syDictItemService.list(queryWrapperDictItem);
+                syDictItemEntityList.forEach(dictItem->{
+                    dictItem.setId(null);
+                    dictItem.setDictId(dict.getId());
+                    syDictItemService.save(dictItem);
+                });
+            });
+        }
+
         //初始化部门
         SyOrgVo syOrgVo = new SyOrgVo() {{
             setName(syEnterpriseEntity.getName());
@@ -87,31 +111,34 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
             setType((short) 0);
         }};
         Long newOrgId = syOrgService.createOrg(syOrgVo);
-        //初始化管理员
-        SyUserVo syUserVo = new SyUserVo() {{
-            setName("管理员");
-            setAccount("admin");
-            setEnterpriseId(syEnterpriseEntity.getEnterpriseId());
-            setPasswordMd5("1234");
-            setOrgId(newOrgId);
-        }};
-        syUserService.createUser(syUserVo);
-        //初始化管理员角色
-        QueryWrapper queryWrapper = new QueryWrapper() {{
-            eq("enterprise_id", syEnterpriseEntity.getEnterpriseId());
-            eq("account", "admin");
-        }};
-        SyUserEntity syUserEntity = syUserService.getOne(queryWrapper);
-        queryWrapper = new QueryWrapper() {{
-            eq("enterprise_id", syEnterpriseEntity.getEnterpriseId());
-            eq("name", "管理员");
-        }};
-        SyRoleEntity syRoleEntity = syRoleService.getOne(queryWrapper);
-        SyUserRoleEntity syUserRoleEntity=new SyUserRoleEntity(){{
-            setRoleId(syRoleEntity.getId());
-            setUserId(syUserEntity.getId());
-        }};
-        syUserRoleService.save(syUserRoleEntity);
+        if (createRoles){
+            //初始化管理员
+            SyUserVo syUserVo = new SyUserVo() {{
+                setName("管理员");
+                setAccount("admin");
+                setEnterpriseId(syEnterpriseEntity.getEnterpriseId());
+                setPasswordMd5("1234");
+                setOrgId(newOrgId);
+            }};
+            syUserService.createUser(syUserVo);
+            //初始化管理员角色
+            QueryWrapper queryWrapper = new QueryWrapper() {{
+                eq("enterprise_id", syEnterpriseEntity.getEnterpriseId());
+                eq("account", "admin");
+            }};
+            SyUserEntity syUserEntity = syUserService.getOne(queryWrapper);
+            queryWrapper = new QueryWrapper() {{
+                eq("enterprise_id", syEnterpriseEntity.getEnterpriseId());
+                eq("name", "管理员");
+            }};
+            SyRoleEntity syRoleEntity = syRoleService.getOne(queryWrapper);
+            SyUserRoleEntity syUserRoleEntity = new SyUserRoleEntity() {{
+                setRoleId(syRoleEntity.getId());
+                setUserId(syUserEntity.getId());
+            }};
+            syUserRoleService.save(syUserRoleEntity);
+        }
+
     }
 
     @Autowired
@@ -144,13 +171,14 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
         QueryWrapper qw = new QueryWrapper();
         qw.eq("enterprise_id", syEnterpriseEntity.getEnterpriseId());
         List<SyUserEntity> syUserEntities = syUserService.list(qw);
-        syUserEntities.forEach(x->{
+        syUserEntities.forEach(x -> {
             redisTemplate.delete(String.format("%s::%s", "centerId2userId", x.getIdCenter()));
         });
         //通配符删除所有的
 //        Set<String> keys = redisTemplate.keys(String.format("%s::%s:%s", "account","centerUserId", "*"));
 //        redisTemplate.delete(keys);
     }
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
     @Override
     public void recoverEnterprise(Long id) throws Exception {
