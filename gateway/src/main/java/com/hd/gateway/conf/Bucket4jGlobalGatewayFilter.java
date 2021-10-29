@@ -10,6 +10,7 @@ import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
 import io.github.bucket4j.Refill;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -28,12 +29,21 @@ public class Bucket4jGlobalGatewayFilter implements GlobalFilter, Ordered
 {
     private static final Map<String, Bucket> BUCKET_CACHE = new ConcurrentHashMap<>();
 
+    @Value("${config.ip-token-capacity}")
+    int ipTokenCapacity;
+    @Value("${config.ip-token-refill}")
+    int ipTokenRefill;
+    @Value("${config.service-token-capacity}")
+    int serviceTokenCapacity;
+    @Value("${config.service-token-refill}")
+    int serviceTokenRefill;
+
     private Bucket createNewIpBucket()
     {
         //桶的最大容量，即能装载 Token 的最大数量
-        int capacity = 100;
+        int capacity = ipTokenCapacity;
         //每次 Token 补充量
-        int refillTokens = 10;
+        int refillTokens = ipTokenRefill;
         //补充 Token 的时间间隔
         Duration duration = Duration.ofSeconds(1);
         Refill refill = Refill.greedy(refillTokens, duration);
@@ -43,9 +53,9 @@ public class Bucket4jGlobalGatewayFilter implements GlobalFilter, Ordered
     private Bucket createNewMicroSysServiceBucket()
     {
         //桶的最大容量，即能装载 Token 的最大数量
-        int capacity = 2000;
+        int capacity = serviceTokenCapacity;
         //每次 Token 补充量
-        int refillTokens = 100;
+        int refillTokens = serviceTokenRefill;
         //补充 Token 的时间间隔
         Duration duration = Duration.ofSeconds(1);
         Refill refill = Refill.greedy(refillTokens, duration);
