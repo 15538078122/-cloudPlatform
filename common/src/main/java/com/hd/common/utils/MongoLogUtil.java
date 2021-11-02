@@ -23,13 +23,14 @@ public class MongoLogUtil {
         }
     }
 
-    public static void logOp(String operModul,String operType,String operDesc,String remoteHost
+    public static void logOp(String enterpriseId,String operModul,String operType,String operDesc,String remoteHost
             ,String requestURI,String account,String params){
         MongoTemplate mongoTemplate = SpringUtil.getBean(MongoTemplate.class);
         if (mongoTemplate != null) {
             final BasicDBObject doc = new BasicDBObject();
             Date date = new Date();
             doc.append("tm", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(date));
+            doc.append("enterId",enterpriseId);
             doc.append("operModul", operModul);
             doc.append("operType", operType);
             doc.append("operDesc", operDesc);
@@ -41,13 +42,14 @@ public class MongoLogUtil {
         }
     }
 
-    public static void logErrorRequest(String operModul,String operType,String operDesc
+    public static void logErrorRequest(String enterpriseId,String operModul,String operType,String operDesc
             ,String remoteHost, String requestURI, String account, String params, String stackTraceToString) {
         MongoTemplate mongoTemplate = SpringUtil.getBean(MongoTemplate.class);
         if (mongoTemplate != null) {
             final BasicDBObject doc = new BasicDBObject();
             Date date = new Date();
             doc.append("tm", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(date));
+            doc.append("enterId",enterpriseId);
             doc.append("operModul", operModul);
             doc.append("operType", operType);
             doc.append("operDesc", operDesc);

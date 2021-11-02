@@ -266,6 +266,13 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         VerifyUtil.verifyEnterId(syUserEntity.getEnterpriseId());
         Assert.isTrue(syUserVo.getEnterpriseId().compareTo(syUserEntity.getEnterpriseId()) == 0, "企业编码异常!");
         Assert.isTrue(syUserVo.getAccount() == null || syUserVo.getAccount().compareTo(syUserEntity.getAccount()) == 0, "账号不能修改!");
+        Assert.isTrue(
+                (syUserEntity.getName().compareTo("admin") != 0)
+                        || (
+                        syUserEntity.getName().compareTo("admin") == 0 && SecurityContext.GetCurTokenInfo().getEnterpriseId().compareTo("root") == 0
+                ),
+                String.format("%s特殊账号不可删除!", "admin"));
+
         SyUserEntity syUserEntityNew = new SyUserEntity();
         VoConvertUtils.copyObjectProperties(syUserVo, syUserEntityNew);
         syUserEntityNew.setModifiedTime(new Date());
@@ -347,7 +354,7 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         RetResult retResult = userCenterFeignService.changepwd(syUserEntity.getAccount(), syUserEntity.getEnterpriseId(), syUserVo.getPasswordMd5(), syUserVo.getPasswordMd5Old());
         //retResult =userCenterFeignService.changepwd(syUserVo.getAccount(),syUserVo.getEnterpriseId(),syUserVo.getPasswordMd5(),syUserVo.getPasswordMd5Old());
         if (retResult.getCode() != HttpStatus.OK.value()) {
-            throw new Exception("修改密码失败，请重试!");
+            throw new Exception(String.format("修改密码失败，%s!",retResult.getMsg()));
         }
     }
 

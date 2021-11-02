@@ -98,7 +98,12 @@ public class OperLogAspect {
                     ,request.getRemoteHost(),request.getRequestURI(), SecurityContext.GetCurTokenInfo().getAccount()
                     ,methodName,params, JSON.toJSONString(keys));
             log.debug(logMsg);
-            MongoLogUtil.logOp( operModul,operType,operDesc
+            String enterpriseId="";
+            if(SecurityContext.GetCurTokenInfo()!=null)
+            {
+                enterpriseId=SecurityContext.GetCurTokenInfo().getEnterpriseId();
+            }
+            MongoLogUtil.logOp(enterpriseId, operModul,operType,operDesc
                     ,request.getRemoteHost(),request.getRequestURI()
                     , SecurityContext.GetCurTokenInfo().getAccount(),params);
 //            operlog.setOperRequParam(params); // 请求参数
@@ -168,7 +173,12 @@ public class OperLogAspect {
                     ,request.getRemoteHost(),request.getRequestURI(), SecurityContext.GetCurTokenInfo().getAccount()
                     ,methodName,params,stackTraceToString(e.getClass().getName(), e.getMessage(), e.getStackTrace()));
             log.error(errMsg);
-            MongoLogUtil.logErrorRequest(operModul,operType,operDesc
+            String enterpriseId="";
+            if(SecurityContext.GetCurTokenInfo()!=null)
+            {
+                enterpriseId=SecurityContext.GetCurTokenInfo().getEnterpriseId();
+            }
+            MongoLogUtil.logErrorRequest(enterpriseId,operModul,operType,operDesc
                     ,request.getRemoteHost(),request.getRequestURI()
                     , SecurityContext.GetCurTokenInfo().getAccount(),params,stackTraceToString(e.getClass().getName(), e.getMessage(), e.getStackTrace()));
 //            excepLog.setExcRequParam(params); // 请求参数

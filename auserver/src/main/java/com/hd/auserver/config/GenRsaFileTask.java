@@ -29,11 +29,11 @@ public class GenRsaFileTask {
     public  void  init(){
         initialRsaKey();
         //cipher= Cipher.getInstance("RSA", bouncyCastleProvider); 第一次慢的问题，提前调用1次
-        try {
-            RSAEncrypt.encrypt(RSAEncrypt.loadPublicKeyByStr(GenRsaFileTask.rsaPublicKey),"1234".getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            RSAEncrypt.encrypt(RSAEncrypt.loadPublicKeyByStr(GenRsaFileTask.rsaPublicKey),"1234".getBytes());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
     //30分钟1次
 //    @Scheduled(cron = "0 0/30 * * * ?")

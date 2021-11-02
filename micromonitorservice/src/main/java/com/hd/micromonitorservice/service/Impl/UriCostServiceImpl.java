@@ -3,6 +3,7 @@ package com.hd.micromonitorservice.service.Impl;
 import com.hd.common.MyPage;
 import com.hd.common.vo.OperatorVo;
 import com.hd.common.vo.UriCostVo;
+import com.hd.micromonitorservice.conf.SecurityContext;
 import com.hd.micromonitorservice.entity.Operator;
 import com.hd.micromonitorservice.entity.UriCost;
 import com.hd.micromonitorservice.service.UriCostService;
@@ -108,13 +109,17 @@ public class UriCostServiceImpl implements UriCostService {
     }
 
     @Override
-    public MyPage<OperatorVo> getOperators(long pageNum, long pageSize) {
+    public MyPage<OperatorVo> getOperators(long pageNum, long pageSize,long lastMinutes) {
         Query query = new Query();
-        //最近10分钟的
+        //最近多少分钟的
         query.addCriteria(Criteria.where("tm").gt(
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date((new Date()).getTime() - 10 * 60 * 1000))
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date((new Date()).getTime() - lastMinutes * 60 * 1000))
                 )
         );
+        String curEnterpriseId = SecurityContext.GetCurTokenInfo().getEnterpriseId();
+        if(curEnterpriseId.compareTo("root")!=0){
+            query.addCriteria(Criteria.where("enterId").is(curEnterpriseId));
+        }
         long total=template2.count(query, Operator.class);
         if(total<=pageSize){
             pageNum=1;

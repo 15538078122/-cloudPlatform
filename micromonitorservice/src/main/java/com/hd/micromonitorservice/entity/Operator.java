@@ -18,10 +18,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @ApiModel("用户操作")
 public class Operator {
     String tm;
+    String enterId;
     String operModul;
     String operType;
     String operDesc;
     String account;
+    String requestURI;
     String params;
     String err;
 }

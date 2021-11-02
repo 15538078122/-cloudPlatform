@@ -9,6 +9,7 @@ import com.hd.common.controller.SuperQueryController;
 import com.hd.common.model.KeyValuePair;
 import com.hd.common.model.RequiresPermissions;
 import com.hd.common.vo.SyRoleVo;
+import com.hd.microsysservice.conf.SecurityContext;
 import com.hd.microsysservice.entity.SyRoleEntity;
 import com.hd.microsysservice.service.SyRoleService;
 import com.hd.microsysservice.utils.VerifyUtil;
@@ -17,6 +18,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,20 +43,26 @@ public class RoleController extends SuperQueryController {
         syRoleService.createRole(syRoleVo);
         return RetResponse.makeRsp("创建角色成功.");
     }
+
     @ApiOperation(value = "编辑角色")
     @RequiresPermissions("role:edit")
     @PutMapping("/role/{id}")
-    public RetResult editRole(@PathVariable("id") Long RoleId,@RequestBody @Validated SyRoleVo syRoleVo) throws Exception {
+    public RetResult editRole(@PathVariable("id") Long RoleId, @RequestBody @Validated SyRoleVo syRoleVo) throws Exception {
         VerifyUtil.verifyEnterId(syRoleVo.getEnterpriseId());
+        Assert.isTrue( syRoleVo.getName().compareTo("超级admin") != 0
+                        ||(
+                            syRoleVo.getName().compareTo("超级admin") == 0 && SecurityContext.GetCurTokenInfo().getEnterpriseId().compareTo("root") == 0
+                        ) ,
+                String.format("%s角色不可编辑!", "超级admin"));
         syRoleService.updateRole(syRoleVo);
         return RetResponse.makeRsp("修改角色成功");
     }
 
     @ApiOperation(value = "获取角色详细")
-    @RequiresPermissions(value = "role:detail",note = "获取角色详细")
+    @RequiresPermissions(value = "role:detail", note = "获取角色详细")
     @GetMapping("/role/{id}")
     public RetResult getRoleDetail(@PathVariable("id") Long RoleId) throws Exception {
-        SyRoleVo syRoleVo=syRoleService.getRoleDetail(RoleId);
+        SyRoleVo syRoleVo = syRoleService.getRoleDetail(RoleId);
         return RetResponse.makeRsp(syRoleVo);
     }
 
@@ -63,14 +71,16 @@ public class RoleController extends SuperQueryController {
     @DeleteMapping("/role/{id}")
     public RetResult delRole(@PathVariable("id") Long RoleId) {
         VerifyUtil.verifyEnterId(syRoleService.getById(RoleId).getEnterpriseId());
+
         syRoleService.removeRoleId(RoleId);
         return RetResponse.makeRsp("删除角色成功");
     }
+
     @ApiOperation(value = "获取角色列表信息")
-    @RequiresPermissions(value = "role:list",note = "分页获取角色列表")
+    @RequiresPermissions(value = "role:list", note = "分页获取角色列表")
     @PostMapping("/role/list")
-    public RetResult getRoles(String query){
-        PageQueryExpressionList pageQuery=VerifyUtil.verifyQueryParam(query,"enterpriseId","enterpriseId不能为空!");
+    public RetResult getRoles(String query) {
+        PageQueryExpressionList pageQuery = VerifyUtil.verifyQueryParam(query, "enterpriseId", "enterpriseId不能为空!");
         //PageQueryExpressionList pageQuery= JSON.parseObject(query,PageQueryExpressionList.class);
         //Assert.isTrue(pageQuery!=null,"查询参数错误!");
         adaptiveQueryColumn(pageQuery);
@@ -85,15 +95,15 @@ public class RoleController extends SuperQueryController {
 //        queryExpression.setType("eq");
 //        pageQuery.getQueryData().add(queryExpression);
 
-        if(pageQuery.getOrderby().size()==0){
-            pageQuery.getOrderby().add(new KeyValuePair("sortNum","asc"));
+        if (pageQuery.getOrderby().size() == 0) {
+            pageQuery.getOrderby().add(new KeyValuePair("sortNum", "asc"));
         }
 
-        Page<SyRoleEntity> syRoleEntityPage= selectPage(pageQuery,syRoleService);
-        List<SyRoleVo> listVo=new ArrayList<>();
-        for(SyRoleEntity syRoleEntity : syRoleEntityPage.getRecords()){
-            SyRoleVo syRoleVo=new SyRoleVo();
-            VoConvertUtils.copyObjectProperties(syRoleEntity,syRoleVo);
+        Page<SyRoleEntity> syRoleEntityPage = selectPage(pageQuery, syRoleService);
+        List<SyRoleVo> listVo = new ArrayList<>();
+        for (SyRoleEntity syRoleEntity : syRoleEntityPage.getRecords()) {
+            SyRoleVo syRoleVo = new SyRoleVo();
+            VoConvertUtils.copyObjectProperties(syRoleEntity, syRoleVo);
             listVo.add(syRoleVo);
         }
         return RetResponse.makeRsp(new MyPage<>(syRoleEntityPage.getCurrent(), syRoleEntityPage.getSize(), syRoleEntityPage.getTotal(), listVo));

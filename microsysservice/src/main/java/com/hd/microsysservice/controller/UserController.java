@@ -11,6 +11,7 @@ import com.hd.common.model.TokenInfo;
 import com.hd.common.vo.SyUserVo;
 import com.hd.microsysservice.conf.SecurityContext;
 import com.hd.microsysservice.conf.operlog.OperLog;
+import com.hd.microsysservice.entity.SyUserEntity;
 import com.hd.microsysservice.service.SyOrgService;
 import com.hd.microsysservice.service.SyUserService;
 import com.hd.microsysservice.utils.VerifyUtil;
@@ -57,6 +58,7 @@ public class UserController extends SuperQueryController {
 
     @ApiOperation(value = "启用禁用用户")
     @RequiresPermissions(value = "user:enabled", note = "启用禁用用户")
+    @OperLog(operModul = "用户管理",operType = "启用禁用",operDesc = "启用禁用用户")
     @PutMapping("/user/enabled")
     public RetResult userEnabled(String userId,Boolean enabled) throws Exception {
         syUserService.enableUser(userId,enabled);
@@ -87,6 +89,7 @@ public class UserController extends SuperQueryController {
 
     @ApiOperation(value = "编辑用户")
     @RequiresPermissions(value = "user:edit", note = "编辑用户")
+    @OperLog(operModul = "用户管理",operType = "编辑",operDesc = "编辑个人信息")
     @PutMapping("/user")
     public RetResult editUser(@RequestBody @Validated SyUserVo syUserVo) throws Exception {
         syUserService.updateUser(syUserVo);
@@ -112,7 +115,15 @@ public class UserController extends SuperQueryController {
     @ApiOperation(value = "移除用户")
     @RequiresPermissions("user:delete")
     @DeleteMapping("/user/{id}")
+    @OperLog(operModul = "用户管理",operType = "移除",operDesc = "移除用户")
     public RetResult removeUser(@PathVariable("id") String id) throws Exception {
+        SyUserEntity syUserEntity = syUserService.getById(Long.parseLong(id));
+        Assert.isTrue(
+                (syUserEntity.getName().compareTo("admin") != 0)
+                || (
+                        syUserEntity.getName().compareTo("admin") == 0 && SecurityContext.GetCurTokenInfo().getEnterpriseId().compareTo("root") == 0
+                ),
+                String.format("%s角色不可删除!", "超级admin"));
         syUserService.removeUser(Long.parseLong(id));
         return RetResponse.makeRsp("移除用户成功.");
     }

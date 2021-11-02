@@ -114,7 +114,7 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
         if (createRoles){
             //初始化管理员
             SyUserVo syUserVo = new SyUserVo() {{
-                setName("管理员");
+                setName("admin");
                 setAccount("admin");
                 setEnterpriseId(syEnterpriseEntity.getEnterpriseId());
                 setPasswordMd5("1234");
@@ -129,7 +129,7 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
             SyUserEntity syUserEntity = syUserService.getOne(queryWrapper);
             queryWrapper = new QueryWrapper() {{
                 eq("enterprise_id", syEnterpriseEntity.getEnterpriseId());
-                eq("name", "管理员");
+                eq("name", "超级admin");
             }};
             SyRoleEntity syRoleEntity = syRoleService.getOne(queryWrapper);
             SyUserRoleEntity syUserRoleEntity = new SyUserRoleEntity() {{

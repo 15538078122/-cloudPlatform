@@ -1,5 +1,6 @@
 package com.hd.micromonitorservice.controller;
 
+import com.hd.common.PageQueryExpressionList;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import com.hd.common.controller.SuperQueryController;
@@ -9,14 +10,12 @@ import com.hd.common.vo.SyMonitorVo;
 import com.hd.common.vo.UriCostVo;
 import com.hd.micromonitorservice.service.SyMonitorService;
 import com.hd.micromonitorservice.service.UriCostService;
+import com.hd.micromonitorservice.utils.VerifyUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author liwei
@@ -64,9 +63,14 @@ public class MonitorController extends SuperQueryController {
     }
     @ApiOperation(value = "最近操作列表")
     @RequiresPermissions(value = "lastoperator:list", note = "最近操作列表")
-    @GetMapping("/lastoperator")
-    public RetResult lastOperator(int pageNum,int pageSize) {
-        return RetResponse.makeRsp(uriCostService.getOperators(pageNum,pageSize));
+    @PostMapping("/lastoperator/list")
+    public RetResult lastOperator(@RequestParam("query") String query) {
+        PageQueryExpressionList pageQueryExpressionList = VerifyUtil.verifyQueryParam(query, null, "");
+        adaptiveQueryColumn(pageQueryExpressionList);
+        int pageNum=pageQueryExpressionList.getPageNum();
+        int pageSize=pageQueryExpressionList.getPageSize();
+        long lastMinutes = Long.parseLong(pageQueryExpressionList.getQueryExpressionByColumn("lastMinutes").getValue());
+        return RetResponse.makeRsp(uriCostService.getOperators(pageNum,pageSize,lastMinutes));
     }
     @ApiOperation(value = "swagger 展示model使用")
     @GetMapping("/nouse/showmodels")

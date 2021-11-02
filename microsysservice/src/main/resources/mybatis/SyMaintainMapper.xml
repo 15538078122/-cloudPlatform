@@ -5,7 +5,7 @@
         delete from account WHERE enterprise=#{enterpeiseId};
 
         delete from sy_enterprise WHERE enterprise_id=#{enterpeiseId};
-        delete from sy_attach WHERE enterprise_id=#{enterpeiseId};
+        delete from sy_attach;
 
         delete dictItem from sy_dict_item dictItem INNER join sy_dict dict on dictItem.dict_id=dict.id WHERE dict.enterprise_id=#{enterpeiseId};
         delete from sy_dict WHERE enterprise_id=#{enterpeiseId};
@@ -21,6 +21,7 @@
         delete from sy_role WHERE enterprise_id=#{enterpeiseId};
         delete from sy_user WHERE enterprise_id=#{enterpeiseId};
 
+        delete from sys_upgrade;
         delete from sy_monitor WHERE client_id is not null;
 
     </delete>

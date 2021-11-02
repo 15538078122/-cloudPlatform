@@ -5,6 +5,7 @@ import com.hd.common.RetResult;
 import com.hd.common.model.RequiresPermissions;
 import com.hd.common.vo.SyOrgVo;
 import com.hd.common.vo.SyUserVo;
+import com.hd.microsysservice.conf.operlog.OperLog;
 import com.hd.microsysservice.service.SyOrgService;
 import com.hd.microsysservice.utils.VerifyUtil;
 import io.swagger.annotations.Api;
@@ -29,6 +30,7 @@ public class OrgController  {
     @ApiOperation(value = "创建部门")
     @RequiresPermissions("org:create")
     @PostMapping("/org")
+    @OperLog(operModul = "部门管理",operType = "创建",operDesc = "新建部门")
     public RetResult createOrg(@RequestBody @Validated SyOrgVo syOrgVo) throws Exception {
         syOrgService.createOrg(syOrgVo);
         return RetResponse.makeRsp("创建部门成功.");
@@ -84,6 +86,7 @@ public class OrgController  {
     @ApiOperation(value = "删除部门")
     @RequiresPermissions("org:delete")
     @DeleteMapping("/org/{id}")
+    @OperLog(operModul = "部门管理",operType = "删除",operDesc = "删除部门")
     public RetResult delOrg(@PathVariable("id") Long orgId) throws Exception {
         syOrgService.delOrg(orgId);
         return RetResponse.makeRsp("删除部门成功");

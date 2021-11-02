@@ -9,6 +9,7 @@ import com.hd.common.RetResult;
 import com.hd.common.controller.SuperQueryController;
 import com.hd.common.model.RequiresPermissions;
 import com.hd.common.vo.SyEnterpriseVo;
+import com.hd.microsysservice.conf.operlog.OperLog;
 import com.hd.microsysservice.entity.SyEnterpriseEntity;
 import com.hd.microsysservice.service.SyEnterpriseService;
 import com.hd.microsysservice.utils.VerifyUtil;
@@ -66,6 +67,7 @@ public class EnterpriseController extends SuperQueryController {
     @ApiOperation(value = "创建企业")
     @RequiresPermissions("enterprise:create")
     @PostMapping("/enterprise")
+    @OperLog(operModul = "企业管理",operType = "创建",operDesc = "新建企业")
     public RetResult createEnterprise(@RequestBody @Validated SyEnterpriseVo syEnterpriseVo) throws Exception {
         SyEnterpriseEntity syEnterpriseEntity = new SyEnterpriseEntity();
         Boolean createRoles=false;
@@ -94,6 +96,7 @@ public class EnterpriseController extends SuperQueryController {
     @ApiOperation(value = "删除企业")
     @RequiresPermissions("enterprise:delete")
     @DeleteMapping("/enterprise/{id}")
+    @OperLog(operModul = "企业管理",operType = "删除",operDesc = "删除企业")
     public RetResult deleteEnterprise(@PathVariable("id") Long id) throws Exception {
         syEnterpriseService.removeEnterpriseById(id);
         return RetResponse.makeRsp("删除企业成功.");
@@ -102,6 +105,7 @@ public class EnterpriseController extends SuperQueryController {
     @ApiOperation(value = "恢复企业")
     @RequiresPermissions("enterprise:recover")
     @PutMapping("/enterprise/recover/{id}")
+    @OperLog(operModul = "企业管理",operType = "恢复",operDesc = "恢复企业")
     public RetResult recoverEnterprise(@PathVariable("id") Long id) throws Exception {
         syEnterpriseService.recoverEnterprise(id);
         return RetResponse.makeRsp("恢复企业成功.");
