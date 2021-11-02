@@ -157,7 +157,7 @@ seata:
 ![image](https://user-images.githubusercontent.com/83743182/134762974-db6764ae-becd-4bb3-b44d-48d323986a8b.png)
 seata： 对应几乎没有并发量的接口使用seata比较合适，省力。对有并发需求的接口，不要启用全局事务；因为启用事务后，seata的事务管理模式造成效率低下，实测200ms的请求，启动事务后，变成5-10倍的耗时。所以对于并发接口还是根据业务情形自行进行数据一致性管理。   
 29、gateway 动态路由配置类Redisroutedefinitionwriter  ，注意retry的配置  
- ![1635503631(1)](https://user-images.githubusercontent.com/83743182/139420565-5f41a0bf-8c2d-48a8-b357-04629aa4231d.jpg)
-
+ ![1635503631(1)](https://user-images.githubusercontent.com/83743182/139420565-5f41a0bf-8c2d-48a8-b357-04629aa4231d.jpg)  
+30、动态rsa密钥加密敏感数据，密码等。 注意rsa每次密文生成都不会一样，这是正确的，因为Cipher.getInstance("RSA");默认使用的BouncyCastle 填充造成。如果想每次密文一样，可以使用cipher= Cipher.getInstance("RSA", new BouncyCastleProvider());设置；
 
 
