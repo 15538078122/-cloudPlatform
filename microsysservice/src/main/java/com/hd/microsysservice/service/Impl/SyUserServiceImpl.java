@@ -347,7 +347,7 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         RetResult retResult = userCenterFeignService.changepwd(syUserEntity.getAccount(), syUserEntity.getEnterpriseId(), syUserVo.getPasswordMd5(), syUserVo.getPasswordMd5Old());
         //retResult =userCenterFeignService.changepwd(syUserVo.getAccount(),syUserVo.getEnterpriseId(),syUserVo.getPasswordMd5(),syUserVo.getPasswordMd5Old());
         if (retResult.getCode() != HttpStatus.OK.value()) {
-            throw new Exception("旧密码不正确!");
+            throw new Exception("修改密码失败，请重试!");
         }
     }
 

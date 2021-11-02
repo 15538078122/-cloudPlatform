@@ -26,6 +26,7 @@ public class RSAEncrypt {
     private static final char[] HEX_CHAR = { '0', '1', '2', '3', '4', '5', '6',
             '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
+    //private static BouncyCastleProvider bouncyCastleProvider = new BouncyCastleProvider();
     /**
      * 随机生成密钥对
      */
@@ -84,7 +85,7 @@ public class RSAEncrypt {
             String readLine = null;
             StringBuilder sb = new StringBuilder();
             while ((readLine = br.readLine()) != null) {
-                sb.append(readLine);
+                sb.append(readLine+'\n');
             }
             br.close();
             return sb.toString();
@@ -181,7 +182,7 @@ public class RSAEncrypt {
         try {
             // 使用默认RSA
             cipher = Cipher.getInstance("RSA");
-            // cipher= Cipher.getInstance("RSA", new BouncyCastleProvider());
+            //cipher= Cipher.getInstance("RSA", bouncyCastleProvider);
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             byte[] output = cipher.doFinal(plainTextData);
             return output;
@@ -256,7 +257,7 @@ public class RSAEncrypt {
         try {
             // 使用默认RSA
             cipher = Cipher.getInstance("RSA");
-            // cipher= Cipher.getInstance("RSA", new BouncyCastleProvider());
+            // cipher= Cipher.getInstance("RSA",bouncyCastleProvider);
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             byte[] output = cipher.doFinal(cipherData);
             return output;

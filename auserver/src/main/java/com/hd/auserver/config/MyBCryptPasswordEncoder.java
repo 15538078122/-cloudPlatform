@@ -1,8 +1,8 @@
 package com.hd.auserver.config;
 
 import com.hd.common.utils.RSAEncrypt;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.encoders.Base64;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -18,7 +18,7 @@ public class MyBCryptPasswordEncoder extends BCryptPasswordEncoder {
         String pwd2 = null;
         try {
             //TODO: 此处将前端加密的pwd转化为明文，临时测试
-            pwd1=RsaEncodePwd(pwd1);
+            //pwd1=RsaEncodePwd(pwd1);
             pwd2 = RsaDecodePwd(pwd1);
         } catch (Exception e) {
            return false;
@@ -38,7 +38,7 @@ public class MyBCryptPasswordEncoder extends BCryptPasswordEncoder {
     }
     public String RsaEncodePwd(String plainText) throws Exception {
         byte[] cipherData=RSAEncrypt.encrypt(RSAEncrypt.loadPublicKeyByStr(GenRsaFileTask.rsaPublicKey),plainText.getBytes());
-        String cipher= Base64.encode(cipherData);
+        String cipher= Base64.toBase64String(cipherData);
         cipher = java.net.URLEncoder.encode(cipher, "UTF-8");
         return  cipher;
     }

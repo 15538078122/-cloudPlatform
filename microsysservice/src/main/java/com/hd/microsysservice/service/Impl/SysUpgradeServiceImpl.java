@@ -31,7 +31,14 @@ public class SysUpgradeServiceImpl extends ServiceImpl<SysUpgradeMapper, SysUpgr
         SysUpgradeEntity sysUpgradeEntity =   getOne(new QueryWrapper(){{
            eq("type",syUpgradeVo.getType());
            eq("version_name",syUpgradeVo.getVersionName());
-            eq("enterprise_id", SecurityContext.GetCurTokenInfo().getEnterpriseId());
+            if(SecurityContext.GetCurTokenInfo().getEnterpriseId().compareTo("root")!=0){
+                eq("enterprise_id", SecurityContext.GetCurTokenInfo().getEnterpriseId());
+                syUpgradeVo.setEnterpriseId(SecurityContext.GetCurTokenInfo().getEnterpriseId());
+            }
+            else {
+                Assert.notNull(syUpgradeVo.getEnterpriseId(),String.format("%s不能为空!","企业Id"));
+                eq("enterprise_id",syUpgradeVo.getEnterpriseId());
+            }
         }});
         Assert.isNull(sysUpgradeEntity,String.format("版本%s已存在!",syUpgradeVo.getVersionName()));
         Assert.notNull(syUpgradeVo.getVersion(),String.format("缺少版本号%s!","version"));

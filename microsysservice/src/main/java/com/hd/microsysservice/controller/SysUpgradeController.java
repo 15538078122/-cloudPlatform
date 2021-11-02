@@ -54,12 +54,16 @@ public class SysUpgradeController extends SuperQueryController {
         PageQueryExpressionList pageQuery = JSON.parseObject(query, PageQueryExpressionList.class);
         Assert.isTrue(pageQuery!=null,"查询参数错误!");
         //adaptiveQueryColumn(pageQuery);
-        QueryExpression queryExpression=new QueryExpression(){{
-           setColumn("enterpriseId");
-           setValue(SecurityContext.GetCurTokenInfo().getEnterpriseId());
-           setType("eq");
-        }};
-        pageQuery.getQueryData().add(queryExpression);
+        if(SecurityContext.GetCurTokenInfo().getEnterpriseId().compareTo("root")!=0)
+        {
+            QueryExpression queryExpression=new QueryExpression(){{
+                setColumn("enterpriseId");
+                setValue(SecurityContext.GetCurTokenInfo().getEnterpriseId());
+                setType("eq");
+            }};
+            pageQuery.getQueryData().add(queryExpression);
+        }
+
         Page<SysUpgradeEntity> sysUpgradeEntityPage = selectPage(pageQuery, sysUpgradeService);
         SysUpgradeService.SyUpgradeVoConvertUtils syUpgradeVoConvertUtils=new SysUpgradeService.SyUpgradeVoConvertUtils();
 

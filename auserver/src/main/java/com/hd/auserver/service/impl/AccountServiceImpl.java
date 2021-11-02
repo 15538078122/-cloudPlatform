@@ -49,9 +49,17 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, AccountEntity
         if(accountEntity==null){
             throw  new Exception("账号不存在!");
         }
+//        try {
+//            //TODO: 此处将前端加密的pwd转化为明文，临时测试
+//            //passwordOld=((MyBCryptPasswordEncoder)bCryptPasswordEncoder).RsaEncodePwd(passwordOld);
+//            passwordOld = ((MyBCryptPasswordEncoder)bCryptPasswordEncoder).RsaDecodePwd(passwordOld);
+//        } catch (Exception e) {
+//            throw  new Exception("密码数据异常!");
+//        }
         if(!bCryptPasswordEncoder.matches(passwordOld,accountEntity.getPassword())){
             throw  new Exception("旧密码不匹配!");
         }
+
         UpdateWrapper updateWrapper=new UpdateWrapper();
         updateWrapper.eq("id",accountEntity.getId());
         String pwd1 = password;

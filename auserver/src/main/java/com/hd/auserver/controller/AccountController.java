@@ -77,6 +77,7 @@ public class AccountController {
     @PutMapping("/account")
     public RetResult changePwd(@RequestParam ("account")  String account,@RequestParam("enterprise") String enterprise,@RequestParam("password") String password,@RequestParam("passwordOld") String passwordOld) throws Exception {
         //TODO: 修改用户密码，pwd需要加密
+        passwordOld = java.net.URLEncoder.encode(passwordOld, "UTF-8");
         accountService.changePwd(account, enterprise, password, passwordOld);
         return RetResponse.makeRsp("修改密码成功.");
     }
