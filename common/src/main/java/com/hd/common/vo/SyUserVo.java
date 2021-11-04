@@ -113,4 +113,6 @@ public class SyUserVo implements Serializable {
 
     @ApiModelProperty(value = "用户角色标志:0:管理员;1:普通用户")
     private Short userFlag=1;
+
+
 }

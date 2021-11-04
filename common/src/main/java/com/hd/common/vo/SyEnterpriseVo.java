@@ -48,4 +48,7 @@ public class SyEnterpriseVo implements Serializable {
 
     @ApiModelProperty(value = "是否复制角色")
     private Short createRoles;
+
+    @ApiModelProperty(value = "授权的用户数目")
+    private Integer userCount;
 }

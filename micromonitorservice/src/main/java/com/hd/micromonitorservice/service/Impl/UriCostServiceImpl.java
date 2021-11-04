@@ -45,7 +45,7 @@ public class UriCostServiceImpl implements UriCostService {
         long total=template.count(query, UriCost.class);
         if(total<=pageSize){
             pageNum=1;
-            pageSize= total;
+            //pageSize= total;
         }
         else{
             long actualPage= total/pageSize+(total%pageSize==0?0:1);
@@ -86,7 +86,7 @@ public class UriCostServiceImpl implements UriCostService {
 
         if(total<=pageSize){
             pageNum=1;
-            pageSize= total;
+            //pageSize= total;
         }
         else{
             long actualPage= total/pageSize+(total%pageSize==0?0:1);
@@ -109,21 +109,39 @@ public class UriCostServiceImpl implements UriCostService {
     }
 
     @Override
-    public MyPage<OperatorVo> getOperators(long pageNum, long pageSize,long lastMinutes) {
+    public MyPage<OperatorVo> getOperators(long pageNum, long pageSize,String sTime,String eTime,String enterpriseId) {
         Query query = new Query();
         //最近多少分钟的
-        query.addCriteria(Criteria.where("tm").gt(
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date((new Date()).getTime() - lastMinutes * 60 * 1000))
-                )
-        );
+        if(sTime!=null&&eTime==null){
+            query.addCriteria(Criteria.where("tm").gt(
+//                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date((new Date()).getTime() - lastMinutes * 60 * 1000))
+                    sTime
+                    )
+            );
+        }else if(sTime==null && eTime!=null){
+            query.addCriteria(Criteria.where("tm").lt(
+                    eTime
+                    )
+            );
+        }else if(sTime!=null && eTime!=null){
+            query.addCriteria(Criteria.where("tm").lt(
+                    eTime
+                    ).gt(sTime)
+            );
+        }
+
         String curEnterpriseId = SecurityContext.GetCurTokenInfo().getEnterpriseId();
         if(curEnterpriseId.compareTo("root")!=0){
             query.addCriteria(Criteria.where("enterId").is(curEnterpriseId));
+        }else {
+            if(enterpriseId!=null){
+                query.addCriteria(Criteria.where("enterId").is(enterpriseId));
+            }
         }
         long total=template2.count(query, Operator.class);
         if(total<=pageSize){
             pageNum=1;
-            pageSize= total;
+            //pageSize= total;
         }
         else{
             long actualPage= total/pageSize+(total%pageSize==0?0:1);

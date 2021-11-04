@@ -76,6 +76,22 @@ public class RSASignature{
         return null;
     }
 
+    public static String sign(PrivateKey priKey , String content){
+        try
+        {
+            java.security.Signature signature = java.security.Signature.getInstance(SIGN_ALGORITHMS);
+            signature.initSign(priKey);
+            signature.update( content.getBytes());
+            byte[] signed = signature.sign();
+            return Base64.encode(signed);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * RSA验签名检查
      * @param content 待签名数据
@@ -111,6 +127,27 @@ public class RSASignature{
         return false;
     }
 
+    public static boolean doCheck(String content, String sign, PublicKey pubKey)
+    {
+        try
+        {
+            java.security.Signature signature = java.security.Signature
+                    .getInstance(SIGN_ALGORITHMS);
+
+            signature.initVerify(pubKey);
+            signature.update( content.getBytes() );
+
+            boolean bverify = signature.verify( Base64.decode(sign) );
+            return bverify;
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
     public static boolean doCheck(String content, String sign, String publicKey)
     {
         try
@@ -136,5 +173,4 @@ public class RSASignature{
 
         return false;
     }
-
 }

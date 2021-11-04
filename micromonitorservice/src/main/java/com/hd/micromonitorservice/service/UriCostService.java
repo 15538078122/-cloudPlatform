@@ -19,7 +19,7 @@ public interface UriCostService {
         MyPage<UriCostVo> getMaxCost2Sec(long pageNum, long pageSize);
         MyPage<UriCostVo> getAverageCost2Sec(long pageNum, long pageSize);
 
-        MyPage<OperatorVo> getOperators (long pageNum, long pageSize,long lastMinutes);
+        MyPage<OperatorVo> getOperators (long pageNum, long pageSize,String sTime,String eTime,String enterpriseId);
 
         UriCost save(UriCost uriCost);
         class UriCostVoConvertUtils  extends VoConvertUtils<UriCost,UriCostVo> {

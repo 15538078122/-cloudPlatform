@@ -17,7 +17,7 @@ import java.security.PrivateKey;
 public class TokenConfig {
     /** JWT密钥 */
     private String signingKey = "fastboot";
-    PrivateKey rsaPrivateKey;
+    public  PrivateKey rsaPrivateKey;
     /**
      * JWT 令牌转换器
      * @return
