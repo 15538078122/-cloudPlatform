@@ -13,15 +13,15 @@ import com.hd.common.model.DataPrivilege;
 import com.hd.common.model.KeyValuePair;
 import com.hd.common.model.QueryExpression;
 import com.hd.common.model.TokenInfo;
+import com.hd.common.utils.FileUtil;
+import com.hd.common.utils.LicenseUtil;
 import com.hd.common.utils.ParseQueryUtil;
+import com.hd.common.utils.RSASignature;
 import com.hd.common.vo.SyDictItemVo;
 import com.hd.common.vo.SyRoleVo;
 import com.hd.common.vo.SyUserVo;
 import com.hd.microsysservice.conf.SecurityContext;
-import com.hd.microsysservice.entity.SyOrgEntity;
-import com.hd.microsysservice.entity.SyRoleEntity;
-import com.hd.microsysservice.entity.SyUserEntity;
-import com.hd.microsysservice.entity.SyUserRoleEntity;
+import com.hd.microsysservice.entity.*;
 import com.hd.microsysservice.mapper.SyRoleMapper;
 import com.hd.microsysservice.mapper.SyUserMapper;
 import com.hd.microsysservice.service.*;
@@ -30,8 +30,10 @@ import com.hd.microsysservice.utils.RedisLockUtil;
 import com.hd.microsysservice.utils.VerifyUtil;
 import com.hd.microsysservice.utils.VoConvertUtils;
 import io.seata.spring.annotation.GlobalTransactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -41,6 +43,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,6 +60,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 2021-07-13
  */
 @Service
+@Slf4j
 public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> implements SyUserService {
 
     @Value("${config.USER_OP_IDENTIFICATION}")
@@ -70,6 +74,9 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
 
     @Autowired
     SyRoleMapper syRoleMapper;
+
+    @Autowired
+    SyEnterpriseService syEnterpriseService;
 
     @Autowired
     SyUserRoleService syUserRoleService;
@@ -104,6 +111,8 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
      */
     //    public synchronized  void createUser(SyUserVo syUserVo) throws Exception {
     public void createUser(SyUserVo syUserVo) throws Exception {
+        JudgeLicense(syUserVo.getEnterpriseId());
+
         //注意timeout的设置，大于执行块可能需要的最大时间，否则锁失效造成异常
         long timeout = 30;
         TimeUnit timeUnit = TimeUnit.SECONDS;
@@ -174,6 +183,31 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
             }
             //log.debug("释放分布式锁解锁 为"+lockValue);
         }
+    }
+
+    private void JudgeLicense(String enterpriseId) throws Exception {
+        //判断授权用户量是否超额
+        String machineCode = LicenseUtil.getMachineCode();
+        //String sign = RSASignature.sign((RSAPrivateKey) tokenConfig.rsaPrivateKey, machineCode+userCount);
+        ApplicationHome ah = new ApplicationHome(getClass());
+        File file = ah.getSource();
+        String licensePath =file.getParentFile().toString()+"/license.txt";
+        String sign= FileUtil.readTxtFile(licensePath);
+        //log.info(licensePath);
+        if(sign.isEmpty()){
+            licensePath =file.getParentFile().toString()+"/../license.txt";
+            sign= FileUtil.readTxtFile(licensePath);
+        }
+        QueryWrapper queryWrapper = new QueryWrapper() {{
+            eq("enterprise_id", enterpriseId);
+        }};
+        SyEnterpriseEntity syEnterpriseEntity = syEnterpriseService.getOne(queryWrapper);
+        Integer userCount=syEnterpriseEntity.getUserCount();
+        Boolean check = RSASignature.doCheck(machineCode+userCount,sign,jwtUtils.rsaPublicKey);
+        Assert.isTrue(check,String.format("未授权,请联系厂家授权,机器码%s",machineCode));
+
+        int totalCount = count(queryWrapper);
+        Assert.isTrue(totalCount<userCount,String.format("授权数量超限,请联系厂家授权,机器码%s",machineCode));
     }
 
     private void updateRoles(Long userId, List<SyRoleVo> syRoleVos) {

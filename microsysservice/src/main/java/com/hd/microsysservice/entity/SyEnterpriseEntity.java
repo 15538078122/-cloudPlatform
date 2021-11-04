@@ -45,5 +45,8 @@ public class SyEnterpriseEntity extends Model<SyEnterpriseEntity> {
 
     @TableLogic("delete_flag")
     //@TableField("delete_flag")
-    boolean deleteFlag;
+    private boolean deleteFlag;
+
+    @TableField("user_count")
+    private Integer userCount;
 }

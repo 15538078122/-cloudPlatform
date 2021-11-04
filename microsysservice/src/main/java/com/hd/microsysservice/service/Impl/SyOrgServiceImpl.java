@@ -115,6 +115,7 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
                     SyOrgVo syOrgVo1=new SyOrgVo(){{
                         setName(syUserVo.getName());
                         setId(syUserVo.getId());
+                        setType((short) -1);
                     }};
                     userForOrg.add(syOrgVo1);
                 }

@@ -93,22 +93,19 @@ public class EnterpriseController extends SuperQueryController {
         return RetResponse.makeRsp("编辑企业成功.");
     }
 
-    @ApiOperation(value = "删除企业")
-    @RequiresPermissions("enterprise:delete")
-    @DeleteMapping("/enterprise/{id}")
-    @OperLog(operModul = "企业管理",operType = "删除",operDesc = "删除企业")
-    public RetResult deleteEnterprise(@PathVariable("id") Long id) throws Exception {
-        syEnterpriseService.removeEnterpriseById(id);
-        return RetResponse.makeRsp("删除企业成功.");
-    }
-
-    @ApiOperation(value = "恢复企业")
-    @RequiresPermissions("enterprise:recover")
-    @PutMapping("/enterprise/recover/{id}")
-    @OperLog(operModul = "企业管理",operType = "恢复",operDesc = "恢复企业")
-    public RetResult recoverEnterprise(@PathVariable("id") Long id) throws Exception {
-        syEnterpriseService.recoverEnterprise(id);
-        return RetResponse.makeRsp("恢复企业成功.");
+    @ApiOperation(value = "启用/停用企业")
+    @RequiresPermissions("enterprise:enable")
+    @PutMapping("/enterprise/enable")
+    @OperLog(operModul = "企业管理",operType = "启用/停用",operDesc = "启用/停用企业")
+    public RetResult enableEnterprise(@RequestParam("id") Long id,@RequestParam("enable") Boolean enable) throws Exception {
+        if(!enable){
+            syEnterpriseService.removeEnterpriseById(id);
+            return RetResponse.makeRsp("停用企业成功.");
+        }
+        else{
+            syEnterpriseService.recoverEnterprise(id);
+            return RetResponse.makeRsp("启用企业成功.");
+        }
     }
 
     @ApiOperation(value = "物理删除企业")
