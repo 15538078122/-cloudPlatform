@@ -1,6 +1,7 @@
 package com.hd.common.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hd.common.utils.LongToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -51,4 +52,9 @@ public class SyEnterpriseVo implements Serializable {
 
     @ApiModelProperty(value = "授权的用户数目")
     private Integer userCount;
+
+    @JSONField(serialzeFeatures={SerializerFeature.WriteNullStringAsEmpty})
+    @ApiModelProperty(value = "授权的日期")
+    private String expireDate;
+
 }

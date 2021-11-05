@@ -243,8 +243,74 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [],
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "client_id",
+									"value": "client",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "Pzaq6vPm7sKoftT4u9i7400q4yd8bA5eTMJv71haiMNr0xWf2cU4sr5t4XwDX4eZW4cGWihCWoHU3sM2KdiYxe%2FVZ3VMDg4Zmwm4ORlXZxbOvv4xZTmLV6%2F8QQnJ9nN8xYbuRrixORNP9Mh9Nh1KIn6wAvz39hjFKtROcbm98fI%3D",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "secret123",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "user",
+									"type": "text"
+								},
+								{
+									"key": "enterId",
+									"value": "root",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "root",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Ndcjz2984i5szPMd2s%2FpINrTHWRPyFqqoAY64gAGDEJbf5ynhN3Jprk7E51Fl%2F0IVtEZ4Y3SZ%2BwSkfs%2B%2F03ym0ojbL6M9J3kK9iJnAE4vuSB7j9fAhlz5ke%2BEBIgoHktqzM7z3cr4hNbYvlC8AtbdqVpucbxcsNOEHUDHSJxKCw%3D",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "1234",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "enterId",
+									"value": "liweitest",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "deviceType",
+									"value": "app",
+									"type": "text",
+									"disabled": true
+								}
+							],
 							"options": {
 								"raw": {
 									"language": "json"
@@ -252,7 +318,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host1}}:20001/auserver/oauth/token?client_id=client&client_secret=secret123&grant_type=password&scope=user&enterId=hdzn&username=li&password=1qaz2wsx&deviceType=web",
+							"raw": "http://{{host1}}:20001/auserver/oauth/token",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -262,55 +328,6 @@
 								"auserver",
 								"oauth",
 								"token"
-							],
-							"query": [
-								{
-									"key": "client_id",
-									"value": "client"
-								},
-								{
-									"key": "client_secret",
-									"value": "secret123"
-								},
-								{
-									"key": "grant_type",
-									"value": "password"
-								},
-								{
-									"key": "scope",
-									"value": "user"
-								},
-								{
-									"key": "enterId",
-									"value": "root",
-									"disabled": true
-								},
-								{
-									"key": "username",
-									"value": "root",
-									"disabled": true
-								},
-								{
-									"key": "password",
-									"value": "1234",
-									"disabled": true
-								},
-								{
-									"key": "enterId",
-									"value": "hdzn"
-								},
-								{
-									"key": "username",
-									"value": "li"
-								},
-								{
-									"key": "password",
-									"value": "1qaz2wsx"
-								},
-								{
-									"key": "deviceType",
-									"value": "web"
-								}
 							]
 						}
 					},
@@ -420,8 +437,8 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
+							"mode": "formdata",
+							"formdata": [
 								{
 									"key": "refresh_token",
 									"value": "{{reftoken}}",
@@ -505,6 +522,169 @@
 							"path": [
 								"account",
 								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "授权license",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "USER_OP_IDENTIFICATION",
+								"type": "text",
+								"value": "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "password",
+									"value": "testuser",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "enterprise",
+									"value": "root",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "machineCode",
+									"value": "[25.192-b12, 1.8.0_192, 10.0, 2C-16-DB-A0-07-B2]",
+									"type": "text"
+								},
+								{
+									"key": "userCount",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "days",
+									"value": "-2",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:20001/microsys/sys/license",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"microsys",
+								"sys",
+								"license"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "授权license上传",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "USER_OP_IDENTIFICATION",
+								"type": "text",
+								"value": "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/liwei/Desktop/license.txt"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:20001/microsys/sys/license/upload",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"microsys",
+								"sys",
+								"license",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "密码的密文",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "USER_OP_IDENTIFICATION",
+								"type": "text",
+								"value": "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "pwd",
+									"value": "1234",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:10001/pwdrsa",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "10001",
+							"path": [
+								"pwdrsa"
 							]
 						}
 					},
@@ -1593,6 +1773,57 @@
 					"response": []
 				},
 				{
+					"name": "启用禁用用户",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "userId",
+									"value": "1455447284149260289",
+									"type": "text"
+								},
+								{
+									"key": "enabled",
+									"value": "false",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:20001/microsys/sys/user/enabled",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"microsys",
+								"sys",
+								"user",
+								"enabled"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "修改用户密码",
 					"protocolProfileBehavior": {
 						"disabledSystemHeaders": {}
@@ -1608,7 +1839,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    id: \"8888888888888888888\",\r\n    account: \"root\",    \r\n    enterpriseId:\"root\",\r\n    passwordMd5:\"1234\",\r\n    passwordMd5Old:\"1234\" \r\n\r\n}",
+							"raw": "{\r\n    id: \"8888888888888888888\",\r\n    account: \"root\",    \r\n    enterpriseId:\"root\",\r\n    passwordMd5:\"1234\",\r\n    passwordMd5Old:\"fC9HPDyjMMu9XpXuC6zpppXsXQVj2trD7R6IJ6XhNhNbdF/zyBdp+4z89OICWK+pdVGooBpkzLwikPGBawynYQisZCiHhLLBY/YSZXjkGfj04FfaEnDN9kk7Lc5RYVr2q5Vh49jLdAlgIPGx3GsdwYgXAZNuRCkDY0mf0Wx8gCw=\" \r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1765,7 +1996,7 @@
 							"formdata": [
 								{
 									"key": "query",
-									"value": "{ \"pageNum\": 1,\"pageSize\": 2,queryData:[{column:\"role\",value:\"管理员\",type:\"eq\"},{column:\"role\",value:\"任务下发\",type:\"eq\"}],orderby:[{key:\"name\",value:\"desc\"}]}",
+									"value": "{ \"pageNum\": 1,\"pageSize\": 2,queryData:[{column:\"role\",value:\"计划\",type:\"eq\"},{column:\"role\",value:\"任务下发\",type:\"eq\"}],orderby:[{key:\"name\",value:\"desc\"}]}",
 									"type": "text"
 								}
 							]
@@ -1845,6 +2076,52 @@
 					"response": []
 				},
 				{
+					"name": "获取企业详情",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "query",
+									"value": "{ \"pageNum\": 1,\"pageSize\": 10,queryData:[],orderby:[{key:\"name\",value:\"asc\"}]}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{host1}}:20001/microsys/sys/enterprise?enterpriseId=root",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"microsys",
+								"sys",
+								"enterprise"
+							],
+							"query": [
+								{
+									"key": "enterpriseId",
+									"value": "root"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "创建企业",
 					"request": {
 						"method": "POST",
@@ -1884,38 +2161,7 @@
 					"response": []
 				},
 				{
-					"name": "删除企业",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "http://127.0.0.1:20001/microsys/sys/enterprise/1440858190777815041",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "20001",
-							"path": [
-								"microsys",
-								"sys",
-								"enterprise",
-								"1440858190777815041"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "恢复企业",
+					"name": "启用/停用企业",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -1925,8 +2171,23 @@
 								"value": "Bearer {{token}}"
 							}
 						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "enable",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "id",
+									"value": "1455358315214540802",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
-							"raw": "http://127.0.0.1:20001/microsys/sys/enterprise/recover/1440858190777815041",
+							"raw": "http://127.0.0.1:20001/microsys/sys/enterprise/enable",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1939,8 +2200,7 @@
 								"microsys",
 								"sys",
 								"enterprise",
-								"recover",
-								"1440858190777815041"
+								"enable"
 							]
 						}
 					},
@@ -1957,8 +2217,18 @@
 								"value": "Bearer {{token}}"
 							}
 						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "enterpriseId",
+									"value": "tttew",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
-							"raw": "http://127.0.0.1:20001/microsys/sys/enterprise/physically/3322",
+							"raw": "http://127.0.0.1:20001/microsys/sys/enterprise/physically",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1971,8 +2241,14 @@
 								"microsys",
 								"sys",
 								"enterprise",
-								"physically",
-								"3322"
+								"physically"
+							],
+							"query": [
+								{
+									"key": "enterpriseId",
+									"value": "tttew",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -2104,7 +2380,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/sys/org/my/tree",
+							"raw": "http://{{host1}}:20001/microsys/sys/org/my/tree?enterId=ceshi",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -2116,6 +2392,44 @@
 								"org",
 								"my",
 								"tree"
+							],
+							"query": [
+								{
+									"key": "enterId",
+									"value": "ceshi"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取自己有权限的部门Tree(含删除)",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://{{host1}}:20001/microsys/sys/org/my/treeall",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"microsys",
+								"sys",
+								"org",
+								"my",
+								"treeall"
 							]
 						}
 					},
@@ -2420,7 +2734,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/dictionary",
+							"raw": "http://{{host1}}:20001/microsys/sys/dictionary",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -2428,6 +2742,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"dictionary"
 							]
 						}
@@ -2536,7 +2851,7 @@
 							"formdata": [
 								{
 									"key": "query",
-									"value": " {\"pageNum\": 1,\"pageSize\": 200,queryData:[{column:\"enterpriseId\",value:\"hdzn\",type:\"eq\"},{column:\"code\",value:\"shy\",type:\"eq\"}],orderby:[{key:\"name\",value:\"asc\"}]}",
+									"value": " {\"pageNum\": 1,\"pageSize\": 2,queryData:[{column:\"enterpriseId\",value:\"ceshi\",type:\"eq\"},{column:\"code\",value:\"shy\",type:\"eq\"}],orderby:[{key:\"name\",value:\"asc\"}]}",
 									"type": "text"
 								}
 							]
@@ -2583,7 +2898,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/dictionary/item",
+							"raw": "http://{{host1}}:20001/microsys/sys/dictionary/item",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -2591,6 +2906,7 @@
 							"port": "20001",
 							"path": [
 								"microsys",
+								"sys",
 								"dictionary",
 								"item"
 							]
@@ -2658,10 +2974,16 @@
 								"type": "text",
 								"value": "bytes=-639",
 								"disabled": true
+							},
+							{
+								"key": "range",
+								"value": "bytes=10000-50000",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/sys/attach/1432617109019693057",
+							"raw": "http://{{host1}}:20001/microsys/sys/attach/1449903437893734401",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -2671,7 +2993,7 @@
 								"microsys",
 								"sys",
 								"attach",
-								"1432617109019693057"
+								"1449903437893734401"
 							]
 						}
 					},
@@ -2748,7 +3070,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/sys/attach/upload?guid=4ilter23sfowewfwef&chunk=1",
+							"raw": "http://{{host1}}:20001/microsys/sys/attach/upload?guid=4ilter23sfowewfwef&chunk=0",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -2767,7 +3089,7 @@
 								},
 								{
 									"key": "chunk",
-									"value": "1"
+									"value": "0"
 								}
 							]
 						}
@@ -2864,14 +3186,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/sys/attach/uploadone",
+							"raw": "http://{{host1}}:20001/microattach/sys/attach/uploadone",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
 							],
 							"port": "20001",
 							"path": [
-								"microsys",
+								"microattach",
 								"sys",
 								"attach",
 								"uploadone"
@@ -2996,6 +3318,56 @@
 								{
 									"key": "pageSize",
 									"value": "8000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "最近请求操作",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "query",
+									"value": " { \"pageNum\": 1,\"pageSize\": 20,queryData:[{column:\"sTime\",value:\"2021-11-01 01:00:00\",type:\"gt\"},{column:\"eTime\",value:\"2021-11-03 16:00:00\",type:\"lt\"},{column:\"enterpriseId\",value:\"weew\",type:\"eq\"}],orderby:[{key:\"tm\",value:\"desc\"}]}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{host1}}:20001/micromonitor/monitor/lastoperator/list",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"micromonitor",
+								"monitor",
+								"lastoperator",
+								"list"
+							],
+							"query": [
+								{
+									"key": "pageNum",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "pageSize",
+									"value": "8000",
+									"disabled": true
 								}
 							]
 						}
@@ -3373,6 +3745,38 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "http://192.168.3.78:20001/execute/api.ps/v1/order/app",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://192.168.3.78:20001/execute/api.ps/v1/order/app",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"78"
+							],
+							"port": "20001",
+							"path": [
+								"execute",
+								"api.ps",
+								"v1",
+								"order",
+								"app"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -3400,7 +3804,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    attachId:\"1443121655110307842\",\r\n    type: 0,     \r\n    versionName:\"2021.01.22.2\",\r\n    desc:\"版本描述信息\"\r\n\r\n}",
+							"raw": "{\r\n    attachId:\"1443121655110307842\",\r\n    type: 0,     \r\n    versionName:\"2021.01.22.24\",\r\n    desc:\"版本描述信息\",\r\n    version: 10\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3444,7 +3848,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://{{host1}}:20001/microsys/sys//app/version",
+							"raw": "http://{{host1}}:20001/microsys/sys/app/version",
 							"protocol": "http",
 							"host": [
 								"{{host1}}"
@@ -3453,9 +3857,431 @@
 							"path": [
 								"microsys",
 								"sys",
-								"",
 								"app",
 								"version"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除版本",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "range",
+								"type": "text",
+								"value": "bytes=0-"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "22323",
+									"type": "text",
+									"disabled": true
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:20001/microsys/sys/app/version?id=3323",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"microsys",
+								"sys",
+								"app",
+								"version"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "3323"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取版本列表",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "range",
+								"type": "text",
+								"value": "bytes=0-"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "query",
+									"value": "{ \"pageNum\": 1,\"pageSize\": 10,queryData:[],orderby:[{key:\"version\",value:\"asc\"}]}",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:20001/microsys/sys/app/version/list",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"microsys",
+								"sys",
+								"app",
+								"version",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "nginx测试",
+			"item": [
+				{
+					"name": "密码模式nginx",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json = JSON.parse(responseBody);  // responseBody是包含整个返回内容的字符串\r",
+									"let token = json.data.access_token;\r",
+									"pm.globals.set(\"token\", token);\r",
+									"let reftoken = json.data.refresh_token;\r",
+									"pm.globals.set(\"reftoken\", reftoken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:8888/baserUrl/auserver/oauth/token?client_id=client&client_secret=secret123&grant_type=password&scope=user&enterId=root&username=root&password=1234&deviceType=web",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "8888",
+							"path": [
+								"baserUrl",
+								"auserver",
+								"oauth",
+								"token"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "client"
+								},
+								{
+									"key": "client_secret",
+									"value": "secret123"
+								},
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "scope",
+									"value": "user"
+								},
+								{
+									"key": "enterId",
+									"value": "root"
+								},
+								{
+									"key": "username",
+									"value": "root"
+								},
+								{
+									"key": "password",
+									"value": "1234"
+								},
+								{
+									"key": "enterId",
+									"value": "ceshi",
+									"disabled": true
+								},
+								{
+									"key": "username",
+									"value": "li",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "123qwe",
+									"disabled": true
+								},
+								{
+									"key": "deviceType",
+									"value": "web"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取部门用户listnginx",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "query",
+									"value": " { \"pageNum\": 1,\"pageSize\": 10,queryData:[{column:\"orgId\",value:\"8888888888888888888\",type:\"eq\"}],orderby:[{key:\"jobName\",value:\"desc\"}]}",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:8888/baserUrl/microsys/sys/org/user/list",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "8888",
+							"path": [
+								"baserUrl",
+								"microsys",
+								"sys",
+								"org",
+								"user",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resource nginx",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true,
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "query",
+									"value": " { \"pageNum\": 1,\"pageSize\": 10,queryData:[{column:\"orgId\",value:\"8888888888888888888\",type:\"eq\"}],orderby:[{key:\"jobName\",value:\"desc\"}]}",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:8888/baserUrl/microsys/sys/static/2.app",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "8888",
+							"path": [
+								"baserUrl",
+								"microsys",
+								"sys",
+								"static",
+								"2.app"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "上传文档 单个 Copy",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "range",
+								"type": "text",
+								"value": "bytes=0-"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/D:/test/test.apk"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host1}}:8888/baserUrl/microsys/sys/attach/uploadone",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "8888",
+							"path": [
+								"baserUrl",
+								"microsys",
+								"sys",
+								"attach",
+								"uploadone"
+							],
+							"query": [
+								{
+									"key": "fileSize",
+									"value": "555",
+									"disabled": true
+								},
+								{
+									"key": "fileName",
+									"value": "test.txt",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "routes",
+			"item": [
+				{
+					"name": "自定义routes",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "query",
+									"value": "{ \"pageNum\": 1,\"pageSize\": 10,queryData:[],orderby:[{key:\"name\",value:\"asc\"}]}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{host1}}:20001/microsys/sys/app/version",
+							"protocol": "http",
+							"host": [
+								"{{host1}}"
+							],
+							"port": "20001",
+							"path": [
+								"microsys",
+								"sys",
+								"app",
+								"version"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "{ \"pageNum\": 1,\"pageSize\": 10,queryData:[],orderby:[{key:\"name\",value:\"asc\"}]}",
+									"disabled": true
+								}
 							]
 						}
 					},

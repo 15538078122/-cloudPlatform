@@ -44,6 +44,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -111,7 +112,10 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
      */
     //    public synchronized  void createUser(SyUserVo syUserVo) throws Exception {
     public void createUser(SyUserVo syUserVo) throws Exception {
-        JudgeLicense(syUserVo.getEnterpriseId());
+        //if(SecurityContext.GetCurTokenInfo().getEnterpriseId().compareTo("root")!=0)
+        {
+            JudgeLicense(syUserVo.getEnterpriseId());
+        }
 
         //注意timeout的设置，大于执行块可能需要的最大时间，否则锁失效造成异常
         long timeout = 30;
@@ -187,25 +191,32 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
 
     private void JudgeLicense(String enterpriseId) throws Exception {
         //判断授权用户量是否超额
-        String machineCode = LicenseUtil.getMachineCode();
-        //String sign = RSASignature.sign((RSAPrivateKey) tokenConfig.rsaPrivateKey, machineCode+userCount);
         ApplicationHome ah = new ApplicationHome(getClass());
         File file = ah.getSource();
-        String licensePath =file.getParentFile().toString()+"/license.txt";
+        String licensePath =file.getParentFile().toString()+"/"+enterpriseId+"/license.txt";
         String sign= FileUtil.readTxtFile(licensePath);
         //log.info(licensePath);
         if(sign.isEmpty()){
-            licensePath =file.getParentFile().toString()+"/../license.txt";
+            licensePath =file.getParentFile().toString()+"/../"+enterpriseId+"/license.txt";
             sign= FileUtil.readTxtFile(licensePath);
         }
+
+        String expDateStr=sign.substring(0,10);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date expDt=sdf.parse(expDateStr);
+        Long userCount=Long.parseLong(sign.substring(10,15));
+        String machineCode = LicenseUtil.getMachineCode();
+
+        Assert.isTrue(expDt.getTime()>new Date().getTime(),String.format("授权已过期,请联系厂家授权,机器码%s",machineCode));
+
+        Boolean check = RSASignature.doCheck( machineCode+userCount+expDateStr,sign.substring(15,sign.length()),jwtUtils.rsaPublicKeyForManufacturer);
+        //String sign = RSASignature.sign((RSAPrivateKey) tokenConfig.rsaPrivateKey, machineCode+userCount);
+
+        Assert.isTrue(check,String.format("未授权,请联系厂家授权,机器码%s",machineCode));
         QueryWrapper queryWrapper = new QueryWrapper() {{
             eq("enterprise_id", enterpriseId);
         }};
-        SyEnterpriseEntity syEnterpriseEntity = syEnterpriseService.getOne(queryWrapper);
-        Integer userCount=syEnterpriseEntity.getUserCount();
-        Boolean check = RSASignature.doCheck(machineCode+userCount,sign,jwtUtils.rsaPublicKey);
-        Assert.isTrue(check,String.format("未授权,请联系厂家授权,机器码%s",machineCode));
-
+        queryWrapper.eq("delete_flag",0);
         int totalCount = count(queryWrapper);
         Assert.isTrue(totalCount<userCount,String.format("授权数量超限,请联系厂家授权,机器码%s",machineCode));
     }
@@ -352,6 +363,7 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         QueryWrapper queryWrapper = new QueryWrapper() {{
             eq("delete_flag", 0);
             eq("org_id", orgId);
+            ne("account","admin");
         }};
         List<SyUserEntity> syUserEntities = list(queryWrapper);
         List<SyUserVo> syUserVos = new ArrayList<>();
@@ -388,7 +400,7 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         RetResult retResult = userCenterFeignService.changepwd(syUserEntity.getAccount(), syUserEntity.getEnterpriseId(), syUserVo.getPasswordMd5(), syUserVo.getPasswordMd5Old());
         //retResult =userCenterFeignService.changepwd(syUserVo.getAccount(),syUserVo.getEnterpriseId(),syUserVo.getPasswordMd5(),syUserVo.getPasswordMd5Old());
         if (retResult.getCode() != HttpStatus.OK.value()) {
-            throw new Exception(String.format("修改密码失败，%s!",retResult.getMsg()));
+            throw new Exception(String.format("修改密码失败，%s",retResult.getMsg()));
         }
     }
 

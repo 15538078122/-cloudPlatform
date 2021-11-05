@@ -82,7 +82,7 @@ mybatis-plus:
 
 logging:
   level:
-    root: debug
+    root: error
     com.hd: debug
     com.alibaba: error
     org.apache.tomcat: error

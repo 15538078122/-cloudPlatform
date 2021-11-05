@@ -34,7 +34,7 @@ public class FeignInterceptor implements RequestInterceptor{
     @Override
     public void apply(RequestTemplate requestTemplate){
          String url = requestTemplate.url();
-         if(url.indexOf("/account")==0) {
+         if(url.indexOf("/account")==0 || url.indexOf("/license")==0) {
              // 获取request请求中的Header信息放到requestTemplate header里
              SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
              byte[] cipherData = new byte[0];

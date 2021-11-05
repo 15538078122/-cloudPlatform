@@ -56,7 +56,12 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, AccountEntity
 //        } catch (Exception e) {
 //            throw  new Exception("密码数据异常!");
 //        }
-        if(!bCryptPasswordEncoder.matches(passwordOld,accountEntity.getPassword())){
+        try{
+            if(!bCryptPasswordEncoder.matches(passwordOld,accountEntity.getPassword())){
+                throw  new Exception("旧密码不匹配!");
+            }
+        }
+        catch (Exception ex){
             throw  new Exception("旧密码不匹配!");
         }
 

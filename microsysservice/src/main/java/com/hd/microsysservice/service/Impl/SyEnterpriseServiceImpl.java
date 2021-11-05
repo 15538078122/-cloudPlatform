@@ -56,7 +56,8 @@ public class SyEnterpriseServiceImpl extends ServiceImpl<SyEnterpriseMapper, SyE
         if (syEnterpriseEntity1 != null) {
             throw new Exception(String.format("企业ID(%s)已经存在!", syEnterpriseEntity.getEnterpriseId()));
         }
-
+        syEnterpriseEntity.setUserCount(0);
+        syEnterpriseEntity.setExpireDate("2021-01-01");
         //TODO: 创建企业，并复制root企业的菜单到当前企业
         save(syEnterpriseEntity);
         //复制菜单

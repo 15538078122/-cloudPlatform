@@ -28,7 +28,7 @@ public class GlobalExceptionHandlerRest {
         if(e instanceof InsufficientAuthenticationException){
             throw e;
         }
-        return RetResponse.makeErrRsp("服务器错误!"+e.getMessage());
+        return RetResponse.makeErrRsp(e.getMessage());
     }
     //拦截以下异常，获取验证码会报错：{"code":202,"msg":"服务器错误!org.springframework.security.authentication.InsufficientAuthenticationException: User must be authenticated with Spring Security before authorization can be completed."}
 //    @ExceptionHandler(value = Exception.class)

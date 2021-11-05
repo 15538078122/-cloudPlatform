@@ -22,7 +22,7 @@ import java.util.Date;
  * @Description:
  */
 @Slf4j
-@WebFilter(filterName = "accountAccessFilter",urlPatterns = "/account/*")
+@WebFilter(filterName = "accountAccessFilter",urlPatterns = {"/account/*","/license"})
 @Order(Ordered.HIGHEST_PRECEDENCE+100)
 public class AccountAccessFilter implements Filter {
     @Override

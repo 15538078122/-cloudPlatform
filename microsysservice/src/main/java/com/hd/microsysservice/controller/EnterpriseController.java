@@ -1,6 +1,7 @@
 package com.hd.microsysservice.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hd.common.MyPage;
 import com.hd.common.PageQueryExpressionList;
@@ -43,7 +44,7 @@ public class EnterpriseController extends SuperQueryController {
     @ApiOperation(value = "获取企业列表信息")
     @RequiresPermissions(value = "enterprise:list", note = "分页获取企业列表")
     @PostMapping("/enterprise/list")
-    public RetResult getEnterprise(@RequestParam("query") String query) {
+    public RetResult getEnterpriselist(@RequestParam("query") String query) {
         PageQueryExpressionList pageQuery = JSON.parseObject(query, PageQueryExpressionList.class);
         Assert.isTrue(pageQuery!=null,"查询参数错误!");
         adaptiveQueryColumn(pageQuery);
@@ -120,5 +121,17 @@ public class EnterpriseController extends SuperQueryController {
         Assert.isTrue(syEnterpriseEntities.size()>0,String.format("企业%s不存在!",enterpriseId));
         syEnterpriseService.deleteEnterprisePhysically(syEnterpriseEntities.get(0).getId());
         return RetResponse.makeRsp("删除企业成功.");
+    }
+
+    @ApiOperation(value = "获取企业详情")
+    @RequiresPermissions("enterprise:get")
+    @GetMapping("/enterprise")
+    public RetResult getEnterprise(@RequestParam("enterpriseId") String enterpriseId) {
+        QueryWrapper queryWrapper=new QueryWrapper(){{
+           eq("enterprise_id",enterpriseId);
+        }};
+        SyEnterpriseEntity syEnterpriseEntity = syEnterpriseService.getOne(queryWrapper);
+        SyEnterpriseService.SyEnterpriseVoConvertUtils  syEnterpriseVoConvertUtils=new SyEnterpriseService.SyEnterpriseVoConvertUtils();
+        return RetResponse.makeRsp(syEnterpriseVoConvertUtils.convertToT2(syEnterpriseEntity));
     }
 }

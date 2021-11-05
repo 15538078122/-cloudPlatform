@@ -49,4 +49,8 @@ public class SyEnterpriseEntity extends Model<SyEnterpriseEntity> {
 
     @TableField("user_count")
     private Integer userCount;
+
+    @TableField("expire_date")
+    private String expireDate;
+
 }
