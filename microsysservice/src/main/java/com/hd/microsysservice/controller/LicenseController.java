@@ -111,13 +111,13 @@ public class LicenseController {
         Date expDt=sdf.parse(expDateStr);
         Long userCount=Long.parseLong(sign.substring(10,15));
         String machineCode = LicenseUtil.getMachineCode();
-        Boolean check = RSASignature.doCheck( machineCode+userCount+expDateStr,sign.substring(15,sign.length()),jwtUtils.rsaPublicKeyForManufacturer);
+        Boolean check = RSASignature.doCheck( machineCode+userCount+expDateStr+ SecurityContext.GetCurTokenInfo().getEnterpriseId(),sign.substring(15,sign.length()),jwtUtils.rsaPublicKeyForManufacturer);
         //Assert.isTrue(check,String.format("未授权,请联系厂家授权,机器码%s",machineCode));
         //if(check){
             UpdateWrapper updateWrapper=new UpdateWrapper();
             updateWrapper.eq("enterprise_id",SecurityContext.GetCurTokenInfo().getEnterpriseId());
             updateWrapper.set("user_count",userCount);
-            updateWrapper.set("Integer expire_date;",expDateStr);
+            updateWrapper.set("expire_date",expDateStr);
             syEnterpriseService.update(updateWrapper);
         //}else {
 

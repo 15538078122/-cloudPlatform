@@ -200,16 +200,16 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
             licensePath =file.getParentFile().toString()+"/../"+enterpriseId+"/license.txt";
             sign= FileUtil.readTxtFile(licensePath);
         }
-
+        String machineCode = LicenseUtil.getMachineCode();
+        Assert.isTrue(sign.length()>50,String.format("未授权,请联系厂家授权,机器码%s",machineCode));
         String expDateStr=sign.substring(0,10);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date expDt=sdf.parse(expDateStr);
         Long userCount=Long.parseLong(sign.substring(10,15));
-        String machineCode = LicenseUtil.getMachineCode();
 
         Assert.isTrue(expDt.getTime()>new Date().getTime(),String.format("授权已过期,请联系厂家授权,机器码%s",machineCode));
 
-        Boolean check = RSASignature.doCheck( machineCode+userCount+expDateStr,sign.substring(15,sign.length()),jwtUtils.rsaPublicKeyForManufacturer);
+        Boolean check = RSASignature.doCheck( machineCode+userCount+expDateStr+enterpriseId,sign.substring(15,sign.length()),jwtUtils.rsaPublicKeyForManufacturer);
         //String sign = RSASignature.sign((RSAPrivateKey) tokenConfig.rsaPrivateKey, machineCode+userCount);
 
         Assert.isTrue(check,String.format("未授权,请联系厂家授权,机器码%s",machineCode));
