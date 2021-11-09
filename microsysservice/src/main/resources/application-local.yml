@@ -91,5 +91,5 @@ config:
   scanUri: false
   USER_OP_IDENTIFICATION: "SFSDF-332-DFDGSG-323-EG-SDG$rfy*kjg"
   attach-path: D:/tmp123/attach/
-#  heart-beat-uri: http://127.0.0.1:20003/monitor/heartbeat
-  heart-beat-uri: http://192.168.3.78:20003/monitor/heartbeat
+  heart-beat-uri: http://127.0.0.1:20003/monitor/heartbeat
+#  heart-beat-uri: http://192.168.3.78:20003/monitor/heartbeat

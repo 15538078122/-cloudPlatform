@@ -528,7 +528,7 @@
 					"response": []
 				},
 				{
-					"name": "授权license",
+					"name": "获取授权license",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -571,6 +571,11 @@
 								{
 									"key": "days",
 									"value": "-2",
+									"type": "text"
+								},
+								{
+									"key": "enterpriseId",
+									"value": "root",
 									"type": "text"
 								}
 							],

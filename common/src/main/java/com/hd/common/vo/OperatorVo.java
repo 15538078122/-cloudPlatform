@@ -45,5 +45,8 @@ public class OperatorVo {
     @ApiModelProperty(value = "异常描述")
     @JSONField(serialzeFeatures={SerializerFeature.WriteNullStringAsEmpty})
     String err;
+    @ApiModelProperty(value = "请求Ip")
+    @JSONField(serialzeFeatures={SerializerFeature.WriteNullStringAsEmpty})
+    String remoteHost;;
 
 }

@@ -26,4 +26,5 @@ public class Operator {
     String requestURI;
     String params;
     String err;
+    String remoteHost;
 }

@@ -81,3 +81,9 @@ hystrix:
           thread:
             # 全局熔断器5s超时
             timeoutInMilliseconds: 61000 #全局请求的默认超时时间（包含重试的时间）
+server:
+  tomcat:
+    remoteip:
+      remote-ip-header: X-Real-IP
+      protocol-header: X-Forwarded-Proto
+  forward-headers-strategy: native

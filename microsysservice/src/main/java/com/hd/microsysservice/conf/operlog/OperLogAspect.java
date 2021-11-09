@@ -170,7 +170,7 @@ public class OperLogAspect {
             }
 
             String errMsg =  String.format("\n请求ip:%s,请求URI:%s,请求账号:%s\n请求方法:%s,请求参数:%s,异常信息:%s\n"
-                    ,request.getRemoteHost(),request.getRequestURI(), SecurityContext.GetCurTokenInfo().getAccount()
+                    ,request.getHeader("x-forwarded-for"),request.getRequestURI(), SecurityContext.GetCurTokenInfo().getAccount()
                     ,methodName,params,stackTraceToString(e.getClass().getName(), e.getMessage(), e.getStackTrace()));
             log.error(errMsg);
             String enterpriseId="";
