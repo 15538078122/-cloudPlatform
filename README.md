@@ -1,17 +1,12 @@
 # 介绍 微服务架构 多企业 多应用 基础平台 微服务分布式事务  
-1、认证OATH2.0，4种模式.   AUTHORIZATION_CODE,GRANT_TYPE, REFRESH_TOKEN,GRANT_TYPE_PASSWORD,IMPLICIT  
-2、jwt rsa   微服务分布式事物seata  
-3、更简洁的jwt client方式   
-4、网关gateway，认证鉴权限流负载均衡、请求监视、retry   
-5、独立的url鉴权服务   
-6、更具独立性，只专注于业务实现。通过设计便于业务数据读写分离  
-7、各个子系统模块均可根据需求，调整部署的实例数。   
-8、数据库主从、连接池、数据缓存、消息队列、运维监视（完善中）   
-9、nacos 服务发现  mongodb存日志  
-10、分布式锁  
-11、rsa动态密钥  
-12、文件分片上传和分片下载  
-13、服务监视&心跳
+1、统一认证，OATH2.0，4种模式.；jwt rsa ；更简洁的jwt client方式；  
+2、微服务分布式锁、分布式事物、rsa动态密钥、nacos 服务发现、redis缓存、rabitmq数据分发、 mongodb日志；  
+3、网关gateway，集中鉴权、限流、负载均衡、请求监视、retry，性能日志，uri扫描、权限配置，功能菜单配置；url鉴权服务剥离，敏感数据传输加密；  
+4、子服务基础模板，更具独立性易用性，只专注于业务实现。通过设计便于业务数据读写分离；  
+5、各个子系统模块以需部署，调整部署的实例数。  
+6、数据库主从、连接池、缓存；  
+7、文件分片上传和分片下载；  
+8、服务监视&心跳，运维监视；    
 # 软件架构  
  ![1632637500(1)](https://user-images.githubusercontent.com/83743182/134796199-62597398-1c1c-4192-a44b-c07e3e7c5ee9.jpg)
 
@@ -158,6 +153,14 @@ seata:
 seata： 对应几乎没有并发量的接口使用seata比较合适，省力。对有并发需求的接口，不要启用全局事务；因为启用事务后，seata的事务管理模式造成效率低下，实测200ms的请求，启动事务后，变成5-10倍的耗时。所以对于并发接口还是根据业务情形自行进行数据一致性管理。   
 29、gateway 动态路由配置类Redisroutedefinitionwriter  ，注意retry的配置  
  ![1635503631(1)](https://user-images.githubusercontent.com/83743182/139420565-5f41a0bf-8c2d-48a8-b357-04629aa4231d.jpg)  
-30、动态rsa密钥加密敏感数据，密码等。 注意rsa每次密文生成都不会一样，这是正确的，因为Cipher.getInstance("RSA");默认使用的BouncyCastle 填充造成。如果想每次密文一样，可以使用cipher= Cipher.getInstance("RSA", new BouncyCastleProvider());设置；
+30、动态rsa密钥加密敏感数据，密码等。 注意rsa每次密文生成都不会一样，这是正确的，因为Cipher.getInstance("RSA");默认使用的BouncyCastle 填充造成。如果想每次密文一样，可以使用cipher= Cipher.getInstance("RSA", new BouncyCastleProvider());设置；  
+31、请求转发，真实ip的获取配置：  
+nginx：  
+![image](https://user-images.githubusercontent.com/83743182/140856972-a9c4b0fb-04e1-4678-9207-fe18a0dbd2be.png)  
+网关和服务：  
+![image](https://user-images.githubusercontent.com/83743182/140857028-b50ba9e8-6206-4a07-9075-65539edfab6c.png)  
+32、远程调试--- 方便在线分析问题  
+启动：java -jar -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 micromonitorservice-0.0.1-SNAPSHOT.jar --server.port=20088
+idea配置：Edit configurations，点击+号，创建一个Remote应用，写入ip和port即可
 
 
