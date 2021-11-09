@@ -153,6 +153,14 @@ seata:
 seata： 对应几乎没有并发量的接口使用seata比较合适，省力。对有并发需求的接口，不要启用全局事务；因为启用事务后，seata的事务管理模式造成效率低下，实测200ms的请求，启动事务后，变成5-10倍的耗时。所以对于并发接口还是根据业务情形自行进行数据一致性管理。   
 29、gateway 动态路由配置类Redisroutedefinitionwriter  ，注意retry的配置  
  ![1635503631(1)](https://user-images.githubusercontent.com/83743182/139420565-5f41a0bf-8c2d-48a8-b357-04629aa4231d.jpg)  
-30、动态rsa密钥加密敏感数据，密码等。 注意rsa每次密文生成都不会一样，这是正确的，因为Cipher.getInstance("RSA");默认使用的BouncyCastle 填充造成。如果想每次密文一样，可以使用cipher= Cipher.getInstance("RSA", new BouncyCastleProvider());设置；
+30、动态rsa密钥加密敏感数据，密码等。 注意rsa每次密文生成都不会一样，这是正确的，因为Cipher.getInstance("RSA");默认使用的BouncyCastle 填充造成。如果想每次密文一样，可以使用cipher= Cipher.getInstance("RSA", new BouncyCastleProvider());设置；  
+31、请求转发，真实ip的获取配置：  
+nginx：  
+![image](https://user-images.githubusercontent.com/83743182/140856972-a9c4b0fb-04e1-4678-9207-fe18a0dbd2be.png)  
+网关和服务：  
+![image](https://user-images.githubusercontent.com/83743182/140857028-b50ba9e8-6206-4a07-9075-65539edfab6c.png)  
+32、远程调试--- 方便在线分析问题  
+启动：java -jar -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 micromonitorservice-0.0.1-SNAPSHOT.jar --server.port=20088
+idea配置：Edit configurations，点击+号，创建一个Remote应用，写入ip和port即可
 
 
