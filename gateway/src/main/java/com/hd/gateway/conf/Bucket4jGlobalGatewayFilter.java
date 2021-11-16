@@ -3,6 +3,7 @@ package com.hd.gateway.conf;
 /**
  * @Author: liwei
  */
+import com.alibaba.fastjson.JSON;
 import com.hd.common.RetResult;
 import com.hd.gateway.utils.ResponseUtil;
 import io.github.bucket4j.Bandwidth;
@@ -15,11 +16,13 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -83,7 +86,19 @@ public class Bucket4jGlobalGatewayFilter implements GlobalFilter, Ordered
 
         if (consumeSuccess)
         {
-            return chain.filter(exchange);
+            //设置X-Real-IP头
+            List<String> realIps = exchange.getRequest().getHeaders().get("X-Real-IP");
+            if(realIps==null || realIps.size()==0){
+                ServerHttpRequest request = exchange.getRequest().mutate().header("X-Real-IP",ip).build();
+                ServerWebExchange buildExchange = exchange.mutate().request(request).build();
+                log.debug("set X-Real-IP: " + ip);
+                return chain.filter(buildExchange);
+            }
+            else
+            {
+                log.debug("get X-Real-IP: " + realIps.get(0));
+                return chain.filter(exchange);
+            }
         }
         else
         {
