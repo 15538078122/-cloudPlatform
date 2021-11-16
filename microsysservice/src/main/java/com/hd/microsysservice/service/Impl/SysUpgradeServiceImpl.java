@@ -43,7 +43,7 @@ public class SysUpgradeServiceImpl extends ServiceImpl<SysUpgradeMapper, SysUpgr
         Assert.isNull(sysUpgradeEntity,String.format("版本%s已存在!",syUpgradeVo.getVersionName()));
         Assert.notNull(syUpgradeVo.getVersion(),String.format("缺少版本号%s!","version"));
         //保存，自增version
-        Integer versiong = baseMapper.getMaxVersionByType(syUpgradeVo.getType());
+        Integer versiong = baseMapper.getMaxVersionByType(syUpgradeVo.getType(),syUpgradeVo.getEnterpriseId());
         versiong=(versiong == null?0:versiong);
         Assert.isTrue(syUpgradeVo.getVersion()>versiong,String.format("版本号%s太低,当前版本号%s!",syUpgradeVo.getVersion(),versiong));
         //syUpgradeVo.setVersion(versiong+1);

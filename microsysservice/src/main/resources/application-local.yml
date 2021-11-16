@@ -33,7 +33,7 @@ spring:
       query-timeout: 30
   data:
     mongodb:
-      #      uri: mongodb://root:123456@192.168.3.78:27017/gatewaylogs?authSource=admin&authMechanism=SCRAM-SHA-1
+#       uri: mongodb://root:123456@192.168.3.78:27017/gatewaylogs?authSource=admin&authMechanism=SCRAM-SHA-1
       uri: mongodb://localhost:27017/syslogs
   redis:
     port: 6379

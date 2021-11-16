@@ -13,27 +13,21 @@ import com.hd.common.model.DataPrivilege;
 import com.hd.common.model.KeyValuePair;
 import com.hd.common.model.QueryExpression;
 import com.hd.common.model.TokenInfo;
-import com.hd.common.utils.FileUtil;
-import com.hd.common.utils.LicenseUtil;
 import com.hd.common.utils.ParseQueryUtil;
-import com.hd.common.utils.RSASignature;
 import com.hd.common.vo.SyDictItemVo;
 import com.hd.common.vo.SyRoleVo;
 import com.hd.common.vo.SyUserVo;
+import com.hd.microsysservice.conf.GeneralConfig;
 import com.hd.microsysservice.conf.SecurityContext;
 import com.hd.microsysservice.entity.*;
 import com.hd.microsysservice.mapper.SyRoleMapper;
 import com.hd.microsysservice.mapper.SyUserMapper;
 import com.hd.microsysservice.service.*;
-import com.hd.microsysservice.utils.JwtUtils;
-import com.hd.microsysservice.utils.RedisLockUtil;
-import com.hd.microsysservice.utils.VerifyUtil;
-import com.hd.microsysservice.utils.VoConvertUtils;
+import com.hd.microsysservice.utils.*;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.system.ApplicationHome;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -43,8 +37,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -97,6 +89,9 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
     @Autowired
     SyOrgService syOrgService;
 
+    @Autowired
+    LicenseCheckUtil licenseCheckUtil;
+
     @GlobalTransactional(rollbackFor = Exception.class)
 //    @Override
 //    public void createUser(SyUserVo syUserVo) throws Exception {
@@ -112,9 +107,10 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
      */
     //    public synchronized  void createUser(SyUserVo syUserVo) throws Exception {
     public void createUser(SyUserVo syUserVo) throws Exception {
-        //if(SecurityContext.GetCurTokenInfo().getEnterpriseId().compareTo("root")!=0)
-        {
-            JudgeLicense(syUserVo.getEnterpriseId());
+        //root企业不允许新加用户
+        Assert.isTrue(syUserVo.getEnterpriseId().compareTo(GeneralConfig.ROOT_ENTERPRISE_ID)!=0,String.format("root企业不允许新增用户!"));
+        if(SecurityContext.GetCurTokenInfo().getEnterpriseId().compareTo(GeneralConfig.ROOT_ENTERPRISE_ID)!=0){
+            licenseCheckUtil.JudgeLicenseForCreateUser(syUserVo.getEnterpriseId());
         }
 
         //注意timeout的设置，大于执行块可能需要的最大时间，否则锁失效造成异常
@@ -188,39 +184,6 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
             //log.debug("释放分布式锁解锁 为"+lockValue);
         }
     }
-
-    private void JudgeLicense(String enterpriseId) throws Exception {
-        //判断授权用户量是否超额
-        ApplicationHome ah = new ApplicationHome(getClass());
-        File file = ah.getSource();
-        String licensePath =file.getParentFile().toString()+"/"+enterpriseId+"/license.txt";
-        String sign= FileUtil.readTxtFile(licensePath);
-        //log.info(licensePath);
-        if(sign.isEmpty()){
-            licensePath =file.getParentFile().toString()+"/../"+enterpriseId+"/license.txt";
-            sign= FileUtil.readTxtFile(licensePath);
-        }
-        String machineCode = LicenseUtil.getMachineCode();
-        Assert.isTrue(sign.length()>50,String.format("未授权,请联系厂家授权,机器码%s",machineCode));
-        String expDateStr=sign.substring(0,10);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date expDt=sdf.parse(expDateStr);
-        Long userCount=Long.parseLong(sign.substring(10,15));
-
-        Assert.isTrue(expDt.getTime()>new Date().getTime(),String.format("授权已过期,请联系厂家授权,机器码%s",machineCode));
-
-        Boolean check = RSASignature.doCheck( machineCode+userCount+expDateStr+enterpriseId,sign.substring(15,sign.length()),jwtUtils.rsaPublicKeyForManufacturer);
-        //String sign = RSASignature.sign((RSAPrivateKey) tokenConfig.rsaPrivateKey, machineCode+userCount);
-
-        Assert.isTrue(check,String.format("未授权,请联系厂家授权,机器码%s",machineCode));
-        QueryWrapper queryWrapper = new QueryWrapper() {{
-            eq("enterprise_id", enterpriseId);
-        }};
-        queryWrapper.eq("delete_flag",0);
-        int totalCount = count(queryWrapper);
-        Assert.isTrue(totalCount<userCount,String.format("授权数量超限,请联系厂家授权,机器码%s",machineCode));
-    }
-
     private void updateRoles(Long userId, List<SyRoleVo> syRoleVos) {
         //删除旧的
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -326,6 +289,8 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         if (syUserVo.getSyRoleVos() != null) {
             updateRoles(syUserVo.getId(), syUserVo.getSyRoleVos());
         }
+        //删除用户菜单缓存
+        redisTemplate.delete(String.format("%s::%s","userMenu",syUserEntityNew.getId()));
 
 //        redisTemplate.opsForValue().set(
 //                String.format("%s::%s-%s", "account", syUserEntityNew.getEnterpriseId(), syUserEntityNew.getAccount())
@@ -469,10 +434,15 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         }
         //自定义分页查询
         Page page = new Page(pageQueryExpressionList.getPageNum(), pageQueryExpressionList.getPageSize(), true);
-        List<SyUserVo> syUserVos = baseMapper.userbyrole(SecurityContext.GetCurTokenInfo().getEnterpriseId(), roles
-                , orgId
-                //,Long.parseLong(SecurityContext.GetCurTokenInfo().getOrgId())
-                , ordrby, page);
+        List<SyUserVo> syUserVos=new ArrayList<>();
+        if(roles.size()>0){
+            syUserVos = baseMapper.userbyrole(SecurityContext.GetCurTokenInfo().getEnterpriseId(), roles
+                    , orgId
+                    //,Long.parseLong(SecurityContext.GetCurTokenInfo().getOrgId())
+                    , ordrby, page);
+        }else {
+            page.setTotal(0);
+        }
 
         return new MyPage<>(page.getCurrent(), page.getSize(), page.getTotal(), syUserVos);
     }
@@ -483,6 +453,7 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         if (tokenInfo == null) {
             throw new Exception("没有当前用户!");
         }
+
         QueryWrapper queryWrapper = new QueryWrapper() {{
 //            eq("account", tokenInfo.getAccount());
 //            eq("enterprise_id", tokenInfo.getEnterpriseId());

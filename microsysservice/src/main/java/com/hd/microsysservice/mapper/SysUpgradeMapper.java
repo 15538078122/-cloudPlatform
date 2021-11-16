@@ -14,6 +14,6 @@ import org.apache.ibatis.annotations.Select;
  */
 public interface SysUpgradeMapper extends BaseMapper<SysUpgradeEntity> {
 
-    @Select("SELECT max(version) FROM sys_upgrade WHERE type=#{type}")
-    Integer getMaxVersionByType(Integer type);
+    @Select("SELECT max(version) FROM sys_upgrade WHERE type=#{type} and enterprise_id=#{enterpriseId}")
+    Integer getMaxVersionByType(Integer type,String enterpriseId);
 }

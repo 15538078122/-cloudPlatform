@@ -28,7 +28,7 @@ config:
   ip-token-refill:  20
   service-token-capacity: 2000
   service-token-refill:  50
-  session-timeout: 200   #minutes
+  session-timeout: 120   #minutes
   check-token: true       #是否检查令牌
   check-permission: true       #是否检查权限
   heart-beat-uri: http://127.0.0.1:20003/monitor/heartbeat

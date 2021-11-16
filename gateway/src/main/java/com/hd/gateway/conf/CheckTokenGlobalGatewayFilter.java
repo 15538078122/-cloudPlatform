@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
@@ -80,25 +81,45 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
             Boolean tokenExist=(redisObj!=null);
 
             if(tokenExist){
-                //更新token tll
-                redisTemplate.expire(String.format("token:%s",bearerTk.replace("Bearer ", "")),sessionTimeout*60, TimeUnit.SECONDS);
+                Boolean edgeOut=(Boolean)  redisTemplate.opsForValue().get(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")));
+                //检查是否已被冲掉
+                if(edgeOut){
+                    return ResponseUtil.makeJsonResponse(exchange.getResponse(),
+                            new RetResult(HttpStatus.UNAUTHORIZED.value(), "该账号已在其他设备登录!", null));
+                }
+                else {
+                    //更新token tll
+                    redisTemplate.expire(String.format("token:%s",bearerTk.replace("Bearer ", "")),sessionTimeout*60, TimeUnit.SECONDS);
+                    redisTemplate.opsForValue().set(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")),false,  (sessionTimeout+5)*60,TimeUnit.SECONDS);
+                }
             }
             else {
                 Long mSec = System.currentTimeMillis() - sdf.parse(tokenInfo.getLoginTime()).getTime();
                 //20分钟
                 if (mSec > (60000 * sessionTimeout)) {
                     return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-                            new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", null));
+                            new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录token已过期!", null));
+                }
+                //判断是否重复login
+                String existKey = isRepeatLogin(tokenInfo);
+                if(!existKey.isEmpty()){
+                    //设置edgeout标识
+//                    return ResponseUtil.makeJsonResponse(exchange.getResponse(),
+//                            new RetResult(HttpStatus.UNAUTHORIZED.value(), "重复登录!", null));
+                    log.debug("重复登录:"+ tokenInfo.getAccount());
+                    redisTemplate.opsForValue().set(String.format("edgeOut:%s",existKey.replace("token:","")),true, (sessionTimeout+5)*60,TimeUnit.SECONDS);
+                    //redisTemplate.delete(existKey);
                 }
                 //保存token
                 redisTemplate.opsForValue().set(String.format("token:%s",bearerTk.replace("Bearer ", "")),tokenInfo, sessionTimeout*60,TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")),false,  (sessionTimeout+5)*60,TimeUnit.SECONDS);
             }
 
 
         } catch (ParseException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", null));
+                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录错误!", null));
         }
 
         ServerHttpRequest request = exchange.getRequest().mutate().header("token-info", JSON.toJSONString(tokenInfo)).header("Authorization","").build();
@@ -106,6 +127,26 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
 
         //TODO: 记录访问日志
         return chain.filter(buildExchange);
+    }
+
+    private String isRepeatLogin(TokenInfo tokenInfo) {
+        Set<String> keys = redisTemplate.keys(String.format("token:%s", "*"));
+        //List<TokenInfo> tokenInfoList = redisTemplate.opsForValue().multiGet(keys);
+        String exist="";
+        for (String key : keys)
+        {
+            TokenInfo item= (TokenInfo) redisTemplate.opsForValue().get(key);
+            if(item.getEnterpriseId().compareTo(tokenInfo.getEnterpriseId())==0
+                &&item.getAccount().compareTo(tokenInfo.getAccount())==0
+                &&item.getDeviceType().compareTo(tokenInfo.getDeviceType())==0){
+                Boolean edgeOut=(Boolean)  redisTemplate.opsForValue().get(String.format("edgeOut:%s",key.replace("token:","")));
+                if(!edgeOut){
+                    exist= key;
+                    break;
+                }
+            }
+        }
+        return  exist;
     }
 
     @Override

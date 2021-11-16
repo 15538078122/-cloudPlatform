@@ -10,7 +10,7 @@ import java.util.Set;
  * @Author: liwei
  * @Description:
  */
-public class LicenseUtil {
+public class MachineCodeUtil {
     private static String getMac() {
         try {
             Enumeration<NetworkInterface> el = NetworkInterface

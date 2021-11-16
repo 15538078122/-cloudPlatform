@@ -2,21 +2,14 @@ package com.hd.microsysservice.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.hd.common.RetCode;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
-import com.hd.common.controller.SuperQueryController;
 import com.hd.common.model.RequiresPermissions;
-import com.hd.common.utils.FileUtil;
-import com.hd.common.utils.LicenseUtil;
-import com.hd.common.utils.RSASignature;
-import com.hd.common.vo.SyAttachVo;
-import com.hd.microsysservice.conf.SecurityContext;
-import com.hd.microsysservice.entity.SyEnterpriseEntity;
-import com.hd.microsysservice.service.SyAttachService;
 import com.hd.microsysservice.service.SyEnterpriseService;
+import com.hd.microsysservice.service.SyUserService;
 import com.hd.microsysservice.service.UserCenterFeignService;
 import com.hd.microsysservice.utils.JwtUtils;
+import com.hd.microsysservice.utils.LicenseCheckUtil;
 import feign.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,11 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author liwei
@@ -57,12 +47,16 @@ public class LicenseController {
     UserCenterFeignService userCenterFeignService;
     @Autowired
     JwtUtils jwtUtils;
+    @Autowired
+    SyUserService syUserService;
+    @Autowired
+    LicenseCheckUtil licenseCheckUtil;
 
     @ApiOperation(value = "授权license")
     @RequiresPermissions(value = "license:create", note = "授权license")
     @PostMapping("/license")
-    public void license(String machineCode, Long userCount,Long days, HttpServletResponse response) throws IOException {
-        Response res =userCenterFeignService.downloadLicense(machineCode,userCount,days);
+    public void license(String machineCode, Long userCount,Long days,String enterpriseId, HttpServletResponse response) throws IOException {
+        Response res =userCenterFeignService.downloadLicense(machineCode,userCount,days,enterpriseId);
         Response.Body body = res.body();
         InputStream inputStream= body.asInputStream();
         byte[] sign = new byte[inputStream.available()];
@@ -74,7 +68,7 @@ public class LicenseController {
             response.setBufferSize(20480);
             //response.setHeader("Content-type", "application/octet-stream;charset=UTF-8");
             String disposition = "attachment";
-            String filename = "license.txt";
+            String filename = "license.lic";
             response.setHeader("Content-Disposition", disposition + ";filename=" +
                     URLEncoder.encode(filename, StandardCharsets.UTF_8.name()));
             response.setHeader("Accept-Ranges", "bytes");
@@ -92,37 +86,46 @@ public class LicenseController {
     @ApiOperation(value = "上传license文件")
     @RequiresPermissions(value = "license:upload", note = "上传license文件")
     @PostMapping("/license/upload")
-    public RetResult licenseUpload(HttpServletRequest request,MultipartFile file) throws Exception {
+    public RetResult licenseUpload(HttpServletRequest request,String enterpriseId,MultipartFile file) throws Exception {
+        Assert.isTrue(enterpriseId!=null,String.format("企业参数%s不能为null!","enterpriseId"));
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
         Assert.isTrue(isMultipart, String.format("没有上传license文件!"));
         ApplicationHome ah = new ApplicationHome(getClass());
         File f = ah.getSource();
-        String licensePath =f.getParentFile().toString()+"/"+ SecurityContext.GetCurTokenInfo().getEnterpriseId() +"/license.txt";
+        //String licensePath =f.getParentFile().toString()+"/"+ SecurityContext.GetCurTokenInfo().getEnterpriseId() +"/license.txt";
+        String enterprisePath=f.getParentFile().toString()+"/"+ enterpriseId;
+        String licensePath =enterprisePath +"/license_new.txt";
         File destFile = new File(licensePath);
         if (destFile.exists()) {
             destFile.delete();
         }
         FileUtils.copyInputStreamToFile(file.getInputStream(), destFile);
-        //读取授权
-        String sign= FileUtil.readTxtFile(licensePath);
-        //log.info(licensePath);
-        String expDateStr=sign.substring(0,10);
+        Long userCount =    licenseCheckUtil.CheckLicense(enterpriseId,"license_new.txt");
+
+        QueryWrapper queryWrapper = new QueryWrapper() {{
+            eq("enterprise_id", enterpriseId);
+        }};
+        queryWrapper.eq("delete_flag",0);
+        int totalCount = syUserService.count(queryWrapper);
+        Assert.isTrue(totalCount-1<=userCount,String.format("授权失败，已存在用户数量超限，请先删除!"));
+
+        String licensePath2 =enterprisePath +"/license.txt";
+        File destFile2 = new File(licensePath2);
+        if (destFile2.exists()) {
+            destFile2.delete();
+        }
+        destFile.renameTo(destFile2);
+
+        UpdateWrapper updateWrapper=new UpdateWrapper();
+        updateWrapper.eq("enterprise_id",enterpriseId);
+        updateWrapper.set("user_count",userCount);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date expDt=sdf.parse(expDateStr);
-        Long userCount=Long.parseLong(sign.substring(10,15));
-        String machineCode = LicenseUtil.getMachineCode();
-        Boolean check = RSASignature.doCheck( machineCode+userCount+expDateStr+ SecurityContext.GetCurTokenInfo().getEnterpriseId(),sign.substring(15,sign.length()),jwtUtils.rsaPublicKeyForManufacturer);
-        //Assert.isTrue(check,String.format("未授权,请联系厂家授权,机器码%s",machineCode));
-        //if(check){
-            UpdateWrapper updateWrapper=new UpdateWrapper();
-            updateWrapper.eq("enterprise_id",SecurityContext.GetCurTokenInfo().getEnterpriseId());
-            updateWrapper.set("user_count",userCount);
-            updateWrapper.set("expire_date",expDateStr);
-            syEnterpriseService.update(updateWrapper);
-        //}else {
+        String nowDateStr=sdf.format(new Date());
+        String expDateStr=licenseCheckUtil.getExpiredDate(enterpriseId,"license.txt");
+        updateWrapper.set("expire_date",nowDateStr+" 至 "+expDateStr);
+        syEnterpriseService.update(updateWrapper);
 
-       // }
-
+        licenseCheckUtil.checkAllLicense();
         return RetResponse.makeRsp("上传license成功");
     }
 }

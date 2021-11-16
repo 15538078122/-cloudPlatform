@@ -46,7 +46,7 @@ public class RsaPubkeyController {
     @PostMapping("/license")
     public  void  license(String machineCode, Long userCount,Long days,String enterpriseId, HttpServletResponse response) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String expDate="2050-01-01";
+        String expDate="2099-01-01";
         if(days.compareTo(-1L)!=0){
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_MONTH, Math.toIntExact(days));
@@ -56,7 +56,7 @@ public class RsaPubkeyController {
         //machineCode = LicenseUtil.getMachineCode();
         String sign = RSASignature.sign((RSAPrivateKey) tokenConfig.rsaPrivateKey, machineCode+userCount+expDate+enterpriseId);
         sign=String.format("%s%05d%s",expDate,userCount,sign);
-        //Boolean res = RSASignature.doCheck(machineCode+userCount,sign,jwtUtils.rsaPublicKey);
+        //Boolean res = RSASignature.doCheck(machineCode+userCount+expDate+enterpriseId,sign.substring(15,sign.length()),jwtUtils.rsaPublicKey);
         //String sf= JSON.toJSONString(sign);
         try(ServletOutputStream output = response.getOutputStream()) {
             //初始化response.

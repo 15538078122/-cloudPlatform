@@ -1,9 +1,6 @@
-package com.hd.microsysservice.utils;
+package com.hd.micromonitorservice.utils;
 
-import com.hd.common.model.TokenInfo;
-import com.hd.microsysservice.mapper.SyUserMapperCommon;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -17,17 +14,7 @@ import java.util.Set;
 public class UserCommonUtil {
 
     @Autowired
-    SyUserMapperCommon syUserMapperCommon;
-    @Autowired
     RedisTemplate redisTemplate;
-
-
-    //    @Cacheable(value = "centerId2userId", key = "'centerUserId:'+#centerUserId", unless = "#result == null")
-    @Cacheable(value = "centerId2userId", key = "#centerUserId", unless = "#result == null")
-    public String getUserIdByCenterUserIdFromCach(Long centerUserId) {
-        String userId = syUserMapperCommon.getUserIdByCenterUserId(centerUserId);
-        return userId;
-    }
 
     /**
      * 返回在线用户数目

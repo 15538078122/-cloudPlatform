@@ -6,6 +6,7 @@ import com.hd.common.PageQueryExpressionList;
 import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import com.hd.common.controller.SuperQueryController;
+import com.hd.common.model.QueryExpression;
 import com.hd.common.model.RequiresPermissions;
 import com.hd.common.model.TokenInfo;
 import com.hd.common.vo.SyUserVo;
@@ -123,7 +124,7 @@ public class UserController extends SuperQueryController {
                 || (
                         syUserEntity.getName().compareTo("admin") == 0 && SecurityContext.GetCurTokenInfo().getEnterpriseId().compareTo("root") == 0
                 ),
-                String.format("%s角色不可删除!", "超级admin"));
+                String.format("%s不可删除!", "超级admin"));
         syUserService.removeUser(Long.parseLong(id));
         return RetResponse.makeRsp("移除用户成功.");
     }
@@ -161,9 +162,10 @@ public class UserController extends SuperQueryController {
     @RequiresPermissions(value = "userbyrole:list", note = "获取某些角色的人员信息")
     @PostMapping("/userbyrole/list")
     public RetResult userbyrole(@RequestParam("query") String query) {
-        PageQueryExpressionList pageQueryExpressionList = VerifyUtil.verifyQueryParam(query, "role", "角色role不能为空!");
-        MyPage<SyUserVo> syUserVoMyPage=syUserService.userbyrole(pageQueryExpressionList);
+        Assert.isTrue(query!=null,"缺少查询参数query!");
+        PageQueryExpressionList pageQueryExpressionList= JSON.parseObject(query,PageQueryExpressionList.class);
 
+        MyPage<SyUserVo> syUserVoMyPage=syUserService.userbyrole(pageQueryExpressionList);
         return RetResponse.makeRsp(syUserVoMyPage);
     }
 }

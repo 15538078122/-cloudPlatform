@@ -14,6 +14,7 @@ import com.hd.microsysservice.service.SyMenuService;
 import com.hd.microsysservice.utils.VerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -37,6 +39,8 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
     SyMenuBtnService syMenuBtnService;
     @Autowired
     SyMenuService syMenuService;
+    @Autowired
+    RedisTemplate redisTemplate;
 
     SyMenuService.SyMenuVoConvertUtils syMenuVoConvertUtils=new SyMenuService.SyMenuVoConvertUtils();
 
@@ -196,6 +200,9 @@ public class SyMenuServiceImpl extends ServiceImpl<SyMenuMapper, SyMenuEntity> i
             recurUpdatePathCode(syMenuEntityNew);
         }
         updateById(syMenuEntityNew);
+
+        Set<String> keys = redisTemplate.keys(String.format("%s::%s", "userMenu", "*"));
+        redisTemplate.delete(keys);
     }
 
     private void recurUpdatePathCode(SyMenuEntity syMenuEntity) {

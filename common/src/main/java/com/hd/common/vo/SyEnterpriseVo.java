@@ -57,4 +57,9 @@ public class SyEnterpriseVo implements Serializable {
     @ApiModelProperty(value = "授权的日期")
     private String expireDate;
 
+    @ApiModelProperty(value = "授权码")
+    private String machineCode;
+
+    @ApiModelProperty(value = "当前用户数")
+    private Long curUserCount;
 }

@@ -21,5 +21,5 @@ public interface UserCenterFeignService {
     @GetMapping("/account")
     RetResult userExist(@RequestParam ("account")  String account,@RequestParam("enterprise") String enterprise);
     @PostMapping("/license")
-    Response downloadLicense(@RequestParam ("machineCode")  String machineCode,@RequestParam("userCount") Long userCount,@RequestParam("days") Long days);
+    Response downloadLicense(@RequestParam ("machineCode")  String machineCode,@RequestParam("userCount") Long userCount,@RequestParam("days") Long days,@RequestParam("enterpriseId") String enterpriseId);
 }

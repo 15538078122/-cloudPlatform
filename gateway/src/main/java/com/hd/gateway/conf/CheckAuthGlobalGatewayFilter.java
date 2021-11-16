@@ -78,7 +78,7 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
         boolean permitted=false;
         Long userId=-1L;
         Long orgId=-1L;
-        if(retResult.getData()!=null){
+        if(retResult.getCode()==HttpStatus.OK.value() && retResult.getData()!=null){
             String returnValue= (String) retResult.getData();
             if(returnValue.compareTo("-1")!=0){
                 userId=Long.parseLong(returnValue.split(":")[0]);
@@ -89,7 +89,7 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
 
         if (!permitted)  {
             //TODO: 记录拒绝访问日志
-            retResult = new RetResult(HttpStatus.FORBIDDEN.value(), "授权异常!", "");
+            retResult = new RetResult(HttpStatus.FORBIDDEN.value(), "授权异常!"+retResult.getMsg(), null);
             return ResponseUtil.makeJsonResponse(exchange.getResponse(), retResult);
         }
         else {

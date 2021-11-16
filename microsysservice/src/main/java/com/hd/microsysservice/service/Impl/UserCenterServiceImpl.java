@@ -36,7 +36,7 @@ class UserCenterServiceImpl implements UserCenterFeignService {
     }
 
     @Override
-    public Response downloadLicense(String machineCode,Long userCount,Long days) {
+    public Response downloadLicense(String machineCode,Long userCount,Long days,String enterpriseId) {
         return null;
     }
 }

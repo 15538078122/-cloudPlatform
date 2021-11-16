@@ -11,6 +11,7 @@ import com.hd.common.vo.SyMonitorVo;
 import com.hd.common.vo.UriCostVo;
 import com.hd.micromonitorservice.service.SyMonitorService;
 import com.hd.micromonitorservice.service.UriCostService;
+import com.hd.micromonitorservice.utils.UserCommonUtil;
 import com.hd.micromonitorservice.utils.VerifyUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,6 +29,9 @@ public class MonitorController extends SuperQueryController {
 
     @Autowired
     SyMonitorService syMonitorService;
+
+    @Autowired
+    UserCommonUtil userCommonUtil;
 
     public MonitorController() {
         //mapQueryCols.put("name", "name");
@@ -58,7 +62,12 @@ public class MonitorController extends SuperQueryController {
     public RetResult lastReq(int pageNum, int pageSize) {
         return RetResponse.makeRsp(uriCostService.getMaxCost2Sec(pageNum, pageSize));
     }
-
+    @ApiOperation(value = "获取在线用户数")
+    @RequiresPermissions(value = "getOnLineUserCount:get", note = "获取在线用户数")
+    @GetMapping("/getOnLineUserCount")
+    public RetResult getOnLineUserCount() {
+        return RetResponse.makeRsp(userCommonUtil.getOnLineUserCount());
+    }
     @ApiOperation(value = "最近请求平均耗时列表")
     @RequiresPermissions(value = "lastreqavg:list", note = "最近请求平均耗时列表")
     @GetMapping("/lastreqavg")

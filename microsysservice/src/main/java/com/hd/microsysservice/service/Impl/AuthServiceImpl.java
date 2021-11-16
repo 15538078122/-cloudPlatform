@@ -1,13 +1,16 @@
 package com.hd.microsysservice.service.Impl;
 
 import com.hd.common.model.TokenInfo;
+import com.hd.microsysservice.conf.GeneralConfig;
 import com.hd.microsysservice.service.AuthService;
 import com.hd.microsysservice.service.SyFuncOpUrlService;
 import com.hd.microsysservice.service.SyUserService;
+import com.hd.microsysservice.utils.LicenseCheckUtil;
 import com.hd.microsysservice.utils.UserCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +30,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     UserCommonUtil userCommonUtil;
+
+    @Autowired
+    LicenseCheckUtil licenseCheckUtil;
 
     HashMap<String, List<String>> scopePermissionList = new HashMap<>();
 
@@ -50,6 +56,9 @@ public class AuthServiceImpl implements AuthService {
      * 返回：失败-1；成功：userId:orgId，如果是client id登录，返回0:0；
      */
     public String auth(TokenInfo tokenInfo) {
+        if(tokenInfo.getEnterpriseId().compareTo(GeneralConfig.ROOT_ENTERPRISE_ID)!=0&&tokenInfo.getAccount().compareTo(GeneralConfig.ENTERPRISE_ADMIN)!=0){
+            licenseCheckUtil.checkIfLicenseExpired(tokenInfo.getEnterpriseId());
+        }
         //Thread.sleep(60);Thread.currentThread().getId()
         //scopes=scopes.toUpperCase();
         String scopes=tokenInfo.getScopes();

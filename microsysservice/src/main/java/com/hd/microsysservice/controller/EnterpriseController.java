@@ -9,10 +9,12 @@ import com.hd.common.RetResponse;
 import com.hd.common.RetResult;
 import com.hd.common.controller.SuperQueryController;
 import com.hd.common.model.RequiresPermissions;
+import com.hd.common.utils.MachineCodeUtil;
 import com.hd.common.vo.SyEnterpriseVo;
 import com.hd.microsysservice.conf.operlog.OperLog;
 import com.hd.microsysservice.entity.SyEnterpriseEntity;
 import com.hd.microsysservice.service.SyEnterpriseService;
+import com.hd.microsysservice.service.SyUserService;
 import com.hd.microsysservice.utils.VerifyUtil;
 import com.hd.microsysservice.utils.VoConvertUtils;
 import io.swagger.annotations.Api;
@@ -36,6 +38,8 @@ import java.util.List;
 public class EnterpriseController extends SuperQueryController {
     @Autowired
     SyEnterpriseService syEnterpriseService;
+    @Autowired
+    SyUserService syUserService;
 
     public EnterpriseController() {
         mapQueryCols.put("name", "name");
@@ -46,7 +50,7 @@ public class EnterpriseController extends SuperQueryController {
     @PostMapping("/enterprise/list")
     public RetResult getEnterpriselist(@RequestParam("query") String query) {
         PageQueryExpressionList pageQuery = JSON.parseObject(query, PageQueryExpressionList.class);
-        Assert.isTrue(pageQuery!=null,"查询参数错误!");
+        Assert.isTrue(pageQuery != null, "查询参数错误!");
         adaptiveQueryColumn(pageQuery);
         //不查询逻辑删除的
 //        QueryExpression queryExpression = new QueryExpression();
@@ -60,6 +64,13 @@ public class EnterpriseController extends SuperQueryController {
         for (SyEnterpriseEntity syEnterpriseEntity : syEnterpriseEntityPage.getRecords()) {
             SyEnterpriseVo syEnterpriseVo = new SyEnterpriseVo();
             VoConvertUtils.copyObjectProperties(syEnterpriseEntity, syEnterpriseVo);
+            //查询企业现有人数
+            QueryWrapper queryWrapper = new QueryWrapper() {{
+                eq("enterprise_id", syEnterpriseVo.getEnterpriseId());
+            }};
+            queryWrapper.eq("delete_flag",0);
+            Long curUserCount = Long.valueOf(syUserService.count(queryWrapper));
+            syEnterpriseVo.setCurUserCount(curUserCount);
             listVo.add(syEnterpriseVo);
         }
         return RetResponse.makeRsp(new MyPage<>(syEnterpriseEntityPage.getCurrent(), syEnterpriseEntityPage.getSize(), syEnterpriseEntityPage.getTotal(), listVo));
@@ -68,15 +79,15 @@ public class EnterpriseController extends SuperQueryController {
     @ApiOperation(value = "创建企业")
     @RequiresPermissions("enterprise:create")
     @PostMapping("/enterprise")
-    @OperLog(operModul = "企业管理",operType = "创建",operDesc = "新建企业")
+    @OperLog(operModul = "企业管理", operType = "创建", operDesc = "新建企业")
     public RetResult createEnterprise(@RequestBody @Validated SyEnterpriseVo syEnterpriseVo) throws Exception {
         SyEnterpriseEntity syEnterpriseEntity = new SyEnterpriseEntity();
-        Boolean createRoles=false;
-        if(syEnterpriseVo.getCreateRoles()!=null){
-            createRoles=syEnterpriseVo.getCreateRoles()==1;
+        Boolean createRoles = false;
+        if (syEnterpriseVo.getCreateRoles() != null) {
+            createRoles = syEnterpriseVo.getCreateRoles() == 1;
         }
         VoConvertUtils.copyObjectProperties(syEnterpriseVo, syEnterpriseEntity);
-        syEnterpriseService.createEnterprise(syEnterpriseEntity,createRoles);
+        syEnterpriseService.createEnterprise(syEnterpriseEntity, createRoles);
         return RetResponse.makeRsp("创建企业成功.");
     }
 
@@ -97,13 +108,12 @@ public class EnterpriseController extends SuperQueryController {
     @ApiOperation(value = "启用/停用企业")
     @RequiresPermissions("enterprise:enable")
     @PutMapping("/enterprise/enable")
-    @OperLog(operModul = "企业管理",operType = "启用/停用",operDesc = "启用/停用企业")
-    public RetResult enableEnterprise(@RequestParam("id") Long id,@RequestParam("enable") Boolean enable) throws Exception {
-        if(!enable){
+    @OperLog(operModul = "企业管理", operType = "启用/停用", operDesc = "启用/停用企业")
+    public RetResult enableEnterprise(@RequestParam("id") Long id, @RequestParam("enable") Boolean enable) throws Exception {
+        if (!enable) {
             syEnterpriseService.removeEnterpriseById(id);
             return RetResponse.makeRsp("停用企业成功.");
-        }
-        else{
+        } else {
             syEnterpriseService.recoverEnterprise(id);
             return RetResponse.makeRsp("启用企业成功.");
         }
@@ -113,12 +123,12 @@ public class EnterpriseController extends SuperQueryController {
     @RequiresPermissions("enterprise:deletePhysically")
     @DeleteMapping("/enterprise/physically")
     public RetResult deleteEnterprisePhysically(String enterpriseId) throws Exception {
-        Assert.notNull(enterpriseId,String.format("参数%s不存在!","enterpriseId"));
+        Assert.notNull(enterpriseId, String.format("参数%s不存在!", "enterpriseId"));
         VerifyUtil.verifyEnterId("root");
         List<SyEnterpriseEntity> syEnterpriseEntities = syEnterpriseService.listByMap(new HashMap<String, Object>() {{
             put("enterprise_id", enterpriseId);
         }});
-        Assert.isTrue(syEnterpriseEntities.size()>0,String.format("企业%s不存在!",enterpriseId));
+        Assert.isTrue(syEnterpriseEntities.size() > 0, String.format("企业%s不存在!", enterpriseId));
         syEnterpriseService.deleteEnterprisePhysically(syEnterpriseEntities.get(0).getId());
         return RetResponse.makeRsp("删除企业成功.");
     }
@@ -126,12 +136,21 @@ public class EnterpriseController extends SuperQueryController {
     @ApiOperation(value = "获取企业详情")
     @RequiresPermissions("enterprise:get")
     @GetMapping("/enterprise")
-    public RetResult getEnterprise(@RequestParam("enterpriseId") String enterpriseId) {
-        QueryWrapper queryWrapper=new QueryWrapper(){{
-           eq("enterprise_id",enterpriseId);
+    public RetResult getEnterprise(@RequestParam("enterpriseId") String enterpriseId) throws Exception {
+        QueryWrapper queryWrapper = new QueryWrapper() {{
+            eq("enterprise_id", enterpriseId);
         }};
         SyEnterpriseEntity syEnterpriseEntity = syEnterpriseService.getOne(queryWrapper);
-        SyEnterpriseService.SyEnterpriseVoConvertUtils  syEnterpriseVoConvertUtils=new SyEnterpriseService.SyEnterpriseVoConvertUtils();
-        return RetResponse.makeRsp(syEnterpriseVoConvertUtils.convertToT2(syEnterpriseEntity));
+        SyEnterpriseService.SyEnterpriseVoConvertUtils syEnterpriseVoConvertUtils = new SyEnterpriseService.SyEnterpriseVoConvertUtils();
+        SyEnterpriseVo syEnterpriseVo = syEnterpriseVoConvertUtils.convertToT2(syEnterpriseEntity);
+        syEnterpriseVo.setMachineCode(MachineCodeUtil.getMachineCode());
+        //查询企业现有人数
+        queryWrapper = new QueryWrapper() {{
+            eq("enterprise_id", enterpriseId);
+        }};
+        queryWrapper.eq("delete_flag",0);
+        Long curUserCount = Long.valueOf(syUserService.count(queryWrapper));
+        syEnterpriseVo.setCurUserCount(curUserCount-1);
+        return RetResponse.makeRsp(syEnterpriseVo);
     }
 }
