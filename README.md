@@ -161,6 +161,9 @@ nginx：
 ![image](https://user-images.githubusercontent.com/83743182/140857028-b50ba9e8-6206-4a07-9075-65539edfab6c.png)  
 32、远程调试--- 方便在线分析问题  
 启动：java -jar -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 micromonitorservice-0.0.1-SNAPSHOT.jar --server.port=20088
-idea配置：Edit configurations，点击+号，创建一个Remote应用，写入ip和port即可
+idea配置：Edit configurations，点击+号，创建一个Remote应用，写入ip和port即可  
+33、gateway通过x-real-ip解决日志中源ip转发后变化的问题  
+ ServerHttpRequest request = exchange.getRequest().mutate().header("X-Real-IP",ip).build();
+ ServerWebExchange buildExchange = exchange.mutate().request(request).build();  
 
 
