@@ -102,16 +102,12 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
             return ResponseUtil.makeJsonResponse(exchange.getResponse(), retResult);
         }
         else {
-            //把tokeninfo中center user id改成业务系统的user id
-            tokenInfo.setId(userId.toString());
-            tokenInfo.setOrgId(orgId.toString());
-            //uri权限验证成功，才保存token
+            //uri权限验证成功，并且是第一次登录，才保存token
             if(CheckTokenGlobalGatewayFilter.toSaveToken.get()){
+                //把tokeninfo中center user id改成业务系统的user id
+                tokenInfo.setId(userId.toString());
+                tokenInfo.setOrgId(orgId.toString());
                 List<String> authorization = exchange.getRequest().getHeaders().get("Authorization");
-                if(authorization==null || authorization.size()==0){
-                    return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-                            new RetResult(HttpStatus.UNAUTHORIZED.value(), "没有登录令牌!", null));
-                }
                 String bearerTk = authorization.get(0);
                 redisTemplate.opsForValue().set(String.format("token:%s",bearerTk.replace("Bearer ", "")),tokenInfo, sessionTimeout*60,TimeUnit.SECONDS);
                 redisTemplate.opsForValue().set(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")),false,  (sessionTimeout+5)*60, TimeUnit.SECONDS);

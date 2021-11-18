@@ -23,13 +23,14 @@ public class UserCommonUtil {
     public Integer getOnLineUserCount() {
         Set<String> keys = redisTemplate.keys(String.format("edgeOut:%s", "*"));
         Integer onlineCount=0;
-        for (String key : keys)
-        {
-            Boolean edgeOut=(Boolean)  redisTemplate.opsForValue().get(key);
-            if(!edgeOut){
-                onlineCount++;
-            }
-        }
+//        for (String key : keys)
+//        {
+//            Boolean edgeOut=(Boolean)  redisTemplate.opsForValue().get(key);
+//            if(!edgeOut){
+//                onlineCount++;
+//            }
+//        }
+        onlineCount=keys.size();
         return  onlineCount;
     }
 }

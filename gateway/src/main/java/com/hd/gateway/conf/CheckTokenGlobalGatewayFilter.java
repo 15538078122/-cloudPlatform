@@ -62,28 +62,14 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
                     new RetResult(HttpStatus.UNAUTHORIZED.value(), "没有登录令牌!", null));
         }
         String bearerTk = authorization.get(0);
-        //TODO:  判断token 登录
         TokenInfo tokenInfo;
         try {
-            tokenInfo = jwtUtils.decodeToken(bearerTk.replace("Bearer ", ""));
-            //url第一个分段一遍用作服务名识别，此处去掉
-            tokenInfo.setUri(uri.substring(uri.indexOf("/",1)));
-            tokenInfo.setMethod(exchange.getRequest().getMethodValue().toLowerCase());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-                    new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", null));
-        }
-        //TODO: 根据应用，判断token超时
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
+            String tokenStr = bearerTk.replace("Bearer ", "");
             //先判断本地缓存是否存在此token
-             Object redisObj = redisTemplate.opsForValue().get(String.format("token:%s",bearerTk.replace("Bearer ", "")));
-
+             Object redisObj = redisTemplate.opsForValue().get(String.format("edgeOut:%s",tokenStr));
             Boolean tokenExist=(redisObj!=null);
-
             if(tokenExist){
-                Boolean edgeOut=(Boolean)  redisTemplate.opsForValue().get(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")));
+                Boolean edgeOut=(Boolean)  redisTemplate.opsForValue().get(String.format("edgeOut:%s",tokenStr));
                 //检查是否已被冲掉
                 if(edgeOut){
                     return ResponseUtil.makeJsonResponse(exchange.getResponse(),
@@ -91,32 +77,50 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
                 }
                 else {
                     //更新token tll
-                    redisTemplate.expire(String.format("token:%s",bearerTk.replace("Bearer ", "")),sessionTimeout*60, TimeUnit.SECONDS);
-                    redisTemplate.expire(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")),(sessionTimeout+5)*60,TimeUnit.SECONDS);
+                    redisTemplate.expire(String.format("token:%s",tokenStr),sessionTimeout*60, TimeUnit.SECONDS);
+                    redisTemplate.expire(String.format("edgeOut:%s",tokenStr),(sessionTimeout+5)*60,TimeUnit.SECONDS);
                     toSaveToken.set(false);
+                    //从缓存获取tokeninfo
+                    tokenInfo= JSON.parseObject(redisTemplate.opsForValue().get(String.format("token:%s",tokenStr)).toString(),TokenInfo.class);
                 }
             }
             else {
+                try {
+                    tokenInfo = jwtUtils.decodeToken(tokenStr);
+                    //url第一个分段一遍用作服务名识别，此处去掉
+                    tokenInfo.setUri(uri.substring(uri.indexOf("/",1)));
+                    tokenInfo.setMethod(exchange.getRequest().getMethodValue().toLowerCase());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return ResponseUtil.makeJsonResponse(exchange.getResponse(),
+                            new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录校验失败!", null));
+                }
+                //TODO: 根据应用，判断token超时
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Long mSec = System.currentTimeMillis() - sdf.parse(tokenInfo.getLoginTime()).getTime();
-                //20分钟
+                //120分钟
                 if (mSec > (60000 * sessionTimeout)) {
                     return ResponseUtil.makeJsonResponse(exchange.getResponse(),
                             new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录token已过期!", null));
                 }
-                //判断是否重复login
+                //判断是否有重复login
                 String existKey = isRepeatLogin(tokenInfo);
                 if(!existKey.isEmpty()){
                     //设置edgeout标识
-//                    return ResponseUtil.makeJsonResponse(exchange.getResponse(),
-//                            new RetResult(HttpStatus.UNAUTHORIZED.value(), "重复登录!", null));
-                    log.debug("重复登录:"+ tokenInfo.getAccount());
+                    //                    return ResponseUtil.makeJsonResponse(exchange.getResponse(),
+                    //                            new RetResult(HttpStatus.UNAUTHORIZED.value(), "重复登录!", null));
+                    log.debug("挤掉重复的登录:"+ tokenInfo.getAccount());
                     redisTemplate.opsForValue().set(String.format("edgeOut:%s",existKey.replace("token:","")),true, (sessionTimeout+5)*60,TimeUnit.SECONDS);
-                    //redisTemplate.delete(existKey);
+                    //删除缓存的tokeninfo，不需要了
+                    redisTemplate.delete(existKey);
                 }
-                //保存token，先写to_save_token标识,在授权检查后保存
+                //保存token，先写to_save_token标识,在授权检查后保存，因为要调整tokeninfo中的centerid为业务系统的userid
                 toSaveToken.set(true);
-//                redisTemplate.opsForValue().set(String.format("token:%s",bearerTk.replace("Bearer ", "")),tokenInfo, sessionTimeout*60,TimeUnit.SECONDS);
-//                redisTemplate.opsForValue().set(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")),false,  (sessionTimeout+5)*60,TimeUnit.SECONDS);
+                //把认证中心的用户id，设置到authId上
+                tokenInfo.setOauthId(tokenInfo.getId());
+                tokenInfo.setId("");
+                //                redisTemplate.opsForValue().set(String.format("token:%s",tokenStr),tokenInfo, sessionTimeout*60,TimeUnit.SECONDS);
+                //                redisTemplate.opsForValue().set(String.format("edgeOut:%s",tokenStr),false,  (sessionTimeout+5)*60,TimeUnit.SECONDS);
             }
         } catch (ParseException e) {
             //e.printStackTrace();
@@ -138,7 +142,7 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
         String exist="";
         for (String key : keys)
         {
-            TokenInfo item= (TokenInfo) redisTemplate.opsForValue().get(key);
+            TokenInfo item= JSON.parseObject(redisTemplate.opsForValue().get(key).toString(),TokenInfo.class);
             if(item.getEnterpriseId().compareTo(tokenInfo.getEnterpriseId())==0
                 &&item.getAccount().compareTo(tokenInfo.getAccount())==0
                 &&item.getDeviceType().compareTo(tokenInfo.getDeviceType())==0){

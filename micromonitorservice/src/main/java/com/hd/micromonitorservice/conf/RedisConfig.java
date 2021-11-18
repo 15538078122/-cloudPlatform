@@ -12,7 +12,6 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -49,17 +48,8 @@ public class RedisConfig {
      * */
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory factory) {
-        FastJson2JsonRedisSerializer jackson2JsonRedisSerializer = new FastJson2JsonRedisSerializer(Object.class);
-        // 配置序列化
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
-        RedisCacheConfiguration redisCacheConfiguration = config.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-                .entryTtl(Duration.ofMinutes(20))
-                .disableCachingNullValues()
-                ;
-
         RedisCacheManager cacheManager = RedisCacheManager.builder(factory)
-                .cacheDefaults(redisCacheConfiguration)
+                .cacheDefaults(getRedisCacheConfigurationWithTtl(20))
                 .withInitialCacheConfigurations(getRedisCacheConfigurationMap())
                 .build();
         return cacheManager;
@@ -67,15 +57,17 @@ public class RedisConfig {
     private Map<String, RedisCacheConfiguration> getRedisCacheConfigurationMap() {
         Map<String, RedisCacheConfiguration> redisCacheConfigurationMap = new HashMap<>();
         //指定特定key的ttl时间
-        redisCacheConfigurationMap.put("lazyCache", this.getRedisCacheConfigurationWithTtl(-1));
+        redisCacheConfigurationMap.put("lazyCache", getRedisCacheConfigurationWithTtl(-1));
         return redisCacheConfigurationMap;
     }
     private RedisCacheConfiguration getRedisCacheConfigurationWithTtl(Integer minutes) {
         // 配置序列化
+        FastJson2JsonRedisSerializer fastJson2JsonRedisSerializer = new FastJson2JsonRedisSerializer(Object.class);
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        // 配置序列化
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
-        FastJson2JsonRedisSerializer jackson2JsonRedisSerializer = new FastJson2JsonRedisSerializer(Object.class);
-        RedisCacheConfiguration redisCacheConfiguration = config.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+        RedisCacheConfiguration redisCacheConfiguration = config.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(stringRedisSerializer))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(fastJson2JsonRedisSerializer))
                 .entryTtl(Duration.ofMinutes(minutes))
                 .disableCachingNullValues()
                 ;

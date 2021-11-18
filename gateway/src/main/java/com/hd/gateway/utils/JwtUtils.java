@@ -69,7 +69,7 @@ public class JwtUtils {
                 scope+=",";
             }
         }
-        TokenInfo tokenInfo=new TokenInfo(id,null,userAccount,enterpriseId,scope,null,null,loginTime,deviceType);
+        TokenInfo tokenInfo=new TokenInfo(id,null,userAccount,enterpriseId,scope,null,null,loginTime,deviceType,"");
         return  tokenInfo;
 
     }

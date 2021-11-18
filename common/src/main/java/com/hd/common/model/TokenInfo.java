@@ -21,4 +21,6 @@ public class TokenInfo {
     String method;
     String loginTime;
     String deviceType;
+    //用户中心账号id
+    String oauthId;
 }
