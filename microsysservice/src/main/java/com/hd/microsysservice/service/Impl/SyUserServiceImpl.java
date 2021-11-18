@@ -291,6 +291,8 @@ public class SyUserServiceImpl extends ServiceImpl<SyUserMapper, SyUserEntity> i
         }
         //删除用户菜单缓存
         redisTemplate.delete(String.format("%s::%s","userMenu",syUserEntityNew.getId()));
+        //删除用户centerId2userId 缓存，账户类型可能修改
+        redisTemplate.delete(String.format("%s::%s","centerId2userId",syUserEntity.getIdCenter()));
 
 //        redisTemplate.opsForValue().set(
 //                String.format("%s::%s-%s", "account", syUserEntityNew.getEnterpriseId(), syUserEntityNew.getAccount())

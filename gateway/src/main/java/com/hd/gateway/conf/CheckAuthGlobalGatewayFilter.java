@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,9 @@ import reactor.core.publisher.Mono;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 //全局过滤器，实现GlobalFilter接口，和Ordered接口即可。
@@ -35,6 +38,9 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
     JwtUtils jwtUtils;
 
     @Autowired
+    RedisTemplate redisTemplate;
+
+    @Autowired
     MicroSysService microSysService;
 
 //    @Value("${config.auth-uri}")
@@ -43,6 +49,9 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
     //TODO: 通过网关访问swagger时，关闭权限检查，开发阶段使用
     @Value("${config.check-permission}")
     boolean checkPermission=true;
+
+    @Value("${config.session-timeout}")
+    int sessionTimeout;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -96,6 +105,17 @@ public class CheckAuthGlobalGatewayFilter implements GlobalFilter, Ordered {
             //把tokeninfo中center user id改成业务系统的user id
             tokenInfo.setId(userId.toString());
             tokenInfo.setOrgId(orgId.toString());
+            //uri权限验证成功，才保存token
+            if(CheckTokenGlobalGatewayFilter.toSaveToken.get()){
+                List<String> authorization = exchange.getRequest().getHeaders().get("Authorization");
+                if(authorization==null || authorization.size()==0){
+                    return ResponseUtil.makeJsonResponse(exchange.getResponse(),
+                            new RetResult(HttpStatus.UNAUTHORIZED.value(), "没有登录令牌!", null));
+                }
+                String bearerTk = authorization.get(0);
+                redisTemplate.opsForValue().set(String.format("token:%s",bearerTk.replace("Bearer ", "")),tokenInfo, sessionTimeout*60,TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")),false,  (sessionTimeout+5)*60, TimeUnit.SECONDS);
+            }
         }
         //TODO: 记录访问日志
         //处理中文账号

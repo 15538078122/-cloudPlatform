@@ -9,6 +9,7 @@ import com.hd.common.RetResult;
 import com.hd.common.model.TokenInfo;
 import com.hd.gateway.utils.JwtUtils;
 import com.hd.gateway.utils.ResponseUtil;
+import io.lettuce.core.output.BooleanListOutput;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,13 +40,14 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
     @Autowired
     RedisTemplate redisTemplate;
 
-
     @Value("${config.session-timeout}")
     int sessionTimeout;
 
     //TODO: 通过网关访问swagger时，关闭权限检查，开发阶段使用
     @Value("${config.check-token}")
     boolean checkPermission=true;
+
+    public static final ThreadLocal<Boolean> toSaveToken = new ThreadLocal<>();
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -90,7 +92,8 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
                 else {
                     //更新token tll
                     redisTemplate.expire(String.format("token:%s",bearerTk.replace("Bearer ", "")),sessionTimeout*60, TimeUnit.SECONDS);
-                    redisTemplate.opsForValue().set(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")),false,  (sessionTimeout+5)*60,TimeUnit.SECONDS);
+                    redisTemplate.expire(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")),(sessionTimeout+5)*60,TimeUnit.SECONDS);
+                    toSaveToken.set(false);
                 }
             }
             else {
@@ -110,19 +113,19 @@ public class CheckTokenGlobalGatewayFilter implements GlobalFilter, Ordered {
                     redisTemplate.opsForValue().set(String.format("edgeOut:%s",existKey.replace("token:","")),true, (sessionTimeout+5)*60,TimeUnit.SECONDS);
                     //redisTemplate.delete(existKey);
                 }
-                //保存token
-                redisTemplate.opsForValue().set(String.format("token:%s",bearerTk.replace("Bearer ", "")),tokenInfo, sessionTimeout*60,TimeUnit.SECONDS);
-                redisTemplate.opsForValue().set(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")),false,  (sessionTimeout+5)*60,TimeUnit.SECONDS);
+                //保存token，先写to_save_token标识,在授权检查后保存
+                toSaveToken.set(true);
+//                redisTemplate.opsForValue().set(String.format("token:%s",bearerTk.replace("Bearer ", "")),tokenInfo, sessionTimeout*60,TimeUnit.SECONDS);
+//                redisTemplate.opsForValue().set(String.format("edgeOut:%s",bearerTk.replace("Bearer ", "")),false,  (sessionTimeout+5)*60,TimeUnit.SECONDS);
             }
-
-
         } catch (ParseException e) {
             //e.printStackTrace();
             return ResponseUtil.makeJsonResponse(exchange.getResponse(),
                     new RetResult(HttpStatus.UNAUTHORIZED.value(), "登录错误!", null));
         }
 
-        ServerHttpRequest request = exchange.getRequest().mutate().header("token-info", JSON.toJSONString(tokenInfo)).header("Authorization","").build();
+        ServerHttpRequest request = exchange.getRequest().mutate().header("token-info", JSON.toJSONString(tokenInfo)).header("Authorization","")
+                .header("Authorization",bearerTk).build();
         ServerWebExchange buildExchange = exchange.mutate().request(request).build();
 
         //TODO: 记录访问日志
