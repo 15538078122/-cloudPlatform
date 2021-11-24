@@ -30,6 +30,6 @@ public interface SyOrgService extends IService<SyOrgEntity> {
     void delOrg(Long orgId) throws Exception;
 
     List<SyUserVo> getMyOrgMen();
-    void updateOrg(SyOrgVo syOrgVo);
+    void updateOrg(SyOrgVo syOrgVo) throws Exception;
     void moveUserToChild(List<SyOrgVo> syOrgVos);
 }

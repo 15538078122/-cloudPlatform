@@ -318,11 +318,41 @@ public class SyOrgServiceImpl extends ServiceImpl<SyOrgMapper, SyOrgEntity> impl
     }
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class}, isolation = Isolation.DEFAULT)
-    public void updateOrg(SyOrgVo syOrgVo) {
+    public void updateOrg(SyOrgVo syOrgVo) throws Exception {
         VerifyUtil.verifyEnterId(syOrgVo.getEnterpriseId());
         //syOrgVo.setEnterpriseId(SecurityContext.GetCurTokenInfo().getenterpriseId());
         SyOrgEntity syOrgEntityOld = getById(syOrgVo.getId());
         Assert.notNull(syOrgEntityOld,String.format("部门(id=%s)不存在!",syOrgEntityOld.getId()));
+
+        String pathCode="";
+        if(syOrgVo.getParentId()==null){
+            //每个企业只能创建一个顶级
+            if(haveTopOrg(syOrgVo.getEnterpriseId())){
+                throw new Exception("顶级部门已存在!");
+            }
+            pathCode=syOrgVo.getLevelCode();
+        }
+        else {
+            //判断部门名称重复
+            QueryWrapper queryWrapper=new QueryWrapper(){{
+                eq("name", syOrgVo.getName());
+                eq("enterprise_id",syOrgVo.getEnterpriseId());
+                eq("delete_flag",0);
+                ne("id",syOrgVo.getId());
+            }};
+            Assert.isTrue(null==getOne(queryWrapper),"部门名称不能重复!");
+            DataPrivilege userDataPrivilege = syUserService.getUserDataPrivilege(Long.parseLong(SecurityContext.GetCurTokenInfo().getId()));
+            Assert.isTrue(userDataPrivilege.getValue() < DataPrivilege.LEVEL_ONLY.getValue(),"数据权限不足!");
+            //获取父编码
+            String parentPathCode = getById(syOrgVo.getParentId()).getPathCode();
+            pathCode=String.format("%s.%s",parentPathCode,syOrgVo.getLevelCode());
+        }
+        syOrgVo.setPathCode(pathCode);
+
+
+        //判断部门的父亲部门不可以是部门现有的子级部门
+        Assert.isTrue(syOrgVo.getPathCode().indexOf(syOrgEntityOld.getPathCode())!=0
+                ||syOrgVo.getPathCode().compareTo(syOrgEntityOld.getPathCode())==0,"不能选择当前部门的子级部门!");
 
         QueryWrapper queryWrapper=new QueryWrapper(){{
             eq("path_code", syOrgVo.getPathCode());
