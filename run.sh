@@ -1,7 +1,7 @@
 #!/bin/sh
 ID=`ps -ef |grep '.*SNAPSHOT.jar$'|awk '{print $2}'`
 echo $ID
-echo "---------------"
+echo "---------------" 
 for id in $ID
 do
 kill -9 $id
